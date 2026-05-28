@@ -638,6 +638,9 @@
     <input type="password" id="pwd-input" placeholder="Contraseña..." autofocus>
     <button class="pwd-btn" id="pwd-btn" onclick="verificarClave()">Entrar</button>
     <p id="pwd-error">❌ Contraseña incorrecta, intentá de nuevo</p>
+    <p id="pwd-hint" style="font-size:11px;color:#9ca3af;margin-top:18px;line-height:1.5;display:none;">
+      Una vez adentro podés cerrar sesión tocando la 👤 de arriba a la derecha
+    </p>
   </div>
 </div>
 
@@ -668,6 +671,7 @@
       <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
     </button>
     <div class="person-menu">
+      <p id="session-label" style="margin:0 0 12px 0;font-size:12px;color:#6b7280;border-bottom:1px solid #e5e7eb;padding-bottom:10px;">Sesión iniciada como <strong style="color:#0b3a75;">usuario gratis</strong></p>
       <button onclick="cerrarSesion()" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;cursor:pointer;padding:6px 4px;border-radius:8px;transition:background 0.15s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         <span style="color:#dc2626;font-size:14px;font-weight:bold;">Cerrar sesión</span>
@@ -868,10 +872,23 @@
     "3305fea36bd49dc0fd4504dff836853483b6c525d90ed8a559af593918fc6064",
   ];
 
+  const NOMBRES = {
+    "3305fea36bd49dc0fd4504dff836853483b6c525d90ed8a559af593918fc6064": "usuario gratis",
+  };
+
   async function sha256(str) {
     const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
     return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
   }
+
+  document.getElementById("pwd-input").addEventListener("input", () => {
+    const hint = document.getElementById("pwd-hint");
+    if (document.getElementById("pwd-input").value.length > 0) {
+      hint.style.display = "block";
+    } else {
+      hint.style.display = "none";
+    }
+  });
 
   async function verificarClave() {
     const input = document.getElementById("pwd-input").value;
@@ -889,13 +906,15 @@
       btn.textContent = "¡Acceso concedido!";
       btn.classList.add("ok");
       document.getElementById("pwd-input").disabled = true;
+      document.getElementById("pwd-hint").style.display = "none";
       box.classList.add("correcto");
 
       sessionStorage.setItem("auth_piratas", "ok");
+      sessionStorage.setItem("auth_nombre", NOMBRES[hash] || "usuario");
 
       setTimeout(() => {
         overlay.classList.add("saliendo");
-        setTimeout(() => overlay.style.display = "none", 600);
+        setTimeout(() => { overlay.style.display = "none"; actualizarSesionLabel(); }, 600);
       }, 700);
 
     } else {
@@ -907,7 +926,14 @@
       input_el.classList.add("pwd-shake");
       input_el.value = "";
       input_el.focus();
+      document.getElementById("pwd-hint").style.display = "none";
     }
+  }
+
+  function actualizarSesionLabel() {
+    const nombre = sessionStorage.getItem("auth_nombre") || "usuario";
+    const label = document.getElementById("session-label");
+    if (label) label.innerHTML = `Sesión iniciada como <strong style="color:#0b3a75;">${nombre}</strong>`;
   }
 
   document.getElementById("pwd-input").addEventListener("keypress", e => {
@@ -916,13 +942,25 @@
 
   if (sessionStorage.getItem("auth_piratas") === "ok") {
     document.getElementById("pwd-overlay").style.display = "none";
+    actualizarSesionLabel();
   }
 
   function cerrarSesion() {
     sessionStorage.removeItem("auth_piratas");
-    document.getElementById("pwd-overlay").style.display = "flex";
+    sessionStorage.removeItem("auth_nombre");
+    const overlay = document.getElementById("pwd-overlay");
+    const box = document.getElementById("pwd-box");
+    overlay.classList.remove("saliendo");
+    box.classList.remove("correcto");
+    document.getElementById("pwd-lock").textContent = "🔒";
+    const btn = document.getElementById("pwd-btn");
+    btn.textContent = "Entrar";
+    btn.classList.remove("ok");
+    document.getElementById("pwd-input").disabled = false;
+    overlay.style.display = "flex";
     document.getElementById("pwd-input").value = "";
     document.getElementById("pwd-error").style.display = "none";
+    document.getElementById("pwd-hint").style.display = "none";
     document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => d.classList.remove("open"));
     setTimeout(() => document.getElementById("pwd-input").focus(), 100);
   }
