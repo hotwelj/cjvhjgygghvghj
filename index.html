@@ -7,190 +7,90 @@
   <style>
     * { box-sizing: border-box; }
 
-    /* ── VARIABLES DE TEMA ── */
     :root {
-      --bg-page:       #f3f6fb;
-      --bg-card:       white;
-      --bg-input:      #f8fafc;
-      --bg-game-card:  #f8fafc;
-      --border-input:  #dbeafe;
-      --border-card:   #e5e7eb;
-      --text-main:     #1f2937;
-      --text-muted:    #6b7280;
-      --text-hint:     #9ca3af;
-      --header-bg:     #0b3a75;
-      --tag-bg:        #eff6ff;
-      --tag-color:     #1d4ed8;
-      --btn-dl-bg:     #dbeafe;
-      --btn-dl-color:  #1d4ed8;
-      --btn-dl-hover:  #bfdbfe;
-      --filter-border: #dbeafe;
-      --search-border: #dbeafe;
-      --eye-fill:      #f8fafc;
-      --eye-stroke:    #9ca3af;
-      --eyelid-fill:   #e2e8f0;
-      --lash-stroke:   #9ca3af;
-      --footer-bg:     white;
-      --footer-border: #e5e7eb;
-      --howto-shadow:  rgba(0,0,0,0.07);
-      --card-shadow:   rgba(0,0,0,0.08);
-      --overlay-bg:    rgba(11,58,117,0.55);
-      --pwd-box-bg:    white;
-      --pwd-box-border:#0b3a75;
-      --version-bg:    #eff6ff;
-      --version-border:#bfdbfe;
-      --version-color: #1d4ed8;
+      --bg-page:#f3f6fb; --bg-card:white; --bg-input:#f8fafc; --bg-game-card:#f8fafc;
+      --border-input:#dbeafe; --border-card:#e5e7eb; --text-main:#1f2937; --text-muted:#6b7280;
+      --text-hint:#9ca3af; --header-bg:#0b3a75; --tag-bg:#eff6ff; --tag-color:#1d4ed8;
+      --btn-dl-bg:#dbeafe; --btn-dl-color:#1d4ed8; --btn-dl-hover:#bfdbfe;
+      --filter-border:#dbeafe; --search-border:#dbeafe; --eye-fill:#f8fafc;
+      --eye-stroke:#9ca3af; --eyelid-fill:#e2e8f0; --lash-stroke:#9ca3af;
+      --footer-bg:white; --footer-border:#e5e7eb; --howto-shadow:rgba(0,0,0,0.07);
+      --card-shadow:rgba(0,0,0,0.08); --overlay-bg:rgba(11,58,117,0.55);
+      --pwd-box-bg:white; --pwd-box-border:#0b3a75; --version-bg:#eff6ff;
+      --version-border:#bfdbfe; --version-color:#1d4ed8;
     }
-
     [data-theme="dark"] {
-      --bg-page:       #0f172a;
-      --bg-card:       #1e293b;
-      --bg-input:      #0f172a;
-      --bg-game-card:  #162032;
-      --border-input:  #334155;
-      --border-card:   #334155;
-      --text-main:     #e2e8f0;
-      --text-muted:    #94a3b8;
-      --text-hint:     #64748b;
-      --header-bg:     #0a2a5c;
-      --tag-bg:        #1e3a5f;
-      --tag-color:     #93c5fd;
-      --btn-dl-bg:     #1e3a5f;
-      --btn-dl-color:  #93c5fd;
-      --btn-dl-hover:  #1d4ed8;
-      --filter-border: #334155;
-      --search-border: #334155;
-      --eye-fill:      #1e293b;
-      --eye-stroke:    #64748b;
-      --eyelid-fill:   #334155;
-      --lash-stroke:   #64748b;
-      --footer-bg:     #1e293b;
-      --footer-border: #334155;
-      --howto-shadow:  rgba(0,0,0,0.3);
-      --card-shadow:   rgba(0,0,0,0.3);
-      --overlay-bg:    rgba(5,15,40,0.75);
-      --pwd-box-bg:    #1e293b;
-      --pwd-box-border:#1d4ed8;
-      --version-bg:    #1e3a5f;
-      --version-border:#1d4ed8;
-      --version-color: #93c5fd;
+      --bg-page:#0f172a; --bg-card:#1e293b; --bg-input:#0f172a; --bg-game-card:#162032;
+      --border-input:#334155; --border-card:#334155; --text-main:#e2e8f0; --text-muted:#94a3b8;
+      --text-hint:#64748b; --header-bg:#0a2a5c; --tag-bg:#1e3a5f; --tag-color:#93c5fd;
+      --btn-dl-bg:#1e3a5f; --btn-dl-color:#93c5fd; --btn-dl-hover:#1d4ed8;
+      --filter-border:#334155; --search-border:#334155; --eye-fill:#1e293b;
+      --eye-stroke:#64748b; --eyelid-fill:#334155; --lash-stroke:#64748b;
+      --footer-bg:#1e293b; --footer-border:#334155; --howto-shadow:rgba(0,0,0,0.3);
+      --card-shadow:rgba(0,0,0,0.3); --overlay-bg:rgba(5,15,40,0.75);
+      --pwd-box-bg:#1e293b; --pwd-box-border:#1d4ed8; --version-bg:#1e3a5f;
+      --version-border:#1d4ed8; --version-color:#93c5fd;
     }
 
-    /* ── BASE ── */
     body { margin:0; font-family:Arial,sans-serif; background:var(--bg-page); color:var(--text-main); text-align:center; display:flex; flex-direction:column; min-height:100vh; transition:background 0.3s, color 0.3s; }
-    h1   { color:#3b82f6; margin-bottom:0; }
+    h1 { color:#3b82f6; margin-bottom:0; }
     [data-theme="light"] h1 { color:#0b3a75; }
 
-    /* ── OVERLAY CONTRASEÑA ── */
-    #pwd-overlay {
-      position:fixed; inset:0; z-index:99999;
-      display:flex; align-items:center; justify-content:center;
-      backdrop-filter:blur(12px) brightness(0.4);
-      -webkit-backdrop-filter:blur(12px) brightness(0.4);
-      background:var(--overlay-bg); transition:opacity 0.6s ease;
-    }
+    #pwd-overlay { position:fixed; inset:0; z-index:99999; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(12px) brightness(0.4); -webkit-backdrop-filter:blur(12px) brightness(0.4); background:var(--overlay-bg); transition:opacity 0.6s ease; }
     #pwd-overlay.saliendo { opacity:0; pointer-events:none; }
-
-    #pwd-box {
-      background:var(--pwd-box-bg); border-radius:18px; padding:44px 40px 36px; width:340px;
-      box-shadow:0 24px 60px rgba(0,0,0,0.4); text-align:center;
-      animation:popIn 0.35s cubic-bezier(.22,1,.36,1);
-      border-top:4px solid var(--pwd-box-border); transition:border-top-color 0.3s, transform 0.4s, background 0.3s;
-    }
+    #pwd-box { background:var(--pwd-box-bg); border-radius:18px; padding:44px 40px 36px; width:340px; box-shadow:0 24px 60px rgba(0,0,0,0.4); text-align:center; animation:popIn 0.35s cubic-bezier(.22,1,.36,1); border-top:4px solid var(--pwd-box-border); transition:border-top-color 0.3s, transform 0.4s, background 0.3s; }
     #pwd-box.correcto { border-top-color:#16a34a; transform:scale(1.03); }
-
-    @keyframes popIn {
-      from { transform:scale(0.88) translateY(20px); opacity:0; }
-      to   { transform:scale(1) translateY(0); opacity:1; }
-    }
+    @keyframes popIn { from{transform:scale(0.88) translateY(20px);opacity:0;} to{transform:scale(1) translateY(0);opacity:1;} }
 
     .pwd-lock { font-size:36px; margin-bottom:8px; display:block; }
     #pwd-box h2 { color:#3b82f6; font-size:22px; margin:0 0 6px; }
     [data-theme="light"] #pwd-box h2 { color:#0b3a75; }
     #pwd-box .pwd-sub { font-size:13px; color:var(--text-muted); margin:0 0 24px; }
 
-    #pwd-input {
-      width:100%; padding:12px 42px 12px 16px; border:2px solid var(--border-input);
-      border-radius:10px; font-size:15px; outline:none; color:var(--text-main);
-      transition:border 0.2s, background 0.3s; background:var(--bg-input); font-family:Arial,sans-serif;
-    }
+    #pwd-input { width:100%; padding:12px 42px 12px 16px; border:2px solid var(--border-input); border-radius:10px; font-size:15px; outline:none; color:var(--text-main); transition:border 0.2s, background 0.3s; background:var(--bg-input); font-family:Arial,sans-serif; }
     #pwd-input:focus { border-color:#1d4ed8; background:var(--bg-card); }
 
-    #show-pwd-btn {
-      position:absolute; right:10px; top:50%; transform:translateY(-50%);
-      background:none; border:none; cursor:pointer; padding:4px;
-      display:flex; align-items:center; justify-content:center;
-      user-select:none; -webkit-user-select:none;
-    }
+    #show-pwd-btn { position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; padding:4px; display:flex; align-items:center; justify-content:center; user-select:none; -webkit-user-select:none; }
     #show-pwd-btn:hover svg { opacity:0.75; }
     #eyelid-top { transition:d 0.3s cubic-bezier(0.4,0,0.2,1); }
 
-    /* Botón modo oscuro en el overlay */
-    #pwd-theme-btn {
-      position:absolute; top:14px; right:14px;
-      background:none; border:none; cursor:pointer;
-      font-size:18px; padding:4px; border-radius:8px;
-      transition:background 0.2s;
-      line-height:1;
-    }
+    #pwd-theme-btn { position:absolute; top:14px; right:14px; background:none; border:none; cursor:pointer; font-size:18px; padding:4px; border-radius:8px; transition:background 0.2s; line-height:1; }
     #pwd-theme-btn:hover { background:rgba(128,128,128,0.15); }
 
-    #pwd-box .pwd-btn {
-      width:100%; padding:13px; background:#0b3a75; color:white;
-      border:none; border-radius:10px; font-size:15px; font-weight:bold;
-      cursor:pointer; transition:background 0.2s, transform 0.1s;
-    }
+    #pwd-box .pwd-btn { width:100%; padding:13px; background:#0b3a75; color:white; border:none; border-radius:10px; font-size:15px; font-weight:bold; cursor:pointer; transition:background 0.2s, transform 0.1s; }
     #pwd-box .pwd-btn:hover  { background:#2563eb; }
     #pwd-box .pwd-btn:active { transform:scale(0.98); }
     #pwd-box .pwd-btn.ok     { background:#16a34a; }
 
     #pwd-error { font-size:12px; color:#dc2626; margin-top:10px; display:none; }
     #pwd-hint  { font-size:11px; color:var(--text-hint); margin-top:18px; line-height:1.5; display:none; }
-
-    @keyframes shake {
-      0%,100% { transform:translateX(0); }
-      25%     { transform:translateX(-6px); }
-      75%     { transform:translateX(6px); }
-    }
+    @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
     .pwd-shake { animation:shake 0.3s ease; }
 
-    /* ── HEADER ── */
     .header { background:var(--header-bg); color:white; padding:15px 30px; display:flex; align-items:center; justify-content:space-between; transition:background 0.3s; }
     .header-left { display:flex; align-items:center; gap:20px; }
+    .header-right { display:flex; align-items:center; gap:8px; }
     .logo a { display:flex; align-items:center; }
     .logo img { height:40px; cursor:pointer; }
     .nav { display:flex; align-items:center; gap:4px; }
     .nav > a { color:white; text-decoration:none; font-weight:bold; opacity:0.9; padding:8px 12px; border-radius:6px; transition:0.2s; font-size:14px; }
     .nav > a:hover { opacity:1; background:rgba(255,255,255,0.15); }
-
-    /* Botón modo oscuro en header */
-    #header-theme-btn {
-      width:36px; height:36px; background:rgba(255,255,255,0.15);
-      border-radius:50%; display:flex; align-items:center; justify-content:center;
-      cursor:pointer; transition:background 0.2s; border:none; font-size:16px;
-      color:white; flex-shrink:0;
-    }
+    #header-theme-btn { width:36px; height:36px; background:rgba(255,255,255,0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background 0.2s; border:none; font-size:16px; color:white; flex-shrink:0; }
     #header-theme-btn:hover { background:rgba(255,255,255,0.3); }
 
-    .header-right { display:flex; align-items:center; gap:8px; }
-
-    /* ── DROPDOWNS ── */
     .dropdown, .person-dropdown { position:relative; }
     .dropdown-btn { background:none; color:white; border:none; font-weight:bold; font-size:14px; padding:8px 12px; border-radius:6px; cursor:pointer; display:flex; align-items:center; gap:6px; opacity:0.9; transition:0.2s; }
     .dropdown-btn:hover { opacity:1; background:rgba(255,255,255,0.15); }
     .dropdown-btn .arrow { font-size:10px; transition:transform 0.2s; }
     .dropdown.open .arrow { transform:rotate(180deg); }
-
     .dropdown-menu { display:none; position:absolute; top:calc(100% + 8px); left:0; background:var(--bg-card); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.2); min-width:180px; overflow:hidden; z-index:100; border:1px solid var(--border-card); }
     .dropdown.open .dropdown-menu { display:block; }
     .dropdown-menu a { display:block; padding:12px 16px; text-decoration:none; color:var(--text-main); font-size:14px; font-weight:bold; text-align:left; transition:background 0.15s; }
     .dropdown-menu a:hover { background:var(--bg-page); color:#3b82f6; }
     .dropdown-menu a + a { border-top:1px solid var(--border-card); }
-
     .person-icon { width:36px; height:36px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background 0.2s; border:none; padding:0; }
     .person-icon:hover { background:rgba(255,255,255,0.35); }
     .person-icon svg { width:20px; height:20px; fill:white; }
-
     .person-menu { display:none; position:absolute; top:calc(100% + 8px); right:0; background:var(--bg-card); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.2); min-width:200px; padding:16px; z-index:100; text-align:left; border:1px solid var(--border-card); }
     .person-dropdown.open .person-menu { display:block; }
     #session-label { margin:0 0 12px; font-size:12px; color:var(--text-muted); border-bottom:1px solid var(--border-card); padding-bottom:10px; }
@@ -198,18 +98,14 @@
     .logout-btn:hover { background:#fef2f2; }
     .logout-btn span { color:#dc2626; font-size:14px; font-weight:bold; }
 
-    /* ── CONTENIDO ── */
     .container { max-width:900px; margin:40px auto; padding:20px; flex:1; width:100%; }
-
     .how-to-box { background:var(--bg-card); border-radius:10px; padding:16px 24px; max-width:600px; margin:0 auto 24px; box-shadow:0 4px 12px var(--howto-shadow); text-align:left; font-size:14px; transition:background 0.3s; }
     .how-to-box ol { margin:10px 0 0; padding-left:20px; line-height:1.9; }
-
     .card { background:var(--bg-card); border-radius:12px; padding:25px; box-shadow:0 8px 20px var(--card-shadow); margin-bottom:30px; transition:background 0.3s; }
     .card h3 { margin-top:0; font-size:20px; color:#3b82f6; }
     [data-theme="light"] .card h3 { color:#0b3a75; }
     .card-subtitle { color:var(--text-muted); font-size:14px; margin:-8px 0 20px; }
 
-    /* ── BÚSQUEDA Y FILTROS ── */
     .search-wrapper { max-width:500px; margin:0 auto 20px; position:relative; }
     .search-wrapper input { width:100%; padding:12px 18px 12px 44px; border-radius:10px; border:2px solid var(--search-border); font-size:15px; outline:none; background:var(--bg-card); color:var(--text-main); transition:border 0.2s, background 0.3s; }
     .search-wrapper input:focus { border-color:#1d4ed8; }
@@ -222,7 +118,6 @@
     .genre-btn.active { background:#1d4ed8; color:white; border-color:#1d4ed8; }
     .genre-btn[data-tooltip]:hover::after { content:attr(data-tooltip); position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:#1f2937; color:white; font-size:11px; padding:5px 10px; border-radius:6px; white-space:nowrap; pointer-events:none; z-index:10; }
 
-    /* ── CARDS JUEGOS ── */
     .games-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; margin-top:10px; }
     .game-card { background:var(--bg-game-card); border:1px solid var(--border-card); border-radius:10px; padding:18px 14px 14px; display:flex; flex-direction:column; align-items:center; gap:6px; transition:background 0.3s; }
     .game-name { font-weight:bold; font-size:15px; color:#3b82f6; margin:0; }
@@ -230,10 +125,12 @@
     .game-desc { font-size:12px; color:var(--text-muted); margin:0; line-height:1.4; }
     .game-tags { display:flex; flex-wrap:wrap; gap:4px; justify-content:center; margin-top:4px; }
     .game-tag  { font-size:10px; padding:2px 8px; border-radius:20px; background:var(--tag-bg); color:var(--tag-color); font-weight:bold; }
-    .btn-download { margin-top:10px; display:inline-flex; align-items:center; gap:6px; padding:8px 18px; background:var(--btn-dl-bg); color:var(--btn-dl-color); border-radius:8px; text-decoration:none; font-size:13px; font-weight:bold; transition:background 0.2s; }
-    .btn-download:hover { background:var(--btn-dl-hover); }
 
-    /* ── FOOTER ── */
+    /* Botón descarga — ahora es un button, no un link */
+    .btn-download { margin-top:10px; display:inline-flex; align-items:center; gap:6px; padding:8px 18px; background:var(--btn-dl-bg); color:var(--btn-dl-color); border-radius:8px; text-decoration:none; font-size:13px; font-weight:bold; transition:background 0.2s; border:none; cursor:pointer; font-family:Arial,sans-serif; }
+    .btn-download:hover { background:var(--btn-dl-hover); }
+    .btn-download:disabled { opacity:0.6; cursor:wait; }
+
     .footer { background:var(--footer-bg); border-top:1px solid var(--footer-border); padding:30px 20px; display:flex; justify-content:center; gap:60px; flex-wrap:wrap; transition:background 0.3s; }
     .footer-item { display:flex; align-items:flex-start; gap:12px; text-align:left; max-width:180px; }
     .footer-icon { width:36px; height:36px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:20px; }
@@ -245,7 +142,6 @@
     .version-dot { width:7px; height:7px; border-radius:50%; background:#22c55e; display:inline-block; }
     .update-date { font-size:12px; color:var(--text-hint); }
 
-    /* ── VOLVER ARRIBA ── */
     .back-to-top { position:fixed; top:24px; left:50%; transform:translateX(-50%) translateY(-20px); background:#0b3a75; color:white; border:none; border-radius:20px; padding:8px 20px; font-size:16px; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 4px 16px rgba(11,58,117,0.3); opacity:0; pointer-events:none; transition:opacity 0.3s ease, transform 0.3s ease, background 0.2s; z-index:999; white-space:nowrap; }
     .back-to-top:hover { background:#2563eb; }
     .back-to-top.visible { opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(0); }
@@ -266,9 +162,9 @@
         onmousedown="event.preventDefault(); mostrarClave(true)" onmouseup="mostrarClave(false)" onmouseleave="mostrarClave(false)"
         ontouchstart="event.preventDefault(); mostrarClave(true)" ontouchend="mostrarClave(false)"
         title="Mantené apretado para ver">
-        <svg id="eyeSvg" width="22" height="22" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="22" height="22" viewBox="0 0 100 100" fill="none">
           <path d="M10 50 Q30 15 50 15 Q70 15 90 50 Q70 85 50 85 Q30 85 10 50 Z" fill="var(--eye-fill)" stroke="var(--eye-stroke)" stroke-width="2.5"/>
-          <g id="eye-pupil" style="opacity:0; transform:scaleY(0); transform-origin:50px 50px; transition:opacity 0.2s ease 0.1s, transform 0.25s cubic-bezier(0.4,0,0.2,1);">
+          <g id="eye-pupil" style="opacity:0;transform:scaleY(0);transform-origin:50px 50px;transition:opacity 0.2s ease 0.1s,transform 0.25s cubic-bezier(0.4,0,0.2,1);">
             <circle cx="50" cy="50" r="18" fill="#1d4ed8" opacity="0.9"/>
             <circle cx="50" cy="50" r="9" fill="#0f172a"/>
             <circle cx="56" cy="44" r="3" fill="white" opacity="0.7"/>
@@ -291,15 +187,11 @@
 <!-- HEADER -->
 <div class="header">
   <div class="header-left">
-    <div class="logo">
-      <a href="index.html"><img src="https://i.imgur.com/CD8poZf.png"></a>
-    </div>
+    <div class="logo"><a href="index.html"><img src="https://i.imgur.com/CD8poZf.png"></a></div>
     <div class="nav">
       <a href="index.html">Home</a>
       <div class="dropdown" id="dropdown-webs">
-        <button class="dropdown-btn" onclick="toggleDropdown('dropdown-webs')">
-          Webs principales <span class="arrow">▼</span>
-        </button>
+        <button class="dropdown-btn" onclick="toggleDropdown('dropdown-webs')">Webs principales <span class="arrow">▼</span></button>
         <div class="dropdown-menu">
           <a href="https://fitgirl-repacks.site/" target="_blank">Fitgirl</a>
           <a href="https://steamunlocked.org/" target="_blank">Steam Unlocked</a>
@@ -331,7 +223,7 @@
   <p>Todos los juegos están comprimidos, necesitas descomprimirlos para poder jugar.</p>
 
   <div class="how-to-box">
-    <strong style="color:#3b82f6;" class="howto-title">📦 ¿Cómo jugar?</strong>
+    <strong class="howto-title">📦 ¿Cómo jugar?</strong>
     <ol>
       <li>Click derecho al archivo .zip → <strong>7-Zip</strong> → <strong>Extraer archivos</strong> → Enter</li>
       <li>Esperá a que termine de extraerse <em>todo</em></li>
@@ -342,12 +234,10 @@
   <div class="card">
     <h3>Juegos (<span id="gameCount"></span>)</h3>
     <p class="card-subtitle">Elegí un juego para descargar y comenzar a jugar.</p>
-
     <div class="search-wrapper">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Buscar juego..." oninput="filterGames()">
     </div>
-
     <div class="genre-filters">
       <button class="genre-btn active" onclick="filterGenre('todos', this)">Todos</button>
       <button class="genre-btn" onclick="filterGenre('accion', this)">Acción</button>
@@ -360,162 +250,162 @@
       <button class="genre-btn" onclick="filterGenre('terror', this)">Terror</button>
       <button class="genre-btn" onclick="filterGenre('estrategia', this)">Estrategia</button>
     </div>
-
     <p class="no-results" id="noResults">No se encontró ningún juego.</p>
     <div class="games-grid">
 
+      <!-- data-id tiene que coincidir exactamente con la clave en getlink.js -->
       <div class="game-card" data-genres="puzzle aventura">
         <p class="game-name">Papers Please</p>
         <p class="game-desc">Inspeccioná documentos y decidí quién entra al país.</p>
         <div class="game-tags"><span class="game-tag">Puzzle</span><span class="game-tag">Aventura</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/Papers-Please/papers.please.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'papers-please')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="accion humor">
         <p class="game-name">No, I'm not human</p>
         <p class="game-desc">Detectá zombies que intentan hacerse pasar por humanos.</p>
         <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Humor</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/No-im-not-human/No_im_not_human.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'no-im-not-human')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="terror aventura">
         <p class="game-name">FNAF Into the pit</p>
         <p class="game-desc">Explorá, sobreviví y descubrí los secretos que esconde el lugar.</p>
         <div class="game-tags"><span class="game-tag">Terror</span><span class="game-tag">Aventura</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/FNAF-into-the-pit/FNAF.into.the.pit.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'fnaf-into-the-pit')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="roguelike puzzle">
         <p class="game-name">Balatro</p>
         <p class="game-desc">Un roguelike de cartas donde construís las mejores manos.</p>
         <div class="game-tags"><span class="game-tag">Roguelike</span><span class="game-tag">Puzzle</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/Balatro/Balatro.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'balatro')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="accion">
         <p class="game-name">Geometry Dash</p>
         <p class="game-desc">Saltá y esquivá obstáculos al ritmo de la música.</p>
         <div class="game-tags"><span class="game-tag">Acción</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/Geometry-dash/Geometry.dash.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'geometry-dash')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="accion puzzle">
         <p class="game-name">Plantas vs Zombies</p>
         <p class="game-desc">Defendé tu jardín de las hordas de zombies con plantas.</p>
         <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Puzzle</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/Plantas-VS-Zombies/Plantas.VS.Zombies.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'plantas-vs-zombies')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="clicker">
         <p class="game-name">Cookie Clicker</p>
         <p class="game-desc">Hacé click para hornear cookies y construir tu imperio.</p>
         <div class="game-tags"><span class="game-tag">Clicker</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/Cookie-clicker/Cookie.Clicker.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'cookie-clicker')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="aventura puzzle">
         <p class="game-name">Undertale</p>
         <p class="game-desc">Es Undertale, ¿quién no lo conoce?</p>
         <div class="game-tags"><span class="game-tag">Aventura</span><span class="game-tag">Puzzle</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/Undertale/Undertale.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'undertale')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="aventura">
         <p class="game-name">Berry Burry Berry</p>
         <p class="game-desc">Un juego indie de aventura y exploración colorido.</p>
         <div class="game-tags"><span class="game-tag">Aventura</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/Berry-Burry-Berry/Berry.Bury.Berry.v2026.02.06.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'berry-burry-berry')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="humor accion">
         <p class="game-name">I Am Bread</p>
         <p class="game-desc">Sé una rebanada de pan y llegá a ser tostada como sea.</p>
         <div class="game-tags"><span class="game-tag">Humor</span><span class="game-tag">Acción</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/I-Am-Bread/I.Am.Bread.Incl.GoatBread.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'i-am-bread')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="clicker">
         <p class="game-name">Particul</p>
         <p class="game-desc">Hacé clic para minar partículas, vendelas y acumulá ganancias. Como Cookie Clicker pero con física.</p>
         <div class="game-tags"><span class="game-tag">Clicker</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/Particul/Particul.Build.21967676.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'particul')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="accion aventura">
         <p class="game-name">The Simpsons: Hit & Run</p>
         <p class="game-desc">GTA pero en Springfield. Manejá por la ciudad, completá misiones y descubrí la conspiración.</p>
         <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Aventura</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/The-Simpsons-Hit-%26-Run/The.Simpsons.Hit.and.Run.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'simpsons-hit-and-run')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="humor aventura">
         <p class="game-name">The Henry Stickmin Collection</p>
         <p class="game-desc">Elegí cómo actúa Henry en cada situación. Fallar es tan divertido como ganar.</p>
         <div class="game-tags"><span class="game-tag">Humor</span><span class="game-tag">Aventura</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/The-Henry-Stickmin-Collection/The.Henry.Stickmin.Collection.v2020.08.12.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'henry-stickmin')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="metroidvania accion">
         <p class="game-name">Hollow Knight</p>
         <p class="game-desc">Explorá un vasto reino subterráneo de insectos y misterios. Difícil, hermoso y enorme.</p>
         <div class="game-tags"><span class="game-tag">Metroidvania</span><span class="game-tag">Acción</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/Hollow-Knight/Hollow.Knight.v1.5.12620.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'hollow-knight')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="humor aventura">
         <p class="game-name">Untitled Goose Game</p>
         <p class="game-desc">Sos un ganso horrible suelto en un pueblo. Robá sombreros, graznás y arruinale el día a todos.</p>
         <div class="game-tags"><span class="game-tag">Humor</span><span class="game-tag">Aventura</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/Untitled-Goose-Game/Untitled.Goose.Game.v1.1.4.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'untitled-goose-game')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="terror puzzle">
         <p class="game-name">Buckshot Roulette</p>
         <p class="game-desc">Ruleta rusa con una escopeta. La estrategia y la suerte deciden quién sale vivo.</p>
         <div class="game-tags"><span class="game-tag">Terror</span><span class="game-tag">Puzzle</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/Buckshot-Roulette/Buckshot.Roulette.v2.2.0.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'buckshot-roulette')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="roguelike clicker">
         <p class="game-name">Scritchy Scratchy</p>
         <p class="game-desc">Comprá tickets de lotería, rascá, hacete millonario, morí, repetí.</p>
         <div class="game-tags"><span class="game-tag">Roguelike</span><span class="game-tag">Clicker</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/Scritchy-Scratchy/Scritchy.Scratchy.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'scritchy-scratchy')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="aventura puzzle estrategia">
         <p class="game-name">Do Not Feed the Monkeys</p>
         <p class="game-desc">Espiá a desconocidos por cámaras de seguridad. Aprendé sus secretos, pero no interactúes con ellos.</p>
         <div class="game-tags"><span class="game-tag">Aventura</span><span class="game-tag">Puzzle</span><span class="game-tag">Estrategia</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegosort/releases/download/Do-Not-Feed-The-Monkeys/DoNotfeedtheMonkeys.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'do-not-feed-the-monkeys')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="terror">
         <p class="game-name">Five Nights at Freddy's</p>
         <p class="game-desc">Sobreviví cinco noches vigilando cámaras en una pizzería donde los animatrónicos cobran vida de noche.</p>
         <div class="game-tags"><span class="game-tag">Terror</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegosort/releases/download/FNAF-1/Five.Nights.at.Freddys.v1.132.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'fnaf-1')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="terror">
         <p class="game-name">Five Nights at Freddy's 2</p>
         <p class="game-desc">Más animatrónicos, sin puertas para protegerte. Solo una máscara y tus reflejos.</p>
         <div class="game-tags"><span class="game-tag">Terror</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegosort/releases/download/FNAF-2/Five.Nights.at.Freddys.2.v1.033.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'fnaf-2')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="terror aventura">
         <p class="game-name">Five Nights at Freddy's 3</p>
         <p class="game-desc">Trabajás en un parque temático de FNAF y solo hay un animatrónico... pero es el peor de todos.</p>
         <div class="game-tags"><span class="game-tag">Terror</span><span class="game-tag">Aventura</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegosort/releases/download/FNAF-3/Five.Nights.at.Freddys.3.v1.032.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'fnaf-3')">⬇ Descargar</button>
       </div>
 
       <div class="game-card" data-genres="estrategia">
         <p class="game-name">Plague Inc: Evolved</p>
         <p class="game-desc">Evolucioná tu patógeno e infectá al mundo entero antes de que la humanidad encuentre la cura.</p>
         <div class="game-tags"><span class="game-tag">Estrategia</span></div>
-        <a class="btn-download" href="https://github.com/hotwelj/juegosort/releases/download/Plague-Inc/Plague.Inc.Evolved.v1.23.0.12.ALL.DLC.zip">⬇ Descargar</a>
+        <button class="btn-download" onclick="descargar(this, 'plague-inc')">⬇ Descargar</button>
       </div>
 
     </div>
@@ -537,8 +427,8 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.081</span>
-    <span class="update-date">🗓 Última actualización: 30 de mayo de 2026</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.082</span>
+    <span class="update-date">🗓 Última actualización: 2 de junio de 2026</span>
   </div>
 </div>
 
@@ -549,37 +439,20 @@
 
   // ── TEMA ──
   function getTheme() { return localStorage.getItem("theme") || "light"; }
-
-  function applyTheme(theme) {
-    document.documentElement.setAttribute("data-theme", theme);
-    const icon = theme === "dark" ? "☀️" : "🌙";
+  function applyTheme(t) {
+    document.documentElement.setAttribute("data-theme", t);
+    const icon = t === "dark" ? "☀️" : "🌙";
     $("header-theme-btn").textContent = icon;
     $("pwd-theme-btn").textContent = icon;
-    // color del título how-to-box en modo claro
-    const howtoTitle = document.querySelector(".howto-title");
-    if (howtoTitle) howtoTitle.style.color = theme === "dark" ? "#3b82f6" : "#0b3a75";
+    const ht = document.querySelector(".howto-title");
+    if (ht) ht.style.color = t === "dark" ? "#3b82f6" : "#0b3a75";
   }
-
   function toggleTheme() {
     const next = getTheme() === "light" ? "dark" : "light";
     localStorage.setItem("theme", next);
     applyTheme(next);
   }
-
   applyTheme(getTheme());
-
-  // ── CONTRASEÑAS ──
-  const HASHES_VALIDOS = [
-    "3305fea36bd49dc0fd4504dff836853483b6c525d90ed8a559af593918fc6064",
-    "a5a8098e19611e966bff4f8243043767ef99bfee85f6499d2e8da5062420d25f",
-    "41c0ebccb07e468d1067b90472cbe6e27ca2631436ce83a528e7a00fb066c6f7",
-    "ff8e5d99a11ddc294515bc779a5569b39dbf745517756ef8b3c4a275621398d5",
-  ];
-
-  async function sha256(str) {
-    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
-  }
 
   // ── OJO ──
   function mostrarClave(ver) {
@@ -603,15 +476,20 @@
   async function verificarClave() {
     const val = $("pwd-input").value;
     if (!val) return;
-    const hash = await sha256(val);
-    if (HASHES_VALIDOS.includes(hash)) {
+    const res = await fetch("/.netlify/functions/auth", {
+      method: "POST",
+      body: JSON.stringify({ password: val })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      sessionStorage.setItem("auth_piratas", "ok");
+      sessionStorage.setItem("auth_token", data.token);
       $("pwd-lock").textContent = "✅";
       $("pwd-btn").textContent = "¡Acceso concedido!";
       $("pwd-btn").classList.add("ok");
       $("pwd-input").disabled = true;
       $("pwd-hint").style.display = "none";
       $("pwd-box").classList.add("correcto");
-      sessionStorage.setItem("auth_piratas", "ok");
       setTimeout(() => {
         $("pwd-overlay").classList.add("saliendo");
         setTimeout(() => $("pwd-overlay").style.display = "none", 600);
@@ -621,17 +499,42 @@
       $("pwd-input").classList.remove("pwd-shake");
       void $("pwd-input").offsetWidth;
       $("pwd-input").classList.add("pwd-shake");
-      $("pwd-input").value = "";
-      $("pwd-input").focus();
+      $("pwd-input").value = ""; $("pwd-input").focus();
       $("pwd-hint").style.display = "none";
     }
   }
 
   if (sessionStorage.getItem("auth_piratas") === "ok") $("pwd-overlay").style.display = "none";
 
+  // ── DESCARGA ──
+  async function descargar(btn, juego) {
+    const token = sessionStorage.getItem("auth_token");
+    if (!token) { alert("Sesión expirada, volvé a ingresar la contraseña."); cerrarSesion(); return; }
+    btn.disabled = true;
+    btn.textContent = "⏳ Cargando...";
+    try {
+      const res = await fetch("/.netlify/functions/getlink", {
+        method: "POST",
+        body: JSON.stringify({ token, juego })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        window.location.href = data.url;
+        setTimeout(() => { btn.disabled = false; btn.textContent = "⬇ Descargar"; }, 3000);
+      } else {
+        btn.disabled = false; btn.textContent = "⬇ Descargar";
+        alert("Error al obtener el link.");
+      }
+    } catch {
+      btn.disabled = false; btn.textContent = "⬇ Descargar";
+      alert("Error de conexión.");
+    }
+  }
+
   // ── CERRAR SESIÓN ──
   function cerrarSesion() {
     sessionStorage.removeItem("auth_piratas");
+    sessionStorage.removeItem("auth_token");
     const ov = $("pwd-overlay"), box = $("pwd-box"), btn = $("pwd-btn");
     ov.classList.remove("saliendo"); box.classList.remove("correcto");
     $("pwd-lock").textContent = "🔒";
@@ -649,7 +552,6 @@
 
   // ── JUEGOS ──
   $("gameCount").textContent = document.querySelectorAll(".game-card").length;
-
   let activeGenre = "todos";
 
   function filterGames() {
@@ -667,8 +569,7 @@
   function filterGenre(genre, btn) {
     activeGenre = genre;
     document.querySelectorAll(".genre-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    filterGames();
+    btn.classList.add("active"); filterGames();
   }
 
   function toggleDropdown(id) {
