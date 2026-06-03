@@ -60,7 +60,15 @@
     #pwd-box .pwd-btn { width:100%; padding:13px; background:#0b3a75; color:white; border:none; border-radius:10px; font-size:15px; font-weight:bold; cursor:pointer; transition:background 0.2s, transform 0.1s; }
     #pwd-box .pwd-btn:hover  { background:#2563eb; }
     #pwd-box .pwd-btn:active { transform:scale(0.98); }
-    #pwd-box .pwd-btn.ok     { background:#16a34a; }
+    #pwd-box .pwd-btn.ok       { background:#16a34a; }
+    #pwd-box .pwd-btn.cargando { background:#6b7280; cursor:wait; position:relative; overflow:hidden; }
+    #pwd-box .pwd-btn.cargando::after { content:''; position:absolute; left:-100%; top:0; width:60%; height:100%; background:rgba(255,255,255,0.2); transform:skewX(-20deg); animation:btnShine 0.9s ease infinite; }
+    @keyframes btnShine { to { left:150%; } }
+    #pwd-dots { display:inline-flex; gap:5px; align-items:center; justify-content:center; }
+    #pwd-dots span { width:7px; height:7px; border-radius:50%; background:white; animation:dotBounce 0.7s ease infinite; }
+    #pwd-dots span:nth-child(2) { animation-delay:0.15s; }
+    #pwd-dots span:nth-child(3) { animation-delay:0.3s; }
+    @keyframes dotBounce { 0%,80%,100%{transform:scale(0.6);opacity:0.5;} 40%{transform:scale(1);opacity:1;} }
 
     #pwd-error { font-size:12px; color:#dc2626; margin-top:10px; display:none; }
     #pwd-hint  { font-size:11px; color:var(--text-hint); margin-top:18px; line-height:1.5; display:none; }
@@ -476,17 +484,28 @@
   async function verificarClave() {
     const val = $("pwd-input").value;
     if (!val) return;
+
+    const btn = $("pwd-btn");
+    btn.classList.add("cargando");
+    btn.innerHTML = '<span id="pwd-dots"><span></span><span></span><span></span></span>';
+    $("pwd-input").disabled = true;
+    $("pwd-error").style.display = "none";
+
     const res = await fetch("/.netlify/functions/auth", {
       method: "POST",
       body: JSON.stringify({ password: val })
     });
     const data = await res.json();
+
+    btn.classList.remove("cargando");
+    $("pwd-input").disabled = false;
+
     if (data.ok) {
       sessionStorage.setItem("auth_piratas", "ok");
       sessionStorage.setItem("auth_token", data.token);
       $("pwd-lock").textContent = "✅";
-      $("pwd-btn").textContent = "¡Acceso concedido!";
-      $("pwd-btn").classList.add("ok");
+      btn.textContent = "¡Acceso concedido!";
+      btn.classList.add("ok");
       $("pwd-input").disabled = true;
       $("pwd-hint").style.display = "none";
       $("pwd-box").classList.add("correcto");
@@ -495,6 +514,7 @@
         setTimeout(() => $("pwd-overlay").style.display = "none", 600);
       }, 700);
     } else {
+      btn.textContent = "Entrar";
       $("pwd-error").style.display = "block";
       $("pwd-input").classList.remove("pwd-shake");
       void $("pwd-input").offsetWidth;
