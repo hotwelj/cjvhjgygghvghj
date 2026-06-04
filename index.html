@@ -127,10 +127,13 @@
     .genre-btn[data-tooltip]:hover::after { content:attr(data-tooltip); position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:#1f2937; color:white; font-size:11px; padding:5px 10px; border-radius:6px; white-space:nowrap; pointer-events:none; z-index:10; }
 
     .games-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; margin-top:10px; }
-    .game-card { background:var(--bg-game-card); border:1px solid var(--border-card); border-radius:10px; padding:18px 14px 14px; display:flex; flex-direction:column; align-items:center; gap:6px; transition:background 0.3s; }
+    .game-card { background:var(--bg-game-card); border:1px solid var(--border-card); border-radius:10px; overflow:hidden; display:flex; flex-direction:column; align-items:center; gap:6px; transition:background 0.3s; }
+    .game-cover { width:100%; height:94px; object-fit:cover; object-position:center; display:block; }
+    .game-cover-placeholder { width:100%; height:94px; background:var(--border-card); display:flex; align-items:center; justify-content:center; font-size:28px; }
+    .game-card-body { padding:10px 14px 14px; display:flex; flex-direction:column; align-items:center; gap:6px; width:100%; }
     .game-name { font-weight:bold; font-size:15px; color:#3b82f6; margin:0; }
     [data-theme="light"] .game-name { color:#0b3a75; }
-    .game-desc { font-size:12px; color:var(--text-muted); margin:0; line-height:1.4; }
+    .game-desc { font-size:12px; color:var(--text-muted); margin:0; line-height:1.4; text-align:center; }
     .game-tags { display:flex; flex-wrap:wrap; gap:4px; justify-content:center; margin-top:4px; }
     .game-tag  { font-size:10px; padding:2px 8px; border-radius:20px; background:var(--tag-bg); color:var(--tag-color); font-weight:bold; }
 
@@ -272,203 +275,286 @@
       <button class="genre-btn" onclick="filterGenre('simulacion', this)">Simulación</button>
     </div>
     <p class="no-results" id="noResults">No se encontró ningún juego.</p>
-    <div class="games-grid">
+<div class="games-grid">
 
-      <!-- data-id tiene que coincidir exactamente con la clave en getlink.js -->
       <div class="game-card" data-genres="puzzle aventura">
-        <p class="game-name">Papers Please</p>
-        <p class="game-desc">Inspeccioná documentos y decidí quién entra al país.</p>
-        <div class="game-tags"><span class="game-tag">Puzzle</span><span class="game-tag">Aventura</span></div>
-        <button class="btn-download" onclick="descargar(this, 'papers-please')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/239030/header.jpg" alt="Papers Please" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Papers Please</p>
+          <p class="game-desc">Inspeccioná documentos y decidí quién entra al país.</p>
+          <div class="game-tags"><span class="game-tag">Puzzle</span><span class="game-tag">Aventura</span></div>
+          <button class="btn-download" onclick="descargar(this, 'papers-please')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="accion humor">
-        <p class="game-name">No, I'm not human</p>
-        <p class="game-desc">Detectá zombies que intentan hacerse pasar por humanos.</p>
-        <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Humor</span></div>
-        <button class="btn-download" onclick="descargar(this, 'no-im-not-human')">⬇ Descargar</button>
+        <div class="game-cover-placeholder">🧟</div>
+        <div class="game-card-body">
+          <p class="game-name">No, I'm not human</p>
+          <p class="game-desc">Detectá zombies que intentan hacerse pasar por humanos.</p>
+          <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Humor</span></div>
+          <button class="btn-download" onclick="descargar(this, 'no-im-not-human')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="terror aventura">
-        <p class="game-name">FNAF Into the pit</p>
-        <p class="game-desc">Explorá, sobreviví y descubrí los secretos que esconde el lugar.</p>
-        <div class="game-tags"><span class="game-tag">Terror</span><span class="game-tag">Aventura</span></div>
-        <button class="btn-download" onclick="descargar(this, 'fnaf-into-the-pit')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/2581400/header.jpg" alt="FNAF Into the pit" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">FNAF Into the pit</p>
+          <p class="game-desc">Explorá, sobreviví y descubrí los secretos que esconde el lugar.</p>
+          <div class="game-tags"><span class="game-tag">Terror</span><span class="game-tag">Aventura</span></div>
+          <button class="btn-download" onclick="descargar(this, 'fnaf-into-the-pit')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="roguelike puzzle">
-        <p class="game-name">Balatro</p>
-        <p class="game-desc">Un roguelike de cartas donde construís las mejores manos.</p>
-        <div class="game-tags"><span class="game-tag">Roguelike</span><span class="game-tag">Puzzle</span></div>
-        <button class="btn-download" onclick="descargar(this, 'balatro')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/2379780/header.jpg" alt="Balatro" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Balatro</p>
+          <p class="game-desc">Un roguelike de cartas donde construís las mejores manos.</p>
+          <div class="game-tags"><span class="game-tag">Roguelike</span><span class="game-tag">Puzzle</span></div>
+          <button class="btn-download" onclick="descargar(this, 'balatro')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="accion">
-        <p class="game-name">Geometry Dash</p>
-        <p class="game-desc">Saltá y esquivá obstáculos al ritmo de la música.</p>
-        <div class="game-tags"><span class="game-tag">Acción</span></div>
-        <button class="btn-download" onclick="descargar(this, 'geometry-dash')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/322170/header.jpg" alt="Geometry Dash" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Geometry Dash</p>
+          <p class="game-desc">Saltá y esquivá obstáculos al ritmo de la música.</p>
+          <div class="game-tags"><span class="game-tag">Acción</span></div>
+          <button class="btn-download" onclick="descargar(this, 'geometry-dash')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="accion puzzle">
-        <p class="game-name">Plantas vs Zombies</p>
-        <p class="game-desc">Defendé tu jardín de las hordas de zombies con plantas.</p>
-        <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Puzzle</span></div>
-        <button class="btn-download" onclick="descargar(this, 'plantas-vs-zombies')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/3590/header.jpg" alt="Plantas vs Zombies" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Plantas vs Zombies</p>
+          <p class="game-desc">Defendé tu jardín de las hordas de zombies con plantas.</p>
+          <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Puzzle</span></div>
+          <button class="btn-download" onclick="descargar(this, 'plantas-vs-zombies')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="clicker">
-        <p class="game-name">Cookie Clicker</p>
-        <p class="game-desc">Hacé click para hornear cookies y construir tu imperio.</p>
-        <div class="game-tags"><span class="game-tag">Clicker</span></div>
-        <button class="btn-download" onclick="descargar(this, 'cookie-clicker')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/1454400/header.jpg" alt="Cookie Clicker" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Cookie Clicker</p>
+          <p class="game-desc">Hacé click para hornear cookies y construir tu imperio.</p>
+          <div class="game-tags"><span class="game-tag">Clicker</span></div>
+          <button class="btn-download" onclick="descargar(this, 'cookie-clicker')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="aventura puzzle">
-        <p class="game-name">Undertale</p>
-        <p class="game-desc">Es Undertale, ¿quién no lo conoce?</p>
-        <div class="game-tags"><span class="game-tag">Aventura</span><span class="game-tag">Puzzle</span></div>
-        <button class="btn-download" onclick="descargar(this, 'undertale')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/391540/header.jpg" alt="Undertale" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Undertale</p>
+          <p class="game-desc">Es Undertale, ¿quién no lo conoce?</p>
+          <div class="game-tags"><span class="game-tag">Aventura</span><span class="game-tag">Puzzle</span></div>
+          <button class="btn-download" onclick="descargar(this, 'undertale')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="aventura">
-        <p class="game-name">Berry Burry Berry</p>
-        <p class="game-desc">Un juego indie de aventura y exploración colorido.</p>
-        <div class="game-tags"><span class="game-tag">Aventura</span></div>
-        <button class="btn-download" onclick="descargar(this, 'berry-burry-berry')">⬇ Descargar</button>
+        <div class="game-cover-placeholder">🫐</div>
+        <div class="game-card-body">
+          <p class="game-name">Berry Burry Berry</p>
+          <p class="game-desc">Un juego indie de aventura y exploración colorido.</p>
+          <div class="game-tags"><span class="game-tag">Aventura</span></div>
+          <button class="btn-download" onclick="descargar(this, 'berry-burry-berry')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="humor accion">
-        <p class="game-name">I Am Bread</p>
-        <p class="game-desc">Sé una rebanada de pan y llegá a ser tostada como sea.</p>
-        <div class="game-tags"><span class="game-tag">Humor</span><span class="game-tag">Acción</span></div>
-        <button class="btn-download" onclick="descargar(this, 'i-am-bread')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/327890/header.jpg" alt="I Am Bread" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">I Am Bread</p>
+          <p class="game-desc">Sé una rebanada de pan y llegá a ser tostada como sea.</p>
+          <div class="game-tags"><span class="game-tag">Humor</span><span class="game-tag">Acción</span></div>
+          <button class="btn-download" onclick="descargar(this, 'i-am-bread')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="clicker">
-        <p class="game-name">Particul</p>
-        <p class="game-desc">Hacé clic para minar partículas, vendelas y acumulá ganancias. Como Cookie Clicker pero con física.</p>
-        <div class="game-tags"><span class="game-tag">Clicker</span></div>
-        <button class="btn-download" onclick="descargar(this, 'particul')">⬇ Descargar</button>
+        <div class="game-cover-placeholder">⚛️</div>
+        <div class="game-card-body">
+          <p class="game-name">Particul</p>
+          <p class="game-desc">Hacé clic para minar partículas, vendelas y acumulá ganancias. Como Cookie Clicker pero con física.</p>
+          <div class="game-tags"><span class="game-tag">Clicker</span></div>
+          <button class="btn-download" onclick="descargar(this, 'particul')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="accion aventura">
-        <p class="game-name">The Simpsons: Hit & Run</p>
-        <p class="game-desc">GTA pero en Springfield. Manejá por la ciudad, completá misiones y descubrí la conspiración.</p>
-        <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Aventura</span></div>
-        <button class="btn-download" onclick="descargar(this, 'simpsons-hit-and-run')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/229280/header.jpg" alt="The Simpsons Hit and Run" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">The Simpsons: Hit & Run</p>
+          <p class="game-desc">GTA pero en Springfield. Manejá por la ciudad, completá misiones y descubrí la conspiración.</p>
+          <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Aventura</span></div>
+          <button class="btn-download" onclick="descargar(this, 'simpsons-hit-and-run')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="humor aventura">
-        <p class="game-name">The Henry Stickmin Collection</p>
-        <p class="game-desc">Elegí cómo actúa Henry en cada situación. Fallar es tan divertido como ganar.</p>
-        <div class="game-tags"><span class="game-tag">Humor</span><span class="game-tag">Aventura</span></div>
-        <button class="btn-download" onclick="descargar(this, 'henry-stickmin')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/1089980/header.jpg" alt="The Henry Stickmin Collection" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">The Henry Stickmin Collection</p>
+          <p class="game-desc">Elegí cómo actúa Henry en cada situación. Fallar es tan divertido como ganar.</p>
+          <div class="game-tags"><span class="game-tag">Humor</span><span class="game-tag">Aventura</span></div>
+          <button class="btn-download" onclick="descargar(this, 'henry-stickmin')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="metroidvania accion">
-        <p class="game-name">Hollow Knight</p>
-        <p class="game-desc">Explorá un vasto reino subterráneo de insectos y misterios. Difícil, hermoso y enorme.</p>
-        <div class="game-tags"><span class="game-tag">Metroidvania</span><span class="game-tag">Acción</span></div>
-        <button class="btn-download" onclick="descargar(this, 'hollow-knight')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/367520/header.jpg" alt="Hollow Knight" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Hollow Knight</p>
+          <p class="game-desc">Explorá un vasto reino subterráneo de insectos y misterios. Difícil, hermoso y enorme.</p>
+          <div class="game-tags"><span class="game-tag">Metroidvania</span><span class="game-tag">Acción</span></div>
+          <button class="btn-download" onclick="descargar(this, 'hollow-knight')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="humor aventura">
-        <p class="game-name">Untitled Goose Game</p>
-        <p class="game-desc">Sos un ganso horrible suelto en un pueblo. Robá sombreros, graznás y arruinale el día a todos.</p>
-        <div class="game-tags"><span class="game-tag">Humor</span><span class="game-tag">Aventura</span></div>
-        <button class="btn-download" onclick="descargar(this, 'untitled-goose-game')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/837470/header.jpg" alt="Untitled Goose Game" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Untitled Goose Game</p>
+          <p class="game-desc">Sos un ganso horrible suelto en un pueblo. Robá sombreros, graznás y arruinale el día a todos.</p>
+          <div class="game-tags"><span class="game-tag">Humor</span><span class="game-tag">Aventura</span></div>
+          <button class="btn-download" onclick="descargar(this, 'untitled-goose-game')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="terror puzzle">
-        <p class="game-name">Buckshot Roulette</p>
-        <p class="game-desc">Ruleta rusa con una escopeta. La estrategia y la suerte deciden quién sale vivo.</p>
-        <div class="game-tags"><span class="game-tag">Terror</span><span class="game-tag">Puzzle</span></div>
-        <button class="btn-download" onclick="descargar(this, 'buckshot-roulette')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/2835570/header.jpg" alt="Buckshot Roulette" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Buckshot Roulette</p>
+          <p class="game-desc">Ruleta rusa con una escopeta. La estrategia y la suerte deciden quién sale vivo.</p>
+          <div class="game-tags"><span class="game-tag">Terror</span><span class="game-tag">Puzzle</span></div>
+          <button class="btn-download" onclick="descargar(this, 'buckshot-roulette')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="roguelike clicker">
-        <p class="game-name">Scritchy Scratchy</p>
-        <p class="game-desc">Comprá tickets de lotería, rascá, hacete millonario, morí, repetí.</p>
-        <div class="game-tags"><span class="game-tag">Roguelike</span><span class="game-tag">Clicker</span></div>
-        <button class="btn-download" onclick="descargar(this, 'scritchy-scratchy')">⬇ Descargar</button>
+        <div class="game-cover-placeholder">🎰</div>
+        <div class="game-card-body">
+          <p class="game-name">Scritchy Scratchy</p>
+          <p class="game-desc">Comprá tickets de lotería, rascá, hacete millonario, morí, repetí.</p>
+          <div class="game-tags"><span class="game-tag">Roguelike</span><span class="game-tag">Clicker</span></div>
+          <button class="btn-download" onclick="descargar(this, 'scritchy-scratchy')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="aventura puzzle estrategia">
-        <p class="game-name">Do Not Feed the Monkeys</p>
-        <p class="game-desc">Espiá a desconocidos por cámaras de seguridad. Aprendé sus secretos, pero no interactúes con ellos.</p>
-        <div class="game-tags"><span class="game-tag">Aventura</span><span class="game-tag">Puzzle</span><span class="game-tag">Estrategia</span></div>
-        <button class="btn-download" onclick="descargar(this, 'do-not-feed-the-monkeys')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/658510/header.jpg" alt="Do Not Feed the Monkeys" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Do Not Feed the Monkeys</p>
+          <p class="game-desc">Espiá a desconocidos por cámaras de seguridad. Aprendé sus secretos, pero no interactúes con ellos.</p>
+          <div class="game-tags"><span class="game-tag">Aventura</span><span class="game-tag">Puzzle</span><span class="game-tag">Estrategia</span></div>
+          <button class="btn-download" onclick="descargar(this, 'do-not-feed-the-monkeys')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="terror">
-        <p class="game-name">Five Nights at Freddy's</p>
-        <p class="game-desc">Sobreviví cinco noches vigilando cámaras en una pizzería donde los animatrónicos cobran vida de noche.</p>
-        <div class="game-tags"><span class="game-tag">Terror</span></div>
-        <button class="btn-download" onclick="descargar(this, 'fnaf-1')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/319510/header.jpg" alt="Five Nights at Freddys" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Five Nights at Freddy's</p>
+          <p class="game-desc">Sobreviví cinco noches vigilando cámaras en una pizzería donde los animatrónicos cobran vida de noche.</p>
+          <div class="game-tags"><span class="game-tag">Terror</span></div>
+          <button class="btn-download" onclick="descargar(this, 'fnaf-1')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="terror">
-        <p class="game-name">Five Nights at Freddy's 2</p>
-        <p class="game-desc">Más animatrónicos, sin puertas para protegerte. Solo una máscara y tus reflejos.</p>
-        <div class="game-tags"><span class="game-tag">Terror</span></div>
-        <button class="btn-download" onclick="descargar(this, 'fnaf-2')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/332310/header.jpg" alt="Five Nights at Freddys 2" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Five Nights at Freddy's 2</p>
+          <p class="game-desc">Más animatrónicos, sin puertas para protegerte. Solo una máscara y tus reflejos.</p>
+          <div class="game-tags"><span class="game-tag">Terror</span></div>
+          <button class="btn-download" onclick="descargar(this, 'fnaf-2')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="terror aventura">
-        <p class="game-name">Five Nights at Freddy's 3</p>
-        <p class="game-desc">Trabajás en un parque temático de FNAF y solo hay un animatrónico... pero es el peor de todos.</p>
-        <div class="game-tags"><span class="game-tag">Terror</span><span class="game-tag">Aventura</span></div>
-        <button class="btn-download" onclick="descargar(this, 'fnaf-3')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/354140/header.jpg" alt="Five Nights at Freddys 3" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Five Nights at Freddy's 3</p>
+          <p class="game-desc">Trabajás en un parque temático de FNAF y solo hay un animatrónico... pero es el peor de todos.</p>
+          <div class="game-tags"><span class="game-tag">Terror</span><span class="game-tag">Aventura</span></div>
+          <button class="btn-download" onclick="descargar(this, 'fnaf-3')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="estrategia">
-        <p class="game-name">Plague Inc: Evolved</p>
-        <p class="game-desc">Evolucioná tu patógeno e infectá al mundo entero antes de que la humanidad encuentre la cura.</p>
-        <div class="game-tags"><span class="game-tag">Estrategia</span></div>
-        <button class="btn-download" onclick="descargar(this, 'plague-inc')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/1005040/header.jpg" alt="Plague Inc Evolved" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Plague Inc: Evolved</p>
+          <p class="game-desc">Evolucioná tu patógeno e infectá al mundo entero antes de que la humanidad encuentre la cura.</p>
+          <div class="game-tags"><span class="game-tag">Estrategia</span></div>
+          <button class="btn-download" onclick="descargar(this, 'plague-inc')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="accion sandbox aventura">
-        <p class="game-name">Terraria</p>
-        <p class="game-desc">Explorá, construí y combatí en un mundo 2D infinito. Minería, jefes brutales, cientos de items y biomas — cada partida es distinta.</p>
-        <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Sandbox</span><span class="game-tag">Aventura</span></div>
-        <button class="btn-download" onclick="descargar(this, 'terraria')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/105600/header.jpg" alt="Terraria" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Terraria</p>
+          <p class="game-desc">Explorá, construí y combatí en un mundo 2D infinito. Minería, jefes brutales, cientos de items y biomas — cada partida es distinta.</p>
+          <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Sandbox</span><span class="game-tag">Aventura</span></div>
+          <button class="btn-download" onclick="descargar(this, 'terraria')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="accion">
-        <p class="game-name">Jump King</p>
-        <p class="game-desc">Subí hasta la cima saltando de plataforma en plataforma. Un solo salto mal calculado y caés todo. No hay checkpoints. Solo vos y tu concentración.</p>
-        <div class="game-tags"><span class="game-tag">Acción</span></div>
-        <button class="btn-download" onclick="descargar(this, 'jump-king')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/1061090/header.jpg" alt="Jump King" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Jump King</p>
+          <p class="game-desc">Subí hasta la cima saltando de plataforma en plataforma. Un solo salto mal calculado y caés todo. No hay checkpoints. Solo vos y tu concentración.</p>
+          <div class="game-tags"><span class="game-tag">Acción</span></div>
+          <button class="btn-download" onclick="descargar(this, 'jump-king')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="accion aventura">
-        <p class="game-name">Celeste</p>
-        <p class="game-desc">Ayudá a Madeline a escalar la montaña Celeste mientras enfrenta sus propios demonios internos. Plataformero difícil con una historia emotiva sobre salud mental y superación.</p>
-        <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Aventura</span></div>
-        <button class="btn-download" onclick="descargar(this, 'celeste')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/504230/header.jpg" alt="Celeste" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Celeste</p>
+          <p class="game-desc">Ayudá a Madeline a escalar la montaña Celeste mientras enfrenta sus propios demonios internos. Plataformero difícil con una historia emotiva sobre salud mental y superación.</p>
+          <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Aventura</span></div>
+          <button class="btn-download" onclick="descargar(this, 'celeste')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="simulacion aventura">
-        <p class="game-name">Stardew Valley</p>
-        <p class="game-desc">Dejás tu trabajo de oficina para hacerte cargo de una granja heredada. Cultivá, pescá, explorá minas, construí relaciones con los vecinos del pueblo y creá la vida que querés.</p>
-        <div class="game-tags"><span class="game-tag">Simulación</span><span class="game-tag">Aventura</span></div>
-        <button class="btn-download" onclick="descargar(this, 'stardew-valley')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/413150/header.jpg" alt="Stardew Valley" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Stardew Valley</p>
+          <p class="game-desc">Dejás tu trabajo de oficina para hacerte cargo de una granja heredada. Cultivá, pescá, explorá minas, construí relaciones con los vecinos del pueblo y creá la vida que querés.</p>
+          <div class="game-tags"><span class="game-tag">Simulación</span><span class="game-tag">Aventura</span></div>
+          <button class="btn-download" onclick="descargar(this, 'stardew-valley')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="accion">
-        <p class="game-name">Super Meat Boy</p>
-        <p class="game-desc">Controlás un cubo de carne cruda que tiene que atravesar niveles llenos de sierras, agujas y trampas mortales para rescatar a su novia. Difícil, rápido y adictivo.</p>
-        <div class="game-tags"><span class="game-tag">Acción</span></div>
-        <button class="btn-download" onclick="descargar(this, 'super-meat-boy')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/40800/header.jpg" alt="Super Meat Boy" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Super Meat Boy</p>
+          <p class="game-desc">Controlás un cubo de carne cruda que tiene que atravesar niveles llenos de sierras, agujas y trampas mortales para rescatar a su novia. Difícil, rápido y adictivo.</p>
+          <div class="game-tags"><span class="game-tag">Acción</span></div>
+          <button class="btn-download" onclick="descargar(this, 'super-meat-boy')">⬇ Descargar</button>
+        </div>
       </div>
 
       <div class="game-card" data-genres="simulacion aventura">
-        <p class="game-name">Slime Rancher</p>
-        <p class="game-desc">Manejás un rancho en un planeta lejano donde criás y coleccionás slimes de distintos tipos. Explorá biomas coloridos, combiná slimes y construí tu fortuna en primera persona.</p>
-        <div class="game-tags"><span class="game-tag">Simulación</span><span class="game-tag">Aventura</span></div>
-        <button class="btn-download" onclick="descargar(this, 'slime-rancher')">⬇ Descargar</button>
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/433340/header.jpg" alt="Slime Rancher" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Slime Rancher</p>
+          <p class="game-desc">Manejás un rancho en un planeta lejano donde criás y coleccionás slimes de distintos tipos. Explorá biomas coloridos, combiná slimes y construí tu fortuna en primera persona.</p>
+          <div class="game-tags"><span class="game-tag">Simulación</span><span class="game-tag">Aventura</span></div>
+          <button class="btn-download" onclick="descargar(this, 'slime-rancher')">⬇ Descargar</button>
+        </div>
       </div>
 
     </div>
@@ -490,8 +576,8 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.086</span>
-    <span class="update-date">🗓 Última actualización: 3 de junio de 2026</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.087</span>
+    <span class="update-date">🗓 Última actualización: 4 de junio de 2026</span>
   </div>
 </div>
 
