@@ -98,46 +98,65 @@
     .logout-btn span { color:#dc2626; font-size:14px; font-weight:bold; }
 
     /* ── CONTENIDO ── */
-    .container { max-width:640px; margin:40px auto; padding:20px; flex:1; width:100%; text-align:center; }
+    .container { max-width:660px; margin:40px auto; padding:20px; flex:1; width:100%; text-align:center; }
 
-    .card { background:var(--bg-card); border-radius:12px; padding:32px; box-shadow:0 8px 20px var(--card-shadow); transition:background 0.3s; text-align:left; }
-    .card h2 { margin-top:0; font-size:22px; color:#3b82f6; }
-    [data-theme="light"] .card h2 { color:#0b3a75; }
-    .card p.sub { font-size:13px; color:var(--text-muted); margin:-8px 0 24px; }
+    .page-header { margin-bottom:28px; }
+    .page-header h1 { font-size:28px; margin-bottom:6px; }
+    .page-header p { color:var(--text-muted); font-size:14px; margin:0; }
 
-    .form-group { margin-bottom:20px; }
-    .form-group label { display:block; font-size:14px; font-weight:bold; color:var(--text-main); margin-bottom:8px; }
-    .form-group .hint { font-size:12px; color:var(--text-muted); margin-bottom:8px; display:block; }
+    .card { background:var(--bg-card); border-radius:16px; box-shadow:0 8px 32px var(--card-shadow); transition:background 0.3s; overflow:hidden; }
 
-    .radio-group { display:flex; flex-direction:column; gap:10px; }
-    .radio-option { display:flex; align-items:center; gap:10px; cursor:pointer; }
+    .card-top-bar { background:linear-gradient(135deg, #0b3a75, #1d4ed8); padding:28px 32px; text-align:left; }
+    [data-theme="dark"] .card-top-bar { background:linear-gradient(135deg, #0a2a5c, #1e3a8a); }
+    .card-top-bar h2 { color:white; font-size:20px; margin:0 0 6px; }
+    .card-top-bar p { color:rgba(255,255,255,0.75); font-size:13px; margin:0; }
+
+    .card-body { padding:28px 32px; text-align:left; }
+
+    .form-group { margin-bottom:24px; }
+    .form-label { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:bold; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; }
+    .form-label .step { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; background:#1d4ed8; color:white; font-size:11px; font-weight:bold; flex-shrink:0; }
+    [data-theme="dark"] .form-label .step { background:#3b82f6; }
+
+    .radio-group { display:flex; flex-direction:column; gap:8px; }
+    .radio-option { display:flex; align-items:center; gap:12px; cursor:pointer; padding:12px 16px; border-radius:10px; border:2px solid var(--border-card); background:var(--bg-input); transition:border-color 0.2s, background 0.2s; }
+    .radio-option:hover { border-color:#93c5fd; background:var(--bg-card); }
+    .radio-option:has(input:checked) { border-color:#1d4ed8; background:#eff6ff; }
+    [data-theme="dark"] .radio-option:has(input:checked) { background:#1e3a5f; border-color:#3b82f6; }
     .radio-option input[type="radio"] { accent-color:#1d4ed8; width:16px; height:16px; cursor:pointer; flex-shrink:0; }
-    .radio-option span { font-size:14px; color:var(--text-main); }
+    .radio-option span { font-size:14px; color:var(--text-main); font-weight:500; }
 
-    #otro-input { margin-top:10px; display:none; }
+    #otro-input { margin-top:8px; }
 
-    input[type="text"], textarea {
-      width:100%; padding:12px 16px; border:2px solid var(--border-input);
+    textarea, input[type="text"] {
+      width:100%; padding:13px 16px; border:2px solid var(--border-input);
       border-radius:10px; font-size:14px; outline:none; color:var(--text-main);
       background:var(--bg-input); font-family:Arial,sans-serif;
-      transition:border 0.2s, background 0.3s; resize:vertical;
+      transition:border 0.2s, background 0.2s, box-shadow 0.2s; resize:vertical;
     }
-    input[type="text"]:focus, textarea:focus { border-color:#1d4ed8; background:var(--bg-card); }
-    textarea { min-height:100px; }
+    textarea:focus, input[type="text"]:focus {
+      border-color:#1d4ed8; background:var(--bg-card);
+      box-shadow:0 0 0 3px rgba(29,78,216,0.12);
+    }
+    textarea { min-height:110px; }
 
-    .sender-badge { display:inline-flex; align-items:center; gap:8px; background:var(--btn-dl-bg); border:1px solid var(--border-input); border-radius:20px; padding:6px 14px; font-size:13px; color:var(--tag-color); font-weight:bold; }
+    .sender-row { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-radius:10px; background:var(--bg-input); border:2px solid var(--border-card); }
+    .sender-row .sender-label { font-size:13px; color:var(--text-muted); }
+    .sender-badge { display:inline-flex; align-items:center; gap:6px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:20px; padding:5px 12px; font-size:13px; color:#1d4ed8; font-weight:bold; }
+    [data-theme="dark"] .sender-badge { background:#1e3a5f; border-color:#334155; color:#93c5fd; }
 
-    .submit-btn { width:100%; padding:14px; background:#0b3a75; color:white; border:none; border-radius:10px; font-size:15px; font-weight:bold; cursor:pointer; transition:background 0.2s, transform 0.1s; margin-top:8px; }
-    .submit-btn:hover { background:#2563eb; }
+    .submit-btn { width:100%; padding:14px; background:#0b3a75; color:white; border:none; border-radius:10px; font-size:15px; font-weight:bold; cursor:pointer; transition:background 0.2s, transform 0.1s, box-shadow 0.2s; margin-top:4px; box-shadow:0 4px 12px rgba(11,58,117,0.25); }
+    .submit-btn:hover { background:#1d4ed8; box-shadow:0 6px 16px rgba(29,78,216,0.35); }
     .submit-btn:active { transform:scale(0.98); }
-    .submit-btn:disabled { background:#6b7280; cursor:wait; }
+    .submit-btn:disabled { background:#6b7280; cursor:wait; box-shadow:none; }
 
-    .success-msg { display:none; text-align:center; padding:32px 20px; }
-    .success-msg .check { font-size:52px; display:block; margin-bottom:12px; }
-    .success-msg h3 { color:#16a34a; font-size:20px; margin:0 0 8px; }
-    .success-msg p { color:var(--text-muted); font-size:14px; margin:0 0 20px; }
-    .success-msg a { display:inline-block; padding:10px 24px; background:#0b3a75; color:white; border-radius:10px; text-decoration:none; font-weight:bold; font-size:14px; transition:background 0.2s; }
-    .success-msg a:hover { background:#2563eb; }
+    .success-msg { display:none; text-align:center; padding:48px 20px; }
+    .success-msg .check { font-size:56px; display:block; margin-bottom:16px; animation:popIn 0.4s cubic-bezier(.22,1,.36,1); }
+    @keyframes popIn { from{transform:scale(0.5);opacity:0;} to{transform:scale(1);opacity:1;} }
+    .success-msg h3 { color:#16a34a; font-size:22px; margin:0 0 8px; }
+    .success-msg p { color:var(--text-muted); font-size:14px; margin:0 0 24px; }
+    .success-msg a { display:inline-block; padding:11px 28px; background:#0b3a75; color:white; border-radius:10px; text-decoration:none; font-weight:bold; font-size:14px; transition:background 0.2s; }
+    .success-msg a:hover { background:#1d4ed8; }
 
     /* ── FOOTER ── */
     .footer { background:var(--footer-bg); border-top:1px solid var(--footer-border); padding:24px 20px; display:flex; justify-content:center; transition:background 0.3s; }
@@ -212,52 +231,61 @@
 
 <!-- CONTENIDO -->
 <div class="container">
-  <h1>Sugerencias</h1>
 
-  <div class="card" style="margin-top:24px;">
-    <h2>📬 Enviá tu sugerencia</h2>
-    <p class="sub">Todas las sugerencias son leídas. Si es buena, la aplicamos.</p>
+  <div class="page-header">
+    <h1>Sugerencias</h1>
+    <p>Tu opinión hace que la página mejore. Todas las sugerencias son leídas.</p>
+  </div>
 
+  <div class="card">
+    <div class="card-top-bar">
+      <h2>📬 Enviá tu sugerencia</h2>
+      <p>Si es buena, la aplicamos. Prometido.</p>
+    </div>
+
+    <div class="card-body">
     <div id="form-wrapper">
       <form name="sugerencias" method="POST" data-netlify="true" onsubmit="enviarFormulario(event)">
         <input type="hidden" name="form-name" value="sugerencias">
         <input type="hidden" name="usuario" id="campo-usuario" value="">
 
         <div class="form-group">
-          <label>1. ¿Qué tipo de sugerencia es?</label>
+          <div class="form-label"><span class="step">1</span> ¿Qué tipo de sugerencia es?</div>
           <div class="radio-group">
             <label class="radio-option">
               <input type="radio" name="tipo" value="Sugerencia de la página" required>
-              <span>Sugerencia de la página</span>
+              <span>🖥️ Sugerencia de la página</span>
             </label>
             <label class="radio-option">
               <input type="radio" name="tipo" value="Sugerencia de juegos">
-              <span>Sugerencia de juegos</span>
+              <span>🎮 Sugerencia de juegos</span>
             </label>
-            <label class="radio-option" id="otro-label">
+            <label class="radio-option">
               <input type="radio" name="tipo" value="otro" id="radio-otro">
-              <span>Otro</span>
+              <span>💬 Otro</span>
             </label>
-            <input type="text" id="otro-input" name="tipo-otro" placeholder="Especificá..." style="display:none;">
+          </div>
+          <input type="text" id="otro-input" name="tipo-otro" placeholder="Especificá de qué se trata..." style="display:none; margin-top:10px;">
+        </div>
+
+        <div class="form-group">
+          <div class="form-label"><span class="step">2</span> ¿Qué querés decir?</div>
+          <textarea name="mensaje" placeholder="Contanos tu idea, problema o comentario en detalle..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label" style="text-transform:none; letter-spacing:0; font-size:14px; color:var(--text-main);">Notas adicionales <span style="font-weight:normal; color:var(--text-muted); font-size:13px;">(opcional)</span></div>
+          <textarea name="notas" placeholder="Cualquier detalle extra..." style="min-height:70px;"></textarea>
+        </div>
+
+        <div class="form-group" style="margin-bottom:20px;">
+          <div class="sender-row">
+            <span class="sender-label">Enviando como</span>
+            <span class="sender-badge" id="sender-badge">👤 cargando...</span>
           </div>
         </div>
 
-        <div class="form-group">
-          <label>2. ¿Qué querés decir?</label>
-          <textarea name="mensaje" placeholder="Contanos tu idea, problema o comentario..." required></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>3. Algo para agregar / notas <span style="font-weight:normal;color:var(--text-muted);">(opcional)</span></label>
-          <textarea name="notas" placeholder="Cualquier detalle extra que quieras agregar..." style="min-height:70px;"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Enviado como</label>
-          <span class="sender-badge" id="sender-badge">👤 cargando...</span>
-        </div>
-
-        <button type="submit" class="submit-btn" id="submit-btn">Enviar sugerencia</button>
+        <button type="submit" class="submit-btn" id="submit-btn">✉️ Enviar sugerencia</button>
       </form>
     </div>
 
@@ -267,14 +295,15 @@
       <p>Gracias por tomarte el tiempo. La vamos a revisar.</p>
       <a href="index.html">← Volver al inicio</a>
     </div>
+    </div>
   </div>
 </div>
 
 <!-- FOOTER -->
 <div class="footer">
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.091</span>
-    <span class="update-date">🗓 Última actualización: 4 de junio de 2026</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.093</span>
+    <span class="update-date">🗓 Última actualización: 5 de junio de 2026</span>
   </div>
 </div>
 
