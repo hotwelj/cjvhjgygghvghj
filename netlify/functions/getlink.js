@@ -30,6 +30,7 @@ const LINKS = {
   "stardew-valley":         "https://github.com/hotwelj/juegosort/releases/download/Stardew-valley/Stardew.Valley.v1.6.15.zip",
   "super-meat-boy":         "https://github.com/hotwelj/juegosort/releases/download/Super-meat-boy/Super.Meat.Boy.v1.2.5.ALL.DLC.zip",
   "slime-rancher":          "https://github.com/hotwelj/juegosort/releases/download/Slime-rancher/Slime.Rancher.v1.4.4.ALL.DLC.zip",
+  "cloverpit":              "https://github.com/hotwelj/juegosort/releases/download/Cloverpit/CloverPit.v1.4.10.ALL.DLC.zip",
 };
 
 exports.handler = async (event) => {
