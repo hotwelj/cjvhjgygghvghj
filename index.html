@@ -177,6 +177,11 @@
     [data-theme="dark"] .game-card:hover { box-shadow:0 12px 28px rgba(0,0,0,0.4); }
 
     /* ── FAVORITOS ── */
+    .card-actions { display:flex; gap:6px; margin-top:10px; width:100%; justify-content:center; }
+    .card-actions .btn-download { margin-top:0; flex:1; }
+    .fav-btn-inline { padding:8px 10px; background:var(--bg-input); border:2px solid var(--border-card); border-radius:8px; cursor:pointer; font-size:15px; transition:background 0.2s, transform 0.15s; flex-shrink:0; }
+    .fav-btn-inline:hover { background:var(--btn-dl-bg); transform:scale(1.1); }
+    .fav-btn-inline.activo { background:#fef2f2; border-color:#fca5a5; }
     .fav-btn { position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.45); border:none; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:15px; transition:background 0.2s, transform 0.15s; z-index:2; backdrop-filter:blur(4px); }
     .fav-btn:hover { background:rgba(0,0,0,0.65); transform:scale(1.15); }
     .fav-btn.activo { background:rgba(220,38,38,0.75); }
@@ -350,7 +355,10 @@
           <p class="game-name">Papers Please</p>
           <p class="game-desc">Inspeccioná documentos y decidí quién entra al país.</p>
           <div class="game-tags"><span class="game-tag">Puzzle</span><span class="game-tag">Aventura</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'papers-please')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -360,7 +368,10 @@
           <p class="game-name">No, I'm not a Human</p>
           <p class="game-desc">El mundo está llegando a su fin. Los Visitantes llaman a tu puerta haciéndose pasar por humanos. Interrogalos, buscá las señales y decidí quién entra... y quién no.</p>
           <div class="game-tags"><span class="game-tag">Terror</span><span class="game-tag">Aventura</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'no-im-not-human')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -370,7 +381,10 @@
           <p class="game-name">FNAF Into the pit</p>
           <p class="game-desc">Explorá, sobreviví y descubrí los secretos que esconde el lugar.</p>
           <div class="game-tags"><span class="game-tag">Terror</span><span class="game-tag">Aventura</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'fnaf-into-the-pit')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -380,7 +394,10 @@
           <p class="game-name">Balatro</p>
           <p class="game-desc">Un roguelike de cartas donde construís las mejores manos.</p>
           <div class="game-tags"><span class="game-tag">Roguelike</span><span class="game-tag">Puzzle</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'balatro')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -390,7 +407,10 @@
           <p class="game-name">Geometry Dash</p>
           <p class="game-desc">Saltá y esquivá obstáculos al ritmo de la música.</p>
           <div class="game-tags"><span class="game-tag">Acción</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'geometry-dash')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -400,7 +420,10 @@
           <p class="game-name">Plantas vs Zombies</p>
           <p class="game-desc">Defendé tu jardín de las hordas de zombies con plantas.</p>
           <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Puzzle</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'plantas-vs-zombies')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -410,7 +433,10 @@
           <p class="game-name">Cookie Clicker</p>
           <p class="game-desc">Hacé click para hornear cookies y construir tu imperio.</p>
           <div class="game-tags"><span class="game-tag">Clicker</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'cookie-clicker')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -420,7 +446,10 @@
           <p class="game-name">Undertale</p>
           <p class="game-desc">Es Undertale, ¿quién no lo conoce?</p>
           <div class="game-tags"><span class="game-tag">Aventura</span><span class="game-tag">Puzzle</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'undertale')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -430,7 +459,10 @@
           <p class="game-name">Berry Bury Berry</p>
           <p class="game-desc">Cultivá berries, tiralas a un hoyo misterioso y acumulá plata. Un incremental surreal en primera persona con amigos-berry, mejoras y los oscuros secretos de un jardín maldito.</p>
           <div class="game-tags"><span class="game-tag">Clicker</span><span class="game-tag">Aventura</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'berry-burry-berry')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -440,7 +472,10 @@
           <p class="game-name">I Am Bread</p>
           <p class="game-desc">Sé una rebanada de pan y llegá a ser tostada como sea.</p>
           <div class="game-tags"><span class="game-tag">Humor</span><span class="game-tag">Acción</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'i-am-bread')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -450,7 +485,10 @@
           <p class="game-name">Particul</p>
           <p class="game-desc">Hacé clic para minar partículas, vendelas y acumulá ganancias. Automatizá la extracción, investigá nuevas tecnologías y negociá en el mercado.</p>
           <div class="game-tags"><span class="game-tag">Clicker</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'particul')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -460,7 +498,10 @@
           <p class="game-name">The Simpsons: Hit &amp; Run</p>
           <p class="game-desc">GTA pero en Springfield. Manejá por la ciudad, completá misiones y descubrí la conspiración.</p>
           <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Aventura</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'simpsons-hit-and-run')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -470,7 +511,10 @@
           <p class="game-name">The Henry Stickmin Collection</p>
           <p class="game-desc">Elegí cómo actúa Henry en cada situación. Fallar es tan divertido como ganar.</p>
           <div class="game-tags"><span class="game-tag">Humor</span><span class="game-tag">Aventura</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'henry-stickmin')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -480,7 +524,10 @@
           <p class="game-name">Hollow Knight</p>
           <p class="game-desc">Explorá un vasto reino subterráneo de insectos y misterios. Difícil, hermoso y enorme.</p>
           <div class="game-tags"><span class="game-tag">Metroidvania</span><span class="game-tag">Acción</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'hollow-knight')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -490,7 +537,10 @@
           <p class="game-name">Untitled Goose Game</p>
           <p class="game-desc">Sos un ganso horrible suelto en un pueblo. Robá sombreros, graznás y arruinale el día a todos.</p>
           <div class="game-tags"><span class="game-tag">Humor</span><span class="game-tag">Aventura</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'untitled-goose-game')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -500,7 +550,10 @@
           <p class="game-name">Buckshot Roulette</p>
           <p class="game-desc">Ruleta rusa con una escopeta. La estrategia y la suerte deciden quién sale vivo.</p>
           <div class="game-tags"><span class="game-tag">Terror</span><span class="game-tag">Puzzle</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'buckshot-roulette')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -510,7 +563,10 @@
           <p class="game-name">Scritchy Scratchy</p>
           <p class="game-desc">Comprá raspaditas, rascalas y perseguí jackpots enormes. Desbloqueá el Scratch Bot que raspa solo y acumulá mejoras corrida a corrida. ¿Jugás seguro o apostás todo?</p>
           <div class="game-tags"><span class="game-tag">Roguelike</span><span class="game-tag">Clicker</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'scritchy-scratchy')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -520,7 +576,10 @@
           <p class="game-name">Do Not Feed the Monkeys</p>
           <p class="game-desc">Espiá a desconocidos por cámaras de seguridad. Aprendé sus secretos, pero no interactúes con ellos.</p>
           <div class="game-tags"><span class="game-tag">Aventura</span><span class="game-tag">Puzzle</span><span class="game-tag">Estrategia</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'do-not-feed-the-monkeys')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -530,7 +589,10 @@
           <p class="game-name">Five Nights at Freddy's</p>
           <p class="game-desc">Sobreviví cinco noches vigilando cámaras en una pizzería donde los animatrónicos cobran vida de noche.</p>
           <div class="game-tags"><span class="game-tag">Terror</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'fnaf-1')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -540,7 +602,10 @@
           <p class="game-name">Five Nights at Freddy's 2</p>
           <p class="game-desc">Más animatrónicos, sin puertas para protegerte. Solo una máscara y tus reflejos.</p>
           <div class="game-tags"><span class="game-tag">Terror</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'fnaf-2')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -550,7 +615,10 @@
           <p class="game-name">Five Nights at Freddy's 3</p>
           <p class="game-desc">Trabajás en un parque temático de FNAF y solo hay un animatrónico... pero es el peor de todos.</p>
           <div class="game-tags"><span class="game-tag">Terror</span><span class="game-tag">Aventura</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'fnaf-3')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -560,7 +628,10 @@
           <p class="game-name">Plague Inc: Evolved</p>
           <p class="game-desc">Evolucioná tu patógeno e infectá al mundo entero antes de que la humanidad encuentre la cura.</p>
           <div class="game-tags"><span class="game-tag">Estrategia</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'plague-inc')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -570,7 +641,10 @@
           <p class="game-name">Terraria</p>
           <p class="game-desc">Explorá, construí y combatí en un mundo 2D infinito. Minería, jefes brutales, cientos de items y biomas — cada partida es distinta.</p>
           <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Sandbox</span><span class="game-tag">Aventura</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'terraria')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -580,7 +654,10 @@
           <p class="game-name">Jump King</p>
           <p class="game-desc">Subí hasta la cima saltando de plataforma en plataforma. Un solo salto mal calculado y caés todo. No hay checkpoints. Solo vos y tu concentración.</p>
           <div class="game-tags"><span class="game-tag">Acción</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'jump-king')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -590,7 +667,10 @@
           <p class="game-name">Celeste</p>
           <p class="game-desc">Ayudá a Madeline a escalar la montaña Celeste mientras enfrenta sus propios demonios internos. Plataformero difícil con una historia emotiva sobre salud mental y superación.</p>
           <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Aventura</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'celeste')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -600,7 +680,10 @@
           <p class="game-name">Stardew Valley</p>
           <p class="game-desc">Dejás tu trabajo de oficina para hacerte cargo de una granja heredada. Cultivá, pescá, explorá minas, construí relaciones con los vecinos del pueblo y creá la vida que querés.</p>
           <div class="game-tags"><span class="game-tag">Simulación</span><span class="game-tag">Aventura</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'stardew-valley')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -610,7 +693,10 @@
           <p class="game-name">Super Meat Boy</p>
           <p class="game-desc">Controlás un cubo de carne cruda que tiene que atravesar niveles llenos de sierras, agujas y trampas mortales para rescatar a su novia. Difícil, rápido y adictivo.</p>
           <div class="game-tags"><span class="game-tag">Acción</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'super-meat-boy')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -620,7 +706,10 @@
           <p class="game-name">Slime Rancher</p>
           <p class="game-desc">Manejás un rancho en un planeta lejano donde criás y coleccionás slimes de distintos tipos. Explorá biomas coloridos, combiná slimes y construí tu fortuna en primera persona.</p>
           <div class="game-tags"><span class="game-tag">Simulación</span><span class="game-tag">Aventura</span></div>
+          <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'slime-rancher')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
         </div>
       </div>
 
@@ -663,7 +752,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.097</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.098</span>
     <span class="update-date">🗓 Última actualización: 5 de junio de 2026</span>
   </div>
 </div>
@@ -772,6 +861,8 @@
       $("pwd-box").classList.add("correcto");
       const nombre = data.nombre || "";
       if (nombre) $("session-label").innerHTML = `Sesión iniciada como <strong style="color:#0b3a75;">${nombre}</strong>`;
+      favs = JSON.parse(localStorage.getItem(getFavsKey()) || "[]");
+      initFavBtns(); updateCounts();
       setTimeout(() => {
         $("pwd-overlay").classList.add("saliendo");
         setTimeout(() => $("pwd-overlay").style.display = "none", 600);
@@ -839,25 +930,26 @@
   }, 500);
 
   // ── JUEGOS ──
-  let favs = JSON.parse(localStorage.getItem("favs_piratas") || "[]");
+  function getFavsKey() { return "favs_" + (sessionStorage.getItem("auth_nombre") || "guest"); }
+  let favs = JSON.parse(localStorage.getItem(getFavsKey()) || "[]");
   let activeGenre = "todos";
   let activeView = "grid";
   let modalDlKey = "";
 
-  function saveFavs() { localStorage.setItem("favs_piratas", JSON.stringify(favs)); }
+  function saveFavs() { localStorage.setItem(getFavsKey(), JSON.stringify(favs)); }
 
   function toggleFav(btn) {
     const card = btn.closest(".game-card");
     const name = card.dataset.name;
-    if (favs.includes(name)) {
-      favs = favs.filter(f => f !== name);
-      btn.textContent = "🤍"; btn.classList.remove("activo");
-    } else {
-      favs.push(name);
-      btn.textContent = "❤️"; btn.classList.add("activo");
-    }
+    const isFav = favs.includes(name);
+    if (isFav) { favs = favs.filter(f => f !== name); } else { favs.push(name); }
+    card.querySelectorAll(".fav-btn, .fav-btn-inline").forEach(fb => {
+      fb.textContent = favs.includes(name) ? "❤️" : "🤍";
+      favs.includes(name) ? fb.classList.add("activo") : fb.classList.remove("activo");
+    });
     saveFavs();
     if ($("modal-fav")) updateModalFav(name);
+    updateCounts();
     if (activeGenre === "favoritos") filterGames();
   }
 
@@ -878,6 +970,7 @@
         if (fb) { fb.textContent = favs.includes(name) ? "❤️" : "🤍"; favs.includes(name) ? fb.classList.add("activo") : fb.classList.remove("activo"); }
       }
     });
+    updateCounts();
     if (activeGenre === "favoritos") filterGames();
   }
 
@@ -888,8 +981,11 @@
 
   function initFavBtns() {
     document.querySelectorAll(".game-card").forEach(c => {
-      const fb = c.querySelector(".fav-btn");
-      if (fb && favs.includes(c.dataset.name)) { fb.textContent = "❤️"; fb.classList.add("activo"); }
+      const isFav = favs.includes(c.dataset.name);
+      c.querySelectorAll(".fav-btn, .fav-btn-inline").forEach(fb => {
+        fb.textContent = isFav ? "❤️" : "🤍";
+        isFav ? fb.classList.add("activo") : fb.classList.remove("activo");
+      });
     });
   }
 
