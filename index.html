@@ -217,71 +217,37 @@
     #modal-close:hover { background:rgba(0,0,0,0.75); }
     #modal-img-wrap { position:relative; }
 
-    /* ── MOBILE ── */
-    @media (max-width: 640px) {
-
-      /* Overlay contraseña */
-      #pwd-box { width:92%; padding:32px 24px 28px; }
-
-      /* Header — hamburger */
-      .header { padding:12px 16px; }
-      .nav { display:none; position:absolute; top:64px; left:0; right:0; background:var(--header-bg); flex-direction:column; padding:8px 12px 16px; gap:2px; z-index:500; box-shadow:0 8px 24px rgba(0,0,0,0.3); }
-      .nav.open { display:flex; }
-      .nav > a { padding:10px 12px; }
-      .nav .dropdown { width:100%; }
-      .nav .dropdown-btn { width:100%; justify-content:space-between; }
-      .nav .dropdown-menu { position:static; box-shadow:none; border-radius:8px; margin-top:4px; }
-      .hamburger { display:flex; flex-direction:column; gap:5px; cursor:pointer; padding:6px; background:none; border:none; }
-      .hamburger span { display:block; width:22px; height:2px; background:white; border-radius:2px; transition:0.3s; }
-      .hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
-      .hamburger.open span:nth-child(2) { opacity:0; }
-      .hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
-
-      /* Aviso mobile */
-      #mobile-warning { display:flex; }
-
-      /* Container */
-      .container { padding:12px; margin:16px auto; }
-
-      /* Games grid */
-      .games-grid { grid-template-columns:1fr 1fr; gap:10px; }
-      .games-grid.list-view { grid-template-columns:1fr; }
-      .game-cover { height:70px; }
-      .game-card-body { padding:8px 10px 10px; }
-      .game-name { font-size:13px; }
-      .game-desc { display:none; }
-      .game-tag { font-size:9px; padding:1px 6px; }
-
-      /* Filtros scroll horizontal */
-      .genre-filters { flex-wrap:nowrap; overflow-x:auto; justify-content:flex-start; padding-bottom:4px; -webkit-overflow-scrolling:touch; }
-      .genre-filters::-webkit-scrollbar { display:none; }
-      .genre-btn { flex-shrink:0; font-size:12px; padding:5px 10px; }
-
-      /* View controls */
-      .view-controls { justify-content:flex-end; }
-
-      /* Modal */
-      #game-modal { max-width:100%; margin:0; border-radius:16px 16px 0 0; }
-      #game-modal-overlay { align-items:flex-end; padding:0; }
-      #game-modal-overlay.visible #game-modal { transform:scale(1) translateY(0); }
-      #modal-cover { height:130px; }
-
-      /* Footer */
-      .footer { gap:24px; padding:20px 16px; }
-      .footer-item { max-width:140px; }
-    }
-
-    /* Hamburger oculto en desktop */
-    .hamburger { display:none; }
-
     /* Aviso mobile — oculto en desktop */
-    #mobile-warning { display:none; align-items:flex-start; gap:10px; background:#fef3c7; border:1px solid #f59e0b; border-radius:10px; padding:12px 14px; margin-bottom:20px; text-align:left; }
+    #mobile-warning { display:none; }
     [data-theme="dark"] #mobile-warning { background:#292209; border-color:#92400e; }
     #mobile-warning .warn-icon { font-size:20px; flex-shrink:0; margin-top:1px; }
     #mobile-warning p { margin:0; font-size:13px; color:#92400e; line-height:1.5; }
     [data-theme="dark"] #mobile-warning p { color:#fcd34d; }
     #mobile-warning-close { background:none; border:none; cursor:pointer; font-size:16px; color:#92400e; padding:0; margin-left:auto; flex-shrink:0; line-height:1; }
     [data-theme="dark"] #mobile-warning-close { color:#fcd34d; }
+
+    @keyframes favPop {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.5); }
+      70%  { transform: scale(0.85); }
+      100% { transform: scale(1); }
+    }
+    .fav-pop { animation: favPop 0.35s cubic-bezier(.22,1,.36,1); }
+
+    /* ── CARD FADE-IN ESCALONADO ── */
+    @keyframes cardFadeIn {
+      from { opacity:0; transform:translateY(12px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .game-card { animation: cardFadeIn 0.4s ease both; }
+
+    /* ── FILTRO SUAVE ── */
+    .game-card.hiding {
+      animation: cardHide 0.2s ease forwards;
+    }
+    @keyframes cardHide {
+      to { opacity:0; transform:scale(0.95); }
+    }
   </style>
 </head>
 <body>
@@ -325,9 +291,6 @@
 <div class="header">
   <div class="header-left">
     <div class="logo"><a href="index.html"><img src="https://i.imgur.com/CD8poZf.png"></a></div>
-    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menú">
-      <span></span><span></span><span></span>
-    </button>
     <div class="nav">
       <a href="index.html">Home</a>
       <a href="sugerencias.html">Sugerencias</a>
@@ -840,7 +803,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.101</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.103</span>
     <span class="update-date">🗓 Última actualización: 5 de junio de 2026</span>
   </div>
 </div>
@@ -882,22 +845,6 @@
     "slime-rancher": "Explorás un planeta alienígena como Beatrix LeBeau, ranchera de slimes. Capturás slimes de distintos tipos, los alimentás, combinás razas y vendés sus plorts para financiar mejoras. Relajado, colorido y con un loop de exploración y gestión muy satisfactorio.",
     "cloverpit": "El hijo demoníaco de Balatro y Buckshot Roulette. Quedás encerrado en una celda oxidada con una tragaperras y un cajero automático, y tenés que pagar tu deuda al final de cada ronda o caer literalmente por una trampilla. Manipulá la máquina, combiná talismanes y rompé las reglas del juego para ganar tu libertad. Más de 150 objetos, múltiples finales y un modo infinito. Uno de los éxitos virales de Steam 2025 con 95% de reviews positivas.",
   };
-
-  // ── MENÚ MOBILE ──
-  function toggleMenu() {
-    const nav = document.querySelector(".nav");
-    const ham = $("hamburger");
-    nav.classList.toggle("open");
-    ham.classList.toggle("open");
-  }
-  document.addEventListener("click", e => {
-    const nav = document.querySelector(".nav");
-    const ham = $("hamburger");
-    if (!nav.contains(e.target) && !ham.contains(e.target)) {
-      nav.classList.remove("open");
-      ham.classList.remove("open");
-    }
-  });
 
   // ── TEMA ──
   function getTheme() { return localStorage.getItem("theme") || "light"; }
@@ -1053,6 +1000,9 @@
     card.querySelectorAll(".fav-btn, .fav-btn-inline").forEach(fb => {
       fb.textContent = favs.includes(name) ? "❤️" : "🤍";
       favs.includes(name) ? fb.classList.add("activo") : fb.classList.remove("activo");
+      fb.classList.remove("fav-pop");
+      void fb.offsetWidth;
+      fb.classList.add("fav-pop");
     });
     saveFavs();
     if ($("modal-fav")) updateModalFav(name);
@@ -1071,10 +1021,15 @@
     }
     saveFavs();
     updateModalFav(name);
+    const mf = $("modal-fav");
+    mf.classList.remove("fav-pop"); void mf.offsetWidth; mf.classList.add("fav-pop");
     document.querySelectorAll(".game-card").forEach(c => {
       if (c.dataset.name === name) {
-        const fb = c.querySelector(".fav-btn");
-        if (fb) { fb.textContent = favs.includes(name) ? "❤️" : "🤍"; favs.includes(name) ? fb.classList.add("activo") : fb.classList.remove("activo"); }
+        c.querySelectorAll(".fav-btn, .fav-btn-inline").forEach(fb => {
+          fb.textContent = favs.includes(name) ? "❤️" : "🤍";
+          favs.includes(name) ? fb.classList.add("activo") : fb.classList.remove("activo");
+          fb.classList.remove("fav-pop"); void fb.offsetWidth; fb.classList.add("fav-pop");
+        });
       }
     });
     updateCounts();
@@ -1129,8 +1084,13 @@
       const nameMatch = c.dataset.name?.toLowerCase().includes(q);
       const genreMatch = activeGenre === "todos" || 
                         (activeGenre === "favoritos" ? favs.includes(c.dataset.name) : (c.dataset.genres || "").includes(activeGenre));
-      c.style.display = nameMatch && genreMatch ? "" : "none";
-      if (nameMatch && genreMatch) visible++;
+      if (nameMatch && genreMatch) {
+        c.style.display = "";
+        c.style.animationDelay = "0ms";
+        visible++;
+      } else {
+        c.style.display = "none";
+      }
     });
     $("noResults").style.display = visible === 0 ? "block" : "none";
   }
@@ -1178,7 +1138,17 @@
 
   document.addEventListener("keydown", e => { if (e.key === "Escape") cerrarModalBtn(); });
 
-  $("gameCount").textContent = document.querySelectorAll(".game-card").length;
+  // Staggered fade-in
+  document.querySelectorAll(".game-card").forEach((c, i) => {
+    c.style.animationDelay = `${i * 40}ms`;
+  });
+  const totalGames = document.querySelectorAll(".game-card").length;
+  let count = 0;
+  const counterInterval = setInterval(() => {
+    count += Math.ceil(totalGames / 20);
+    if (count >= totalGames) { count = totalGames; clearInterval(counterInterval); }
+    $("gameCount").textContent = count;
+  }, 40);
   initFavBtns();
   updateCounts();
 
