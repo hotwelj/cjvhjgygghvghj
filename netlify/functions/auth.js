@@ -8,6 +8,7 @@ const USUARIOS = {
   "ff8e5d99a11ddc294515bc779a5569b39dbf745517756ef8b3c4a275621398d5": "32208Sn3",
   "d764ffb7b5b0c4a9e5bcfe31ae1e02805993d0426a09928a98eb84b47a4e54ce": "ortng",
   "e7fe814f09f51fae5e8de644d6a06b1a1ee265adb90a629d163bbaf937ad7881": "timy2904",
+  "1e49b994bc4e851eb601b132ae979a7340a563793554982c60abede128bcda45": "12345jacques12345",
 };
 
 const TOKEN_SECRETO = "ort-piratas-xK92mNq7pL3wZ";
