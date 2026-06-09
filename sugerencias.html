@@ -15,7 +15,7 @@
       --overlay-bg:rgba(11,58,117,0.55); --pwd-box-bg:white; --pwd-box-border:#0b3a75;
       --eye-fill:#f8fafc; --eye-stroke:#9ca3af; --eyelid-fill:#e2e8f0; --lash-stroke:#9ca3af;
       --version-bg:#eff6ff; --version-border:#bfdbfe; --version-color:#1d4ed8;
-      --tag-color:#1d4ed8; --btn-dl-bg:#dbeafe; --btn-dl-hover:#bfdbfe;
+      --tag-color:#1d4ed8; --tag-bg:#eff6ff; --btn-dl-bg:#dbeafe; --btn-dl-color:#1d4ed8; --btn-dl-hover:#bfdbfe; --border-input:#dbeafe;
     }
     [data-theme="dark"] {
       --bg-page:#0f172a; --bg-card:#1e293b; --bg-input:#0f172a;
@@ -25,7 +25,7 @@
       --overlay-bg:rgba(5,15,40,0.75); --pwd-box-bg:#1e293b; --pwd-box-border:#1d4ed8;
       --eye-fill:#1e293b; --eye-stroke:#64748b; --eyelid-fill:#334155; --lash-stroke:#64748b;
       --version-bg:#1e3a5f; --version-border:#1d4ed8; --version-color:#93c5fd;
-      --tag-color:#93c5fd; --btn-dl-bg:#1e3a5f; --btn-dl-hover:#1d4ed8;
+      --tag-color:#93c5fd; --tag-bg:#1e3a5f; --btn-dl-bg:#1e3a5f; --btn-dl-color:#93c5fd; --btn-dl-hover:#1d4ed8; --border-input:#334155;
     }
 
     body { margin:0; font-family:Arial,sans-serif; background:var(--bg-page); color:var(--text-main); display:flex; flex-direction:column; min-height:100vh; transition:background 0.3s, color 0.3s; }
@@ -80,19 +80,10 @@
     .dropdown, .person-dropdown { position:relative; }
     .dropdown-btn { background:none; color:white; border:none; font-weight:bold; font-size:14px; padding:8px 12px; border-radius:6px; cursor:pointer; display:flex; align-items:center; gap:6px; opacity:0.9; transition:0.2s; }
     .dropdown-btn:hover { opacity:1; background:rgba(255,255,255,0.15); }
-    .dropdown-btn .arrow { font-size:10px; transition:transform 0.2s; }
-    .dropdown.open .arrow { transform:rotate(180deg); }
-    .dropdown-menu { display:none; position:absolute; top:calc(100% + 8px); left:0; background:var(--bg-card); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.2); min-width:180px; overflow:hidden; z-index:100; border:1px solid var(--border-card); }
-    .dropdown.open .dropdown-menu { display:block; }
-    .dropdown-menu a { display:block; padding:12px 16px; text-decoration:none; color:var(--text-main); font-size:14px; font-weight:bold; text-align:left; transition:background 0.15s; }
-    .dropdown-menu a:hover { background:var(--bg-page); color:#3b82f6; }
-    .dropdown-menu a + a { border-top:1px solid var(--border-card); }
-    .dropdown-btn { background:none; color:white; border:none; font-weight:bold; font-size:14px; padding:8px 12px; border-radius:6px; cursor:pointer; display:flex; align-items:center; gap:6px; opacity:0.9; transition:0.2s; }
-    .dropdown-btn:hover { opacity:1; background:rgba(255,255,255,0.15); }
-    .dropdown-btn .arrow { font-size:10px; transition:transform 0.2s; }
-    .dropdown.open .arrow { transform:rotate(180deg); }
-    .dropdown-menu { display:none; position:absolute; top:calc(100% + 8px); left:0; background:var(--bg-card); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.2); min-width:180px; overflow:hidden; z-index:100; border:1px solid var(--border-card); }
-    .dropdown.open .dropdown-menu { display:block; }
+    .dropdown-btn .arrow { font-size:10px; transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1); display:inline-block; }
+    .dropdown.open .arrow { transform:rotate(180deg) scale(1.2); }
+    .dropdown-menu { position:absolute; top:calc(100% + 8px); left:0; background:var(--bg-card); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.2); min-width:180px; overflow:hidden; z-index:100; border:1px solid var(--border-card); transform-origin:top center; transform:scaleY(0); opacity:0; transition:transform 0.2s cubic-bezier(0.22,1,0.36,1), opacity 0.15s ease; display:block !important; pointer-events:none; }
+    .dropdown.open .dropdown-menu { transform:scaleY(1); opacity:1; pointer-events:all; }
     .dropdown-menu a { display:block; padding:12px 16px; text-decoration:none; color:var(--text-main); font-size:14px; font-weight:bold; text-align:left; transition:background 0.15s; }
     .dropdown-menu a:hover { background:var(--bg-page); color:#3b82f6; }
     .dropdown-menu a + a { border-top:1px solid var(--border-card); }
@@ -334,8 +325,7 @@
 <!-- FOOTER -->
 <div class="footer">
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.096</span>
-    <span class="update-date">🗓 Última actualización: 5 de junio de 2026</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.119</span>
   </div>
 </div>
 
@@ -422,7 +412,7 @@
     const nombre = sessionStorage.getItem("auth_nombre") || "desconocido";
     $("campo-usuario").value = nombre;
     $("sender-badge").textContent = "👤 " + nombre;
-    $("session-label").innerHTML = `Sesión iniciada como <strong style="color:#0b3a75;">${nombre}</strong>`;
+    $("session-label").innerHTML = `Sesión iniciada como <strong style="color:var(--tag-color);">${nombre}</strong>`;
   }
 
   if (sessionStorage.getItem("auth_piratas") === "ok") {
