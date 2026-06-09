@@ -89,9 +89,9 @@
     .dropdown, .person-dropdown { position:relative; }
     .dropdown-btn { background:none; color:white; border:none; font-weight:bold; font-size:14px; padding:8px 12px; border-radius:6px; cursor:pointer; display:flex; align-items:center; gap:6px; opacity:0.9; transition:0.2s; }
     .dropdown-btn:hover { opacity:1; background:rgba(255,255,255,0.15); }
-    .dropdown-btn .arrow { font-size:10px; transition:transform 0.2s; }
-    .dropdown.open .arrow { transform:rotate(180deg); }
-    .dropdown-menu { display:none; position:absolute; top:calc(100% + 8px); left:0; background:var(--bg-card); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.2); min-width:180px; overflow:hidden; z-index:100; border:1px solid var(--border-card); }
+    .dropdown-btn .arrow { font-size:10px; transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1); display:inline-block; }
+    .dropdown.open .arrow { transform:rotate(180deg) scale(1.2); }
+    .dropdown-menu { position:absolute; top:calc(100% + 8px); left:0; background:var(--bg-card); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.2); min-width:180px; overflow:hidden; z-index:100; border:1px solid var(--border-card); }
     .dropdown.open .dropdown-menu { display:block; }
     .dropdown-menu a { display:block; padding:12px 16px; text-decoration:none; color:var(--text-main); font-size:14px; font-weight:bold; text-align:left; transition:background 0.15s; }
     .dropdown-menu a:hover { background:var(--bg-page); color:#3b82f6; }
@@ -248,6 +248,44 @@
       to { opacity:0; transform:scale(0.95); }
     }
 
+
+    /* ── BOTÓN DESCARGA PROGRESO ── */
+    .btn-download.descargando {
+      position:relative; overflow:hidden;
+      color:transparent; pointer-events:none;
+      background:var(--btn-dl-bg);
+    }
+    .btn-download.descargando::before {
+      content:''; position:absolute; left:0; top:0; height:100%;
+      width:0%; background:var(--btn-dl-hover);
+      animation:downloadProgress 2.4s cubic-bezier(0.4,0,0.2,1) forwards;
+    }
+    .btn-download.descargando::after {
+      content:'⬇ Preparando...'; position:absolute;
+      inset:0; display:flex; align-items:center; justify-content:center;
+      color:var(--btn-dl-color); font-size:13px; font-weight:bold;
+    }
+    @keyframes downloadProgress {
+      0%   { width:0%; }
+      60%  { width:75%; }
+      85%  { width:90%; }
+      100% { width:100%; }
+    }
+
+    /* ── DROPDOWN ANIMACIÓN ── */
+    .dropdown-menu {
+      transform-origin: top center;
+      transform: scaleY(0);
+      opacity: 0;
+      transition: transform 0.2s cubic-bezier(0.22,1,0.36,1), opacity 0.15s ease;
+      display: block !important;
+      pointer-events: none;
+    }
+    .dropdown.open .dropdown-menu {
+      transform: scaleY(1);
+      opacity: 1;
+      pointer-events: all;
+    }
   </style>
 </head>
 <body>
@@ -802,7 +840,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.117</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.119</span>
   </div>
 </div>
 
@@ -939,8 +977,8 @@
   async function descargar(btn, juego) {
     const token = sessionStorage.getItem("auth_token");
     if (!token) { alert("Sesión expirada, volvé a ingresar la contraseña."); cerrarSesion(); return; }
+    btn.classList.add("descargando");
     btn.disabled = true;
-    btn.textContent = "⏳ Cargando...";
     try {
       const res = await fetch("/.netlify/functions/getlink", {
         method: "POST",
@@ -949,13 +987,18 @@
       const data = await res.json();
       if (data.ok) {
         window.location.href = data.url;
-        setTimeout(() => { btn.disabled = false; btn.textContent = "⬇ Descargar"; }, 3000);
+        setTimeout(() => {
+          btn.classList.remove("descargando");
+          btn.disabled = false;
+        }, 3000);
       } else {
-        btn.disabled = false; btn.textContent = "⬇ Descargar";
+        btn.classList.remove("descargando");
+        btn.disabled = false;
         alert("Error al obtener el link.");
       }
     } catch {
-      btn.disabled = false; btn.textContent = "⬇ Descargar";
+      btn.classList.remove("descargando");
+      btn.disabled = false;
       alert("Error de conexión.");
     }
   }
