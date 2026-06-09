@@ -802,7 +802,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.115</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.116</span>
   </div>
 </div>
 
@@ -1165,6 +1165,18 @@
 
   document.addEventListener("keydown", e => { if (e.key === "Escape") cerrarModalBtn(); });
 
+  function toggleDropdown(id) {
+    const t = $(id), open = t.classList.contains("open");
+    document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => d.classList.remove("open"));
+    if (!open) t.classList.add("open");
+  }
+
+  document.addEventListener("click", e => {
+    document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => {
+      if (!d.contains(e.target)) d.classList.remove("open");
+    });
+  });
+
   // Staggered fade-in
   document.querySelectorAll(".game-card").forEach((c, i) => {
     c.style.animationDelay = `${i * 40}ms`;
@@ -1180,18 +1192,6 @@
   }, 80);
   initFavBtns();
   updateCounts();
-
-  function toggleDropdown(id) {
-    const t = $(id), open = t.classList.contains("open");
-    document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => d.classList.remove("open"));
-    if (!open) t.classList.add("open");
-  }
-
-  document.addEventListener("click", e => {
-    document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => {
-      if (!d.contains(e.target)) d.classList.remove("open");
-    });
-  });
 
   window.addEventListener("scroll", () => {
     $("backToTop").classList.toggle("visible", window.scrollY > 300);
