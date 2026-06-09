@@ -210,17 +210,16 @@
     #modal-desc.truncated { display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
     #modal-desc-wrap { position:relative; margin-bottom:4px; }
     #modal-desc.truncated { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
-    #modal-ver-mas-inline { display:none; color:#3b82f6; font-size:13px; font-weight:bold; cursor:pointer; background:none; border:none; padding:0 0 16px; font-family:Arial,sans-serif; }
-    #modal-ver-mas-inline:hover { color:#1d4ed8; }
 
-    /* Sweep animation container */
-    .sweep-container { position:relative; overflow:hidden; height:1.4em; margin-bottom:12px; display:none; }
-    .sweep-arrow { position:absolute; top:0; font-size:13px; color:#3b82f6; font-weight:bold; white-space:nowrap; }
-    @keyframes sweepRight { from{left:0;} to{left:100%;} }
-    @keyframes sweepLeft  { from{right:0;} to{right:100%;} }
-    .sweep-text { position:absolute; top:0; left:0; font-size:13px; color:#3b82f6; font-weight:bold; white-space:nowrap; clip-path:inset(0 100% 0 0); transition:clip-path 0.35s linear; }
-    .sweep-text.revealed { clip-path:inset(0 0% 0 0); }
-    .sweep-text.hiding { clip-path:inset(0 100% 0 0); }
+    /* Ver más inline — pegado al texto */
+    .ver-mas-btn { display:inline; background:none; border:none; padding:0; font-family:Arial,sans-serif; font-size:14px; color:#3b82f6; font-weight:bold; cursor:pointer; line-height:1.7; }
+    .ver-mas-btn:hover { color:#1d4ed8; }
+    .ver-mas-arrow-char { display:inline-block; }
+
+    /* Sweep: texto + flecha que corren juntos */
+    .sweep-wrap { display:inline-block; overflow:hidden; white-space:nowrap; vertical-align:bottom; max-width:0; opacity:1; transition:max-width 0.45s linear, opacity 0.2s ease 0.35s; }
+    .sweep-wrap.running { max-width:200px; }
+    .sweep-wrap.fading { opacity:0; }
     #modal-ver-mas:hover { color:#1d4ed8; text-decoration:underline; }
     #modal-actions { display:flex; gap:10px; }
     #modal-download { flex:1; padding:12px; background:#0b3a75; color:white; border:none; border-radius:10px; font-size:14px; font-weight:bold; cursor:pointer; transition:background 0.2s; }
@@ -833,13 +832,9 @@
       <div id="modal-tags"></div>
       <p id="modal-desc"></p>
       <div id="modal-desc-wrap">
-        <p id="modal-desc"></p>
-        <button id="modal-ver-mas-inline" onclick="toggleVerMas()"></button>
+        <p id="modal-desc" style="display:inline; margin:0;"></p><span id="ver-mas-space"> </span><button class="ver-mas-btn" id="modal-ver-mas-inline" onclick="toggleVerMas()"><span id="ver-mas-label">Ver más</span> <span class="ver-mas-arrow-char" id="ver-mas-arrow-char">▼</span></button>
       </div>
-      <div class="sweep-container" id="sweep-container">
-        <span class="sweep-text" id="sweep-text"></span>
-        <span class="sweep-arrow" id="sweep-arrow"></span>
-      </div>
+      <div style="margin-bottom:16px;"></div>
       <div id="modal-actions">
         <button id="modal-download" onclick="descargarDesdeModal()">⬇ Descargar</button>
         <button id="modal-fav" onclick="toggleFavModal()">🤍</button>
@@ -863,7 +858,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.123</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.124</span>
   </div>
 </div>
 
@@ -1214,72 +1209,80 @@
     // Check if description needs truncation
     const descEl = $("modal-desc");
     const verMasBtn = $("modal-ver-mas-inline");
+    const verMasLabel = $("ver-mas-label");
+    const verMasArrow = $("ver-mas-arrow-char");
+    const verMasSpace = $("ver-mas-space");
+    descEl.style.display = "inline";
     descEl.classList.add("truncated");
-    verMasBtn.textContent = "Ver más";
+    verMasLabel.textContent = "Ver más";
+    verMasLabel.style.opacity = "1";
+    verMasArrow.textContent = "▼";
+    verMasArrow.style.transform = "rotate(0deg)";
+    verMasArrow.style.transition = "";
     setTimeout(() => {
       if (descEl.scrollHeight > descEl.clientHeight + 5) {
         verMasBtn.style.display = "inline";
+        verMasSpace.style.display = "inline";
       } else {
         descEl.classList.remove("truncated");
+        descEl.style.display = "block";
         verMasBtn.style.display = "none";
+        verMasSpace.style.display = "none";
       }
     }, 10);
     $("game-modal-overlay").classList.add("visible");
     document.body.style.overflow = "hidden";
   }
 
-  function runSweep(text, direction, callback) {
-    const container = $("sweep-container");
-    const sweepText = $("sweep-text");
-    const sweepArrow = $("sweep-arrow");
-    container.style.display = "block";
-    sweepText.textContent = text;
-    sweepText.className = "sweep-text";
-    void sweepText.offsetWidth;
-
-    if (direction === "right") {
-      // Arrow goes right, text reveals behind it
-      sweepArrow.textContent = "▶";
-      sweepArrow.style.cssText = "position:absolute;top:0;left:0;font-size:13px;color:#3b82f6;font-weight:bold;transition:left 0.35s linear;";
-      void sweepArrow.offsetWidth;
-      sweepArrow.style.left = "100%";
-      sweepText.classList.add("revealed");
-    } else {
-      // Arrow goes left, text hides
-      sweepArrow.textContent = "▲";
-      sweepArrow.style.cssText = "position:absolute;top:0;right:0;font-size:13px;color:#3b82f6;font-weight:bold;transition:right 0.35s linear;";
-      void sweepArrow.offsetWidth;
-      sweepArrow.style.right = "100%";
-      sweepText.classList.add("hiding");
-    }
-
-    setTimeout(() => {
-      container.style.display = "none";
-      sweepText.className = "sweep-text";
-      if (callback) callback();
-    }, 400);
-  }
-
   function toggleVerMas() {
     const desc = $("modal-desc");
     const btn = $("modal-ver-mas-inline");
-    if (desc.classList.contains("truncated")) {
-      // Expand: sweep right revealing "Ver más" then show full text
+    const label = $("ver-mas-label");
+    const arrowChar = $("ver-mas-arrow-char");
+    const space = $("ver-mas-space");
+    const expanding = desc.classList.contains("truncated");
+
+    // Disable button during animation
+    btn.style.pointerEvents = "none";
+
+    // Step 1: rotate arrow 90deg slowly
+    arrowChar.style.transition = "transform 0.35s ease";
+    arrowChar.style.transform = expanding ? "rotate(-90deg)" : "rotate(90deg)";
+
+    // Step 2: fade out label text
+    label.style.transition = "opacity 0.25s ease";
+    label.style.opacity = "0";
+
+    setTimeout(() => {
+      // Step 3: hide button, expand/collapse desc
       btn.style.display = "none";
-      runSweep("Ver más ▼", "right", () => {
+      space.style.display = "none";
+
+      if (expanding) {
         desc.classList.remove("truncated");
-        btn.textContent = "Ver menos";
-        btn.style.display = "inline";
-      });
-    } else {
-      // Collapse: sweep left hiding "Ver menos" then truncate
-      btn.style.display = "none";
-      runSweep("Ver menos ▲", "left", () => {
+        desc.style.display = "block";
+      } else {
         desc.classList.add("truncated");
-        btn.textContent = "Ver más";
+      }
+
+      // Step 4: update label and reset, show button again
+      label.textContent = expanding ? "Ver menos" : "Ver más";
+      label.style.opacity = "0";
+      arrowChar.textContent = expanding ? "▲" : "▼";
+      arrowChar.style.transition = "none";
+      arrowChar.style.transform = expanding ? "rotate(90deg)" : "rotate(-90deg)";
+
+      setTimeout(() => {
         btn.style.display = "inline";
-      });
-    }
+        space.style.display = "inline";
+        void arrowChar.offsetWidth;
+        arrowChar.style.transition = "transform 0.35s ease";
+        arrowChar.style.transform = "rotate(0deg)";
+        label.style.transition = "opacity 0.3s ease";
+        label.style.opacity = "1";
+        btn.style.pointerEvents = "";
+      }, 50);
+    }, 320);
   }
 
   function cerrarModal(e) {
@@ -1290,8 +1293,9 @@
     $("game-modal-overlay").classList.remove("visible");
     document.body.style.overflow = "";
     $("modal-desc").classList.remove("truncated");
+    $("modal-desc").style.display = "block";
     $("modal-ver-mas-inline").style.display = "none";
-    $("sweep-container").style.display = "none";
+    $("ver-mas-space").style.display = "none";
   }
 
   function descargarDesdeModal() {
