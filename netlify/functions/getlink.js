@@ -31,6 +31,7 @@ const LINKS = {
   "super-meat-boy":         "https://github.com/hotwelj/juegosort/releases/download/Super-meat-boy/Super.Meat.Boy.v1.2.5.ALL.DLC.zip",
   "slime-rancher":          "https://github.com/hotwelj/juegosort/releases/download/Slime-rancher/Slime.Rancher.v1.4.4.ALL.DLC.zip",
   "cloverpit":              "https://github.com/hotwelj/juegosort/releases/download/Cloverpit/CloverPit.v1.4.10.ALL.DLC.zip",
+  "getting-over-it":        "https://github.com/hotwelj/juegosort/releases/download/Getting-over-it/Getting.Over.It.with.Bennett.Foddy.v1.7.zip",
 };
 
 exports.handler = async (event) => {
