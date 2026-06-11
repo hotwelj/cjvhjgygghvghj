@@ -10,6 +10,7 @@ const USUARIOS = {
   "e7fe814f09f51fae5e8de644d6a06b1a1ee265adb90a629d163bbaf937ad7881": "timy2904",
   "1e49b994bc4e851eb601b132ae979a7340a563793554982c60abede128bcda45": "12345jacques12345",
   "679f39017d3381cd279ce5b437ef2ac82e60175f86390626d5edee06c9d69bf0": "060912ian",
+  "d13c2fbc565696f1c18cbd33e98d49745c7eb7668a0837a1f61242d3ccda5e34": "notado",
 };
 
 const TOKEN_SECRETO = "ort-piratas-xK92mNq7pL3wZ";
