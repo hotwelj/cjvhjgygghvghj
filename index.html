@@ -91,11 +91,13 @@
     .dropdown-btn:hover { opacity:1; background:rgba(255,255,255,0.15); }
     .dropdown-btn .arrow { font-size:10px; transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1); display:inline-block; }
     .dropdown.open .arrow { transform:rotate(180deg) scale(1.2); }
-    .dropdown-menu { position:absolute; top:calc(100% + 8px); left:0; background:var(--bg-card); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.2); min-width:180px; overflow:hidden; z-index:100; border:1px solid var(--border-card); }
+    .dropdown-menu { position:absolute; top:calc(100% + 8px); left:0; background:var(--bg-card); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.2); min-width:200px; max-height:70vh; overflow-y:auto; z-index:100; border:1px solid var(--border-card); }
     .dropdown.open .dropdown-menu { display:block; }
-    .dropdown-menu a { display:block; padding:12px 16px; text-decoration:none; color:var(--text-main); font-size:14px; font-weight:bold; text-align:left; transition:background 0.15s; }
+    .dropdown-menu a { display:block; padding:10px 16px; text-decoration:none; color:var(--text-main); font-size:14px; font-weight:bold; text-align:left; transition:background 0.15s; }
     .dropdown-menu a:hover { background:var(--bg-page); color:#3b82f6; }
     .dropdown-menu a + a { border-top:1px solid var(--border-card); }
+    .dropdown-menu .dropdown-category { padding:8px 16px 4px; font-size:11px; font-weight:bold; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted); background:var(--bg-page); border-top:1px solid var(--border-card); }
+    .dropdown-menu .dropdown-category:first-child { border-top:none; }
     .person-icon { width:36px; height:36px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background 0.2s; border:none; padding:0; }
     .person-icon:hover { background:rgba(255,255,255,0.35); }
     .person-icon svg { width:20px; height:20px; fill:white; }
@@ -359,16 +361,44 @@
       <div class="dropdown" id="dropdown-chrome">
         <button class="dropdown-btn" onclick="toggleDropdown('dropdown-chrome')">Extensiones Chrome <span class="arrow">▼</span></button>
         <div class="dropdown-menu">
+          <div class="dropdown-category">Clásicos</div>
           <a href="https://chromewebstore.google.com/detail/boxel-3d/mjjgmlmpeaikcaajghilhnioimmaibon" target="_blank">Boxel 3D</a>
           <a href="https://chromewebstore.google.com/detail/boxel-rebound/iginnfkhmmfhlkagcmpgofnjhanpmklb" target="_blank">Boxel Rebound</a>
           <a href="https://chromewebstore.google.com/detail/boxel-golf/mmgjkfjlmdkmoipndaeombfnomjfgeff" target="_blank">Boxel Golf</a>
-          <a href="https://chromewebstore.google.com/detail/slope-game-unblocked-game/bhphgjfiljhcpbjgbkkgkikokmidjoga" target="_blank">Slope</a>
-          <a href="https://chromewebstore.google.com/detail/space-waves-unblocked-gam/gkapokeohapeknikagjgbakpljlhcoag" target="_blank">Space Waves</a>
           <a href="https://chromewebstore.google.com/detail/2048/ijkmjnaahlnmdjjlbhbjbhlnmadmmlgg" target="_blank">2048</a>
-          <a href="https://chromewebstore.google.com/detail/snake-unblocked-games/kcfefleifiebaninaolcmhmlfkcdkhfc" target="_blank">Snake</a>
+          <a href="https://chromewebstore.google.com/detail/snake-unblocked-game/jkicdecdpijjlffbiopgmlfbbblljecn" target="_blank">Snake</a>
           <a href="https://chromewebstore.google.com/detail/flappy-bird-offline/pidkjcapccmhpdokcjnkngcflobhopdl" target="_blank">Flappy Bird</a>
           <a href="https://chromewebstore.google.com/detail/pacman-game-offline-for-g/ciiepdilkgkacpioofhgljmidgjodjcl" target="_blank">Pac-Man</a>
           <a href="https://chromewebstore.google.com/detail/pac-man-and-ms-pac-man/gjdfppeajganomoaogedoelileclieai" target="_blank">Pac-Man &amp; Ms. Pac-Man</a>
+          <a href="https://chromewebstore.google.com/detail/doodle-jump-popup/ifkljpddenfagcfheokphfpeiniieghn" target="_blank">Doodle Jump</a>
+
+          <div class="dropdown-category">Deportes</div>
+          <a href="https://chromewebstore.google.com/detail/penalty-shooters-3-unbloc/afafmcaedkmiaakcdhncopjdhiofhpea" target="_blank">Penalty Shooters 3</a>
+          <a href="https://chromewebstore.google.com/detail/penalty-shooters-2/amlcgkngcbmlgllgnenflkelllciffjf" target="_blank">Penalty Shooters 2</a>
+          <a href="https://chromewebstore.google.com/detail/retro-bowl-%F0%9F%8F%88-offline/egebgmpgjnglkjnmgaehidhhffhfgmle" target="_blank">Retro Bowl</a>
+          <a href="https://chromewebstore.google.com/detail/basketball-stars-unblocke/igpjgkjelmkfgkckakgihajbejgfkmjj" target="_blank">Basketball Stars</a>
+          <a href="https://chromewebstore.google.com/detail/basketball-legends-unbloc/cpbpeipmjeoddppkgppcokffdhoimjeb" target="_blank">Basketball Legends</a>
+          <a href="https://chromewebstore.google.com/detail/basket-bros-unblocked-fre/gjkmejoggfmhdgmhlokckfijiccmpdmi" target="_blank">Basket Bros</a>
+
+          <div class="dropdown-category">Arcade / Acción</div>
+          <a href="https://chromewebstore.google.com/detail/slope-game-unblocked-game/bhphgjfiljhcpbjgbkkgkikokmidjoga" target="_blank">Slope</a>
+          <a href="https://chromewebstore.google.com/detail/space-waves-unblocked-gam/gkapokeohapeknikagjgbakpljlhcoag" target="_blank">Space Waves</a>
+          <a href="https://chromewebstore.google.com/detail/friday-night-funkin-unblo/mhhaojjmihhckphkakafeeiiedpfdmom" target="_blank">Friday Night Funkin'</a>
+          <a href="https://chromewebstore.google.com/detail/subway-surfers-for-chrome/eckacibjicinjmnodnpkdfiloniiodam" target="_blank">Subway Surfers</a>
+          <a href="https://chromewebstore.google.com/detail/stumble-guys-2024/dpngfbcigjhikepbhhlejikdjnbkikpd" target="_blank">Stumble Guys</a>
+          <a href="https://chromewebstore.google.com/detail/snow-rider-3d-%E2%80%93-snow-raci/bdhfmbnnpnjgdekangoabmmknijoimig" target="_blank">Snow Rider 3D</a>
+          <a href="https://chromewebstore.google.com/detail/1v1lol-for-chrome/oklapemlhildlejomjmonbcicohmoehl" target="_blank">1v1.LOL</a>
+          <a href="https://chromewebstore.google.com/detail/holeio-unblocked/bacicbbedbgjonbafnmoekmploklfmao" target="_blank">Hole.io</a>
+          <a href="https://chromewebstore.google.com/detail/drive-mad-game/heeadadfnmdomignjmllobaejhipeckc" target="_blank">Drive Mad</a>
+          <a href="https://chromewebstore.google.com/detail/color-tunnel-unblocked-fr/icldmmbgijegcglifopnllgpgmfdnoem" target="_blank">Color Tunnel</a>
+
+          <div class="dropdown-category">Clicker / Idle</div>
+          <a href="https://chromewebstore.google.com/detail/block-blast-unblocked/jlccdnmljgfecdileapkonkhbhchceed" target="_blank">Block Blast</a>
+          <a href="https://chromewebstore.google.com/detail/monkey-mart-simulator/gefmigblngledjfgadekhhfnghpfihki" target="_blank">Monkey Mart</a>
+          <a href="https://chromewebstore.google.com/detail/idle-digging-tycoon-game/napaekndcmebdpdhjkdpibgonombakmf" target="_blank">Idle Digging Tycoon</a>
+          <a href="https://chromewebstore.google.com/detail/tiny-fishing-free-game/kfnbdkpnlajhfglojbjoccodlhjjkmne" target="_blank">Tiny Fishing</a>
+          <a href="https://chromewebstore.google.com/detail/suika-game-aka-watermelon/nakohbfkcebgehahpebfpnnhgojgeopc" target="_blank">Suika Game</a>
+          <a href="https://chromewebstore.google.com/detail/helix-fruit-jump-arcade-g/jhegmncopobmnnmcdaobcepcamekoomb" target="_blank">Helix Fruit Jump</a>
         </div>
       </div>
     </div>
@@ -908,7 +938,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.132</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.136</span>
   </div>
 </div>
 
