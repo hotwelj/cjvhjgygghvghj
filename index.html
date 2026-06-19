@@ -163,6 +163,7 @@
       <button class="genre-btn active" onclick="filterGenre('todos', this)">Todos</button>
       <button class="genre-btn" onclick="filterGenre('accion', this)">Acción</button>
       <button class="genre-btn" onclick="filterGenre('aventura', this)">Aventura</button>
+      <button class="genre-btn" onclick="filterGenre('indie', this)">Indie</button>
       <button class="genre-btn" onclick="filterGenre('humor', this)">Humor</button>
       <button class="genre-btn" onclick="filterGenre('puzzle', this)">Puzzle</button>
       <button class="genre-btn" data-tooltip="Cada partida es distinta, morís y empezás de cero con mejoras" onclick="filterGenre('roguelike', this)">Roguelike</button>
@@ -267,7 +268,7 @@
         </div>
       </div>
 
-      <div class="game-card" onclick="abrirModal(this)" data-name='Undertale' data-desc='Es Undertale, ¿quién no lo conoce?' data-img='/images/undertale.jpg' data-dl='undertale' data-genres="aventura puzzle">
+      <div class="game-card" onclick="abrirModal(this)" data-name='Undertale' data-desc='Es Undertale, ¿quién no lo conoce?' data-img='/images/undertale.jpg' data-dl='undertale' data-genres="aventura puzzle humor">
         <img class="game-cover" src="/images/undertale.jpg" alt="Undertale" loading="lazy" onerror="this.style.display='none'">
         <div class="game-card-body">
           <p class="game-name">Undertale</p>
@@ -371,7 +372,7 @@
         </div>
       </div>
 
-      <div class="game-card" onclick="abrirModal(this)" data-name='Buckshot Roulette' data-desc='Ruleta rusa con una escopeta. La estrategia y la suerte deciden quién sale vivo.' data-img='/images/buckshotroulette.jpg' data-dl='buckshot-roulette' data-genres="terror puzzle">
+      <div class="game-card" onclick="abrirModal(this)" data-name='Buckshot Roulette' data-desc='Ruleta rusa con una escopeta. La estrategia y la suerte deciden quién sale vivo.' data-img='/images/buckshotroulette.jpg' data-dl='buckshot-roulette' data-genres="terror estrategia">
         <img class="game-cover" src="/images/buckshotroulette.jpg" alt="Buckshot Roulette" loading="lazy" onerror="this.style.display='none'">
         <div class="game-card-body">
           <p class="game-name">Buckshot Roulette</p>
@@ -436,7 +437,7 @@
         </div>
       </div>
 
-      <div class="game-card" onclick="abrirModal(this)" data-name='Five Nights at Freddy\'s 3' data-desc='Trabajás en un parque temático de FNAF y solo hay un animatrónico... pero es el peor de todos.' data-img='/images/fnaf3.jpg' data-dl='fnaf-3' data-genres="terror aventura">
+      <div class="game-card" onclick="abrirModal(this)" data-name='Five Nights at Freddy\'s 3' data-desc='Trabajás en un parque temático de FNAF y solo hay un animatrónico... pero es el peor de todos.' data-img='/images/fnaf3.jpg' data-dl='fnaf-3' data-genres="terror">
         <img class="game-cover" src="/images/fnaf3.jpg" alt="Five Nights at Freddys 3" loading="lazy" onerror="this.style.display='none'">
         <div class="game-card-body">
           <p class="game-name">Five Nights at Freddy's 3</p>
@@ -449,7 +450,7 @@
         </div>
       </div>
 
-      <div class="game-card" onclick="abrirModal(this)" data-name='Plague Inc: Evolved' data-desc='Evolucioná tu patógeno e infectá al mundo entero antes de que la humanidad encuentre la cura.' data-img='/images/plagueinc.jpg' data-dl='plague-inc' data-genres="estrategia">
+      <div class="game-card" onclick="abrirModal(this)" data-name='Plague Inc: Evolved' data-desc='Evolucioná tu patógeno e infectá al mundo entero antes de que la humanidad encuentre la cura.' data-img='/images/plagueinc.jpg' data-dl='plague-inc' data-genres="estrategia simulacion">
         <img class="game-cover" src="/images/plagueinc.jpg" alt="Plague Inc Evolved" loading="lazy" onerror="this.style.display='none'">
         <div class="game-card-body">
           <p class="game-name">Plague Inc: Evolved</p>
@@ -589,11 +590,11 @@
         </div>
         </div>
       </div>
-      <div class="game-card" onclick="abrirModal(this)" data-name='Vampire Survivors' data-desc='Sobrevivís en hordas cada vez más grandes de enemigos mientras tus armas disparan solas a tu alrededor. Subís de nivel, elegís mejoras al instante y vas armando combos absurdos hasta llenar la pantalla de efectos. Partidas de 20-30 minutos, fácil de entender, durísimo de soltar.' data-img='/images/vampiresurvivors.png' data-dl='vampire-survivors' data-genres="roguelike accion">
+      <div class="game-card" onclick="abrirModal(this)" data-name='Vampire Survivors' data-desc='Sobrevivís a hordas infinitas de enemigos mientras tus armas disparan solas. Subís de nivel, elegís mejoras y armás combos absurdos hasta llenar la pantalla.' data-img='/images/vampiresurvivors.png' data-dl='vampire-survivors' data-genres="roguelike accion">
         <img class="game-cover" src="/images/vampiresurvivors.png" alt="Vampire Survivors" loading="lazy" onerror="this.style.display='none'">
         <div class="game-card-body">
           <p class="game-name">Vampire Survivors</p>
-          <p class="game-desc">Sobrevivís en hordas cada vez más grandes de enemigos mientras tus armas disparan solas a tu alrededor. Subís de nivel, elegís mejoras al instante y vas armando combos absurdos hasta llenar la pantalla de efectos. Partidas de 20-30 minutos, fácil de entender, durísimo de soltar.</p>
+          <p class="game-desc">Sobrevivís a hordas infinitas de enemigos mientras tus armas disparan solas. Subís de nivel, elegís mejoras y armás combos absurdos hasta llenar la pantalla.</p>
           <div class="game-tags"><span class="game-tag">Roguelike</span><span class="game-tag">Acción</span></div>
           <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'vampire-survivors')">⬇ Descargar</button>
@@ -601,11 +602,11 @@
         </div>
         </div>
       </div>
-      <div class="game-card" onclick="abrirModal(this)" data-name='OneShot' data-desc='Acompañás a Niko, que tiene que devolver el sol a un mundo que se está apagando. Es un juego narrativo corto con puzzles tranquilos y una conexión rara entre el personaje y quien está jugando: el juego sabe que vos también estás ahí del otro lado de la pantalla.' data-img='/images/oneshot.jpg' data-dl='oneshot' data-genres="aventura indie">
+      <div class="game-card" onclick="abrirModal(this)" data-name='OneShot' data-desc='Acompañás a Niko en un viaje para devolver el sol a un mundo que se apaga. Narrativo, corto y con una conexión rara entre el juego y quien lo juega.' data-img='/images/oneshot.jpg' data-dl='oneshot' data-genres="aventura indie">
         <img class="game-cover" src="/images/oneshot.jpg" alt="OneShot" loading="lazy" onerror="this.style.display='none'">
         <div class="game-card-body">
           <p class="game-name">OneShot</p>
-          <p class="game-desc">Acompañás a Niko, que tiene que devolver el sol a un mundo que se está apagando. Es un juego narrativo corto con puzzles tranquilos y una conexión rara entre el personaje y quien está jugando: el juego sabe que vos también estás ahí del otro lado de la pantalla.</p>
+          <p class="game-desc">Acompañás a Niko en un viaje para devolver el sol a un mundo que se apaga. Narrativo, corto y con una conexión rara entre el juego y quien lo juega.</p>
           <div class="game-tags"><span class="game-tag">Aventura</span><span class="game-tag">Indie</span></div>
           <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'oneshot')">⬇ Descargar</button>
@@ -613,11 +614,11 @@
         </div>
         </div>
       </div>
-      <div class="game-card" onclick="abrirModal(this)" data-name='A Short Hike' data-desc='Sos un pájaro explorando una isla tranquila, subiendo una montaña sin apuro. Volás, escalás, pescás y charlás con los personajes que te cruzás en el camino. Dura un par de horas y te deja una sensación rara de paz que pocos juegos logran.' data-img='/images/ashorthike.png' data-dl='a-short-hike' data-genres="aventura indie">
+      <div class="game-card" onclick="abrirModal(this)" data-name='A Short Hike' data-desc='Sos un pájaro explorando una isla tranquila, subiendo una montaña sin apuro. Volás, escalás y charlás con quien te cruzás en el camino.' data-img='/images/ashorthike.png' data-dl='a-short-hike' data-genres="aventura indie">
         <img class="game-cover" src="/images/ashorthike.png" alt="A Short Hike" loading="lazy" onerror="this.style.display='none'">
         <div class="game-card-body">
           <p class="game-name">A Short Hike</p>
-          <p class="game-desc">Sos un pájaro explorando una isla tranquila, subiendo una montaña sin apuro. Volás, escalás, pescás y charlás con los personajes que te cruzás en el camino. Dura un par de horas y te deja una sensación rara de paz que pocos juegos logran.</p>
+          <p class="game-desc">Sos un pájaro explorando una isla tranquila, subiendo una montaña sin apuro. Volás, escalás y charlás con quien te cruzás en el camino.</p>
           <div class="game-tags"><span class="game-tag">Aventura</span><span class="game-tag">Indie</span></div>
           <div class="card-actions">
           <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'a-short-hike')">⬇ Descargar</button>
@@ -680,7 +681,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.141</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.142</span>
   </div>
 </div>
 
