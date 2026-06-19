@@ -1,6 +1,5 @@
 const crypto = require("crypto");
 
-// ── CONTRASEÑAS ──
 const USUARIOS = {
   "1b2910a9fbe1709de628fbcefa9fb9b409078a7d40d5dd2d8dfdaeb80a6bcbb5": "user1",
   "a5a8098e19611e966bff4f8243043767ef99bfee85f6499d2e8da5062420d25f": "user2",
@@ -17,6 +16,15 @@ const USUARIOS = {
 
 const TOKEN_SECRETO = "ort-piratas-xK92mNq7pL3wZ";
 
+function getNombreReal(userId) {
+  try {
+    const mapa = JSON.parse(process.env.USER_NAMES || "{}");
+    return mapa[userId] || userId;
+  } catch {
+    return userId;
+  }
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method not allowed" };
@@ -25,9 +33,10 @@ exports.handler = async (event) => {
   try {
     const { password } = JSON.parse(event.body);
     const hash = crypto.createHash("sha256").update(password).digest("hex");
-    const nombre = USUARIOS[hash];
+    const userId = USUARIOS[hash];
 
-    if (nombre) {
+    if (userId) {
+      const nombre = getNombreReal(userId);
       return {
         statusCode: 200,
         body: JSON.stringify({ ok: true, token: TOKEN_SECRETO, nombre }),
