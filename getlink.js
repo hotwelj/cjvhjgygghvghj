@@ -34,7 +34,6 @@ const LINKS = {
   "getting-over-it":        "https://github.com/hotwelj/paramintarneort/releases/download/Getting-over-it/Getting.Over.It.with.Bennett.Foddy.v1.7.zip",
   "fortune-mill":           "https://github.com/hotwelj/paramintarneort/releases/download/Fortune-mill/Fortune.Mill.v2026.06.03.zip",
   "eaglercraft":            "https://github.com/hotwelj/paramintarneort/releases/download/Eaglercraft/EaglercraftX_1.8_Signed_Offline.zip",
-  "minecraft":              "https://github.com/hotwelj/paramintarneort/releases/download/Minecraft/Minecraft.v1.19.1.1.zip",
   "vampire-survivors":      "https://github.com/hotwelj/paramintarneort/releases/download/Vampire-survivors/Vampire.Survivors.v1.14.112.ALL.DLC.zip",
   "oneshot":                "https://github.com/hotwelj/paramintarneort/releases/download/OneShot/OneShot.v2022.12.06.zip",
   "a-short-hike":           "https://github.com/hotwelj/paramintarneort/releases/download/A-short-hike/A.Short.Hike.v1.8.14.zip",
