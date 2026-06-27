@@ -836,7 +836,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.155</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.156</span>
   </div>
 </div>
 
@@ -1357,7 +1357,7 @@
 
         <div style="display:flex;gap:8px;margin-bottom:20px;">
           <button id="tab-contras" onclick="switchTab('contras')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#3b82f6;color:white;">🔑 Contraseñas</button>
-          <button id="tab-sugerencias" onclick="switchTab('sugerencias')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">💬 Sugerencias</button>
+          <button id="tab-sugerencias" onclick="switchTab('sugerencias')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">💬 Sugerencias <span id="sug-badge" style="display:none;background:#ef4444;color:white;font-size:11px;padding:1px 7px;border-radius:20px;margin-left:4px;"></span></button>
         </div>
 
         <div id="panel-contras">
@@ -1370,7 +1370,8 @@
             <p id="admin-add-msg" style="margin-top:10px;font-size:13px;color:#22c55e;display:none;"></p>
           </div>
           <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;">
-            <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;">Usuarios registrados</h2>
+            <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;">Usuarios registrados</h2>
+            <input id="admin-search" type="text" placeholder="🔍 Buscar por user o contraseña..." oninput="buscarUsuario(this.value)" style="width:100%;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:8px 12px;color:#f1f5f9;font-size:13px;outline:none;margin-bottom:12px;box-sizing:border-box;">
             <div id="admin-user-list" style="color:#94a3b8;font-size:14px;">Cargando...</div>
           </div>
         </div>
@@ -1398,6 +1399,27 @@
       if (tab === "sugerencias") cargarSugerencias();
     };
 
+    function renderUsuarios(usuarios, list) {
+      if (!usuarios.length) { list.textContent = "No hay usuarios."; return; }
+      list.innerHTML = usuarios.map(u => {
+        const ultima = u.ultimaConexion ? new Date(u.ultimaConexion).toLocaleString("es-AR") : "Nunca";
+        return `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1e293b;">
+          <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+            <div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span style="color:#f1f5f9;font-weight:600;">${u.nombre}</span>
+                <button onclick="const s=this.nextElementSibling;s.style.display=s.style.display==='none'?'inline':'none';this.textContent=s.style.display==='none'?'👁️':'🙈'" style="background:none;border:none;cursor:pointer;font-size:13px;padding:0;">👁️</button>
+                <span style="color:#64748b;font-size:12px;display:none;">${u.nombreReal || '—'}</span>
+              </div>
+              <div style="color:#475569;font-size:11px;margin-top:2px;">Última conexión: ${ultima} · ${u.totalLogins} login${u.totalLogins !== 1 ? 's' : ''}</div>
+            </div>
+          </div>
+          <button onclick="eliminarUsuario('${u.id}', this)" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;flex-shrink:0;margin-left:8px;">Eliminar</button>
+        </div>`;
+      }).join("");
+    }
+
     // Cargar usuarios
     async function cargarUsuarios() {
       const list = overlay.querySelector("#admin-user-list");
@@ -1409,21 +1431,30 @@
         });
         const data = await res.json();
         if (!data.ok) { list.textContent = "Error al cargar."; return; }
-        if (!data.usuarios.length) { list.textContent = "No hay usuarios."; return; }
-        list.innerHTML = data.usuarios.map(u => `
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #334155;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <span style="color:#f1f5f9;font-weight:600;">${u.nombre}</span>
-              <button onclick="const s=this.nextElementSibling;s.style.display=s.style.display==='none'?'inline':'none';this.textContent=s.style.display==='none'?'👁️':'🙈'" style="background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;">👁️</button>
-              <span style="color:#64748b;font-size:13px;display:none;">${u.nombreReal || '—'}</span>
-            </div>
-            <button onclick="eliminarUsuario('${u.id}', this)" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;">Eliminar</button>
-          </div>
-        `).join("");
+        renderUsuarios(data.usuarios, list);
       } catch(e) {
         list.textContent = "Error: " + e.message;
       }
     }
+
+    // Buscar usuario
+    window.buscarUsuario = async function(q) {
+      const list = overlay.querySelector("#admin-user-list");
+      if (!q.trim()) { cargarUsuarios(); return; }
+      list.textContent = "Buscando...";
+      try {
+        const res = await fetch(ADMIN_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "search_user", adminToken, query: q }),
+        });
+        const data = await res.json();
+        if (!data.ok) { list.textContent = "Error."; return; }
+        renderUsuarios(data.usuarios, list);
+      } catch(e) {
+        list.textContent = "Error: " + e.message;
+      }
+    };
 
     // Cargar sugerencias
     async function cargarSugerencias() {
@@ -1560,6 +1591,23 @@
     };
 
     cargarUsuarios();
+
+    // Badge de sugerencias no leídas
+    (async () => {
+      try {
+        const res = await fetch(ADMIN_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "list_suggestions", adminToken }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          const noLeidas = data.sugerencias.filter(s => !s.leida).length;
+          const badge = overlay.querySelector("#sug-badge");
+          if (noLeidas > 0) { badge.textContent = noLeidas; badge.style.display = "inline"; }
+        }
+      } catch {}
+    })();
   }
 
 </script>
