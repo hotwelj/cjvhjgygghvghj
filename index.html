@@ -934,9 +934,38 @@
     $("pwd-input").disabled = false;
 
     if (data.ok && data.adminToken) {
-      $("pwd-overlay").style.display = "none";
-      mostrarPanelAdmin(data.adminToken);
-      return;
+      const pwd2Input = $("pwd-input-2");
+      if (!pwd2Input) {
+        const inputWrap = $("pwd-input").parentNode;
+        const div2 = document.createElement("div");
+        div2.id = "pwd-2-wrap";
+        div2.style.cssText = "margin-top:12px;animation:popIn 0.3s ease;";
+        div2.innerHTML = '<input id="pwd-input-2" type="password" placeholder="Segunda contraseña..." style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid var(--border-input);background:var(--bg-page);color:var(--text-main);font-size:15px;outline:none;" autocomplete="off">';
+        inputWrap.appendChild(div2);
+        $("pwd-input-2").focus();
+        btn.textContent = "Entrar";
+        btn.classList.remove("cargando");
+        $("pwd-input").disabled = false;
+        btn._adminToken = data.adminToken;
+        return;
+      } else {
+        const val2 = pwd2Input.value.trim();
+        if (val2 !== "estalocura") {
+          $("pwd-lock").textContent = "❌";
+          $("pwd-msg").textContent = "Segunda contraseña incorrecta.";
+          $("pwd-msg").style.color = "var(--error-color)";
+          $("pwd-msg").style.display = "block";
+          btn.classList.remove("cargando");
+          $("pwd-input").disabled = false;
+          pwd2Input.value = "";
+          pwd2Input.focus();
+          return;
+        }
+        const adminToken = btn._adminToken;
+        $("pwd-overlay").style.display = "none";
+        mostrarPanelAdmin(adminToken);
+        return;
+      }
     }
 
     if (data.ok) {
@@ -1386,7 +1415,14 @@
     `;
 
     overlay.id = "admin-panel-overlay";
+    overlay.style.opacity = "0";
+    overlay.style.transform = "scale(0.97)";
+    overlay.style.transition = "opacity 0.3s ease, transform 0.3s ease";
     document.body.appendChild(overlay);
+    requestAnimationFrame(() => {
+      overlay.style.opacity = "1";
+      overlay.style.transform = "scale(1)";
+    });
 
     // Cambiar tab
     window.switchTab = function(tab) {
