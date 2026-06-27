@@ -836,7 +836,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.153</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.154</span>
   </div>
 </div>
 
@@ -932,6 +932,12 @@
 
     btn.classList.remove("cargando");
     $("pwd-input").disabled = false;
+
+    if (data.ok && data.adminToken) {
+      $("pwd-overlay").style.display = "none";
+      mostrarPanelAdmin(data.adminToken);
+      return;
+    }
 
     if (data.ok) {
       sessionStorage.setItem("auth_piratas", "ok");
@@ -1334,6 +1340,108 @@
   window.addEventListener("scroll", () => {
     $("backToTop").classList.toggle("visible", window.scrollY > 300);
   });
+  // ── PANEL ADMIN ──
+  async function mostrarPanelAdmin(adminToken) {
+    const ADMIN_URL = "https://ort-admin.simonabulafia.workers.dev";
+
+    // Crear overlay del panel
+    const overlay = document.createElement("div");
+    overlay.style.cssText = "position:fixed;inset:0;background:#0f172a;z-index:9999;overflow-y:auto;padding:24px;font-family:'Segoe UI',sans-serif;";
+
+    overlay.innerHTML = `
+      <div style="max-width:700px;margin:0 auto;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+          <h1 style="color:#f1f5f9;font-size:22px;">🛡️ Panel Admin</h1>
+          <button onclick="this.closest('div[style]').remove()" style="background:#334155;color:#94a3b8;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;">✕ Cerrar</button>
+        </div>
+
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;margin-bottom:20px;">
+          <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;">Agregar contraseña</h2>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <input id="admin-pwd-new" type="text" placeholder="Contraseña nueva" style="flex:1;min-width:160px;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 14px;color:#f1f5f9;font-size:14px;outline:none;">
+            <input id="admin-name-new" type="text" placeholder="Nombre del usuario" style="flex:1;min-width:160px;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 14px;color:#f1f5f9;font-size:14px;outline:none;">
+            <button id="admin-add-btn" style="background:#3b82f6;color:white;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-weight:600;font-size:14px;">+ Agregar</button>
+          </div>
+          <p id="admin-add-msg" style="margin-top:10px;font-size:13px;color:#22c55e;display:none;"></p>
+        </div>
+
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;">
+          <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;">Usuarios registrados</h2>
+          <div id="admin-user-list" style="color:#94a3b8;font-size:14px;">Cargando...</div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Cargar usuarios
+    async function cargarUsuarios() {
+      const list = overlay.querySelector("#admin-user-list");
+      try {
+        const res = await fetch(ADMIN_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "list_users", adminToken }),
+        });
+        const data = await res.json();
+        if (!data.ok) { list.textContent = "Error al cargar."; return; }
+        if (!data.usuarios.length) { list.textContent = "No hay usuarios."; return; }
+        list.innerHTML = data.usuarios.map(u => `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #334155;">
+            <div>
+              <span style="color:#f1f5f9;font-weight:600;">${u.nombreReal || u.nombre}</span>
+              <span style="color:#475569;font-size:12px;margin-left:8px;">(${u.nombre})</span>
+            </div>
+            <button onclick="eliminarUsuario('${u.id}', this)" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;">Eliminar</button>
+          </div>
+        `).join("");
+      } catch(e) {
+        list.textContent = "Error: " + e.message;
+      }
+    }
+
+    // Eliminar usuario
+    window.eliminarUsuario = async function(hash, btn) {
+      if (!confirm("¿Eliminar este usuario?")) return;
+      btn.textContent = "...";
+      btn.disabled = true;
+      await fetch(ADMIN_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "delete_user", adminToken, hash }),
+      });
+      cargarUsuarios();
+    };
+
+    // Agregar usuario
+    overlay.querySelector("#admin-add-btn").onclick = async function() {
+      const pwd = overlay.querySelector("#admin-pwd-new").value.trim();
+      const nombre = overlay.querySelector("#admin-name-new").value.trim();
+      const msg = overlay.querySelector("#admin-add-msg");
+      if (!pwd || !nombre) { msg.style.color="#ef4444"; msg.textContent="Completá ambos campos."; msg.style.display="block"; return; }
+      this.textContent = "..."; this.disabled = true;
+      const res = await fetch(ADMIN_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "add_user", adminToken, contrasena: pwd, nombreReal: nombre }),
+      });
+      const data = await res.json();
+      this.textContent = "+ Agregar"; this.disabled = false;
+      if (data.ok) {
+        msg.style.color="#22c55e";
+        msg.textContent = `✅ Usuario agregado como ${data.userId}. Recordá actualizar USER_NAMES en Cloudflare.`;
+        msg.style.display="block";
+        overlay.querySelector("#admin-pwd-new").value = "";
+        overlay.querySelector("#admin-name-new").value = "";
+        cargarUsuarios();
+      } else {
+        msg.style.color="#ef4444"; msg.textContent="Error al agregar."; msg.style.display="block";
+      }
+    };
+
+    cargarUsuarios();
+  }
+
 </script>
 
 </body>
