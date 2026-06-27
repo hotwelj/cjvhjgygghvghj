@@ -1441,19 +1441,21 @@
         list.innerHTML = data.sugerencias.map(s => {
           const fecha = s.fecha ? new Date(s.fecha).toLocaleString("es-AR") : "";
           const tipo = s.tipo === "otro" ? (s.tipoOtro || "Otro") : s.tipo;
+          const preview = s.mensaje.length > 80 ? s.mensaje.substring(0, 80) + "..." : s.mensaje;
           return `
           <div style="background:#0f172a;border:1px solid ${s.leida ? '#1e293b' : '#3b82f6'};border-radius:10px;padding:14px;margin-bottom:10px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
               <div>
-                <span style="color:#f1f5f9;font-weight:600;">${s.usuario || '—'}</span>
-                <span style="color:#64748b;font-size:12px;margin-left:8px;">${tipo}</span>
-                ${!s.leida ? '<span style="background:#1d4ed8;color:#93c5fd;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:8px;">Nueva</span>' : ''}
+                <span style="color:#f1f5f9;font-weight:700;">${s.usuario || '—'}</span>
+                <span style="color:#64748b;font-size:12px;margin-left:6px;">·</span>
+                <span style="color:#94a3b8;font-size:13px;margin-left:6px;">Tipo: <strong style="color:#cbd5e1;">${tipo || '—'}</strong></span>
+                ${!s.leida ? '<span style="background:#1d4ed8;color:#93c5fd;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:8px;">Nueva</span>' : '<span style="background:#1e293b;color:#475569;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:8px;">Leída</span>'}
               </div>
-              <span style="color:#475569;font-size:12px;">${fecha}</span>
+              <span style="color:#475569;font-size:11px;white-space:nowrap;">${fecha}</span>
             </div>
-            <p style="color:#cbd5e1;font-size:14px;margin:0 0 10px;">${s.mensaje}</p>
+            <p onclick="abrirSugerencia(${JSON.stringify(JSON.stringify(s))})" style="color:#cbd5e1;font-size:14px;margin:0 0 10px;cursor:pointer;line-height:1.5;" title="Click para leer completo">${preview}</p>
             <div style="display:flex;gap:8px;">
-              ${!s.leida ? `<button onclick="marcarLeida('${s.id}', this)" style="background:#1e3a5f;color:#93c5fd;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;">✓ Marcar leída</button>` : ''}
+              <button id="btn-leida-${s.id}" onclick="marcarLeida('${s.id}', this)" style="background:${s.leida ? '#1e293b' : '#1e3a5f'};color:${s.leida ? '#475569' : '#93c5fd'};border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;">${s.leida ? 'Leída ✓' : '✓ Marcar leída'}</button>
               <button onclick="eliminarSugerencia('${s.id}', this)" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;">Eliminar</button>
             </div>
           </div>`;
@@ -1475,6 +1477,28 @@
       cargarUsuarios();
     };
 
+    // Abrir modal de sugerencia
+    window.abrirSugerencia = function(sJson) {
+      const s = JSON.parse(sJson);
+      const fecha = s.fecha ? new Date(s.fecha).toLocaleString("es-AR") : "";
+      const tipo = s.tipo === "otro" ? (s.tipoOtro || "Otro") : s.tipo;
+      const modal = document.createElement("div");
+      modal.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;padding:24px;";
+      modal.innerHTML = `
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:16px;padding:28px;max-width:520px;width:100%;position:relative;">
+          <button onclick="this.closest('div[style*=fixed]').remove()" style="position:absolute;top:14px;right:14px;background:#334155;color:#94a3b8;border:none;border-radius:8px;padding:4px 12px;cursor:pointer;">✕</button>
+          <div style="margin-bottom:16px;">
+            <span style="color:#f1f5f9;font-weight:700;font-size:16px;">${s.usuario || '—'}</span>
+            <span style="color:#64748b;font-size:13px;margin-left:8px;">· Tipo: <strong style="color:#94a3b8;">${tipo || '—'}</strong></span>
+          </div>
+          <p style="color:#cbd5e1;font-size:15px;line-height:1.7;margin:0 0 16px;white-space:pre-wrap;">${s.mensaje}</p>
+          <span style="color:#475569;font-size:12px;">${fecha}</span>
+        </div>
+      `;
+      modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+      document.body.appendChild(modal);
+    };
+
     // Marcar sugerencia como leída
     window.marcarLeida = async function(id, btn) {
       btn.textContent = "..."; btn.disabled = true;
@@ -1483,7 +1507,10 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "mark_read", adminToken, id }),
       });
-      cargarSugerencias();
+      btn.textContent = "Leída ✓";
+      btn.style.background = "#1e293b";
+      btn.style.color = "#475569";
+      btn.disabled = true;
     };
 
     // Eliminar sugerencia
