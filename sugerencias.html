@@ -133,8 +133,8 @@ textarea { min-height:110px; }
   <div class="header-left">
     <div class="logo"><a href="index.html"><img src="https://i.imgur.com/CD8poZf.png"></a></div>
     <div class="nav">
-      <a href="index.html">Home</a>
-      <a href="sugerencias.html" style="background:rgba(255,255,255,0.15); opacity:1;">Sugerencias</a>
+      <a href="index.html" id="nav-home"><span class="sweep"></span>Home</a>
+      <a href="sugerencias.html" id="nav-sug" class="active"><span class="sweep"></span>Sugerencias</a>
       <div class="dropdown" id="dropdown-chrome">
         <button class="dropdown-btn" onclick="toggleDropdown('dropdown-chrome')">Extensiones Chrome <span class="arrow">▼</span></button>
         <div class="dropdown-menu dropdown-menu-cols">
@@ -326,6 +326,18 @@ textarea { min-height:110px; }
     $("pwd-hint").style.display = $("pwd-input").value.length > 0 ? "block" : "none";
   });
   $("pwd-input").addEventListener("keypress", e => { if (e.key === "Enter") verificarClave(); });
+
+  // Nav sweep effect
+  document.querySelectorAll('.nav a').forEach(link => {
+    link.addEventListener('click', function(e) {
+      const href = this.getAttribute('href');
+      if (href === 'sugerencias.html') return;
+      e.preventDefault();
+      document.querySelectorAll('.nav a').forEach(l => l.classList.remove('active'));
+      this.classList.add('sweeping');
+      setTimeout(() => { window.location.href = href; }, 320);
+    });
+  });
 
   async function verificarClave() {
     const val = $("pwd-input").value;

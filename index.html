@@ -48,8 +48,8 @@
   <div class="header-left">
     <div class="logo"><a href="index.html"><img src="https://i.imgur.com/CD8poZf.png"></a></div>
     <div class="nav">
-      <a href="index.html">Home</a>
-      <a href="sugerencias.html">Sugerencias</a>
+      <a href="index.html" id="nav-home" class="active"><span class="sweep"></span>Home</a>
+      <a href="sugerencias.html" id="nav-sug"><span class="sweep"></span>Sugerencias</a>
       <div class="dropdown" id="dropdown-chrome">
         <button class="dropdown-btn" onclick="toggleDropdown('dropdown-chrome')">Extensiones Chrome <span class="arrow">▼</span></button>
         <div class="dropdown-menu dropdown-menu-cols">
@@ -1364,6 +1364,20 @@
   document.addEventListener("click", e => {
     document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => {
       if (!d.contains(e.target)) d.classList.remove("open");
+    });
+  });
+
+  // Nav sweep effect
+  document.querySelectorAll('.nav a').forEach(link => {
+    link.addEventListener('click', function(e) {
+      const href = this.getAttribute('href');
+      const current = window.location.pathname.endsWith('sugerencias.html') ? 'sugerencias.html' : 'index.html';
+      if (href === current) return;
+      e.preventDefault();
+      // Quitar active del actual, poner sweeping en el clickeado
+      document.querySelectorAll('.nav a').forEach(l => l.classList.remove('active'));
+      this.classList.add('sweeping');
+      setTimeout(() => { window.location.href = href; }, 320);
     });
   });
 
