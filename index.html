@@ -1515,8 +1515,9 @@
     };
 
     function renderUsuarios(usuarios, list) {
+      window._usuarios = usuarios;
       if (!usuarios.length) { list.textContent = "No hay usuarios."; return; }
-      list.innerHTML = usuarios.map(u => {
+      list.innerHTML = usuarios.map((u, idx) => {
         const ultima = u.ultimaConexion ? new Date(u.ultimaConexion).toLocaleString("es-AR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" }) : "Nunca";
         return `
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1e293b;">
@@ -1532,7 +1533,7 @@
             </div>
           </div>
           <button onclick="eliminarUsuario('${u.id}', this)" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;flex-shrink:0;margin-left:8px;">Eliminar</button>
-          <button onclick="verHistorial(${JSON.stringify(u.historial||[])}, '${u.nombre}')" style="background:#1e3a5f;color:#93c5fd;border:none;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:12px;flex-shrink:0;margin-left:4px;">📋</button>
+          <button onclick="verHistorial(${idx})" style="background:#1e3a5f;color:#93c5fd;border:none;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:12px;flex-shrink:0;margin-left:4px;">📋</button>
         </div>`;
       }).join("");
     }
@@ -1658,7 +1659,10 @@
     };
 
     // Historial de logins
-    window.verHistorial = function(historial, nombre) {
+    window.verHistorial = function(idx) {
+      const u = window._usuarios[idx];
+      const historial = u.historial || [];
+      const nombre = u.nombre;
       let pagina = 0;
       const porPagina = 10;
 
