@@ -8,6 +8,15 @@
   <title>Ort piratas - Menú</title>
   <link rel="icon" href="https://i.imgur.com/CD8poZf.png" type="image/png">
   <link rel="stylesheet" href="/style.css">
+  <script>
+    // Mostrar botón chat inmediatamente si hay sesión activa
+    if (sessionStorage.getItem("auth_piratas") === "ok") {
+      document.addEventListener("DOMContentLoaded", function() {
+        var btn = document.getElementById("header-chat-btn");
+        if (btn) btn.style.display = "flex";
+      });
+    }
+  </script>
 </head>
 <body>
 
@@ -1035,6 +1044,7 @@
   let chatPollInterval = null;
   let badgePollInterval = null;
   let solicitudesPendientes = 0;
+  const msgsByChatId = {};
   let typingTimeout = null;
   let typingPollInterval = null;
 
@@ -2409,13 +2419,10 @@
     else cargarSolicitudesChat();
   };
 
-  const msgsByChatId = {};  // cache de mensajes no leídos por chatId
-
   async function cargarAmigos() {
     const overlay = document.getElementById("chat-overlay");
     if (!overlay) return;
     const lista = overlay.querySelector("#chat-lista");
-    lista.innerHTML = '<p style="color:var(--text-muted);font-size:12px;padding:8px;text-align:center;">Cargando...</p>';
     const data = await chatFetch({ action: "mis_amigos" });
     chatAmigos = data.amigos || [];
     localStorage.setItem('mis_chats', JSON.stringify(chatAmigos.map(a => ({ nombre: a.nombre, chatId: a.chatId }))));
