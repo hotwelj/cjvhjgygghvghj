@@ -1042,6 +1042,7 @@
   let badgePollInterval = null;
   let solicitudesPendientes = 0;
   const msgsByChatId = {};
+  let chatGrupos = [];
   let typingTimeout = null;
   let typingPollInterval = null;
 
@@ -2424,6 +2425,9 @@
       if (btn) { btn.style.background = tab === t ? "#3b82f6" : "transparent"; btn.style.color = tab === t ? "white" : "var(--text-muted)"; }
     });
     overlay.querySelector("#chat-buscar-wrap").style.display = tab === "amigos" ? "block" : "none";
+    // Limpiar lista inmediatamente para que no quede la anterior
+    const lista = overlay.querySelector("#chat-lista");
+    if (lista) lista.innerHTML = "";
     if (tab === "amigos") cargarAmigos();
     else if (tab === "grupos") cargarGrupos();
     else cargarSolicitudesChat();
@@ -2463,115 +2467,39 @@
     const overlay = document.getElementById("chat-overlay");
     if (!overlay) return;
     const lista = overlay.querySelector("#chat-lista");
-    lista.innerHTML = '<p style="color:var(--text-muted);font-size:12px;padding:8px;text-align:center;">Cargando...</p>';
     const data = await chatFetch({ action: "mis_solicitudes" });
     const sols = data.solicitudes || [];
     if (!sols.length) {
       lista.innerHTML = '<p style="color:var(--text-muted);font-size:12px;padding:8px;text-align:center;">Sin solicitudes</p>';
       return;
     }
-    lista.innerHTML = sols.map(s => `
-      <div style="padding:10px 12px;border-radius:10px;border:1px solid var(--border-card);margin-bottom:6px;">
-        <div style="font-weight:600;color:var(--text-main);font-size:13px;">${s.de}</div>
-        <div style="color:var(--text-muted);font-size:11px;margin-bottom:8px;">${s.deTag}</div>
+    lista.innerHTML = sols.map(s => {
+      const esGrupo = s.tipo === "grupo";
+      const apodoDe = localStorage.getItem('apodo_' + s.de) || s.de;
+      const titulo = esGrupo ? `👥 ${s.grupoNombre}` : apodoDe;
+      const subtitulo = esGrupo
+        ? `<span style="color:#93c5fd;font-size:10px;font-weight:600;background:#1e3a5f;border-radius:4px;padding:1px 5px;">GRUPO</span> invitado por <b>${apodoDe}</b>`
+        : s.deTag;
+      const tipo = s.tipo || "amigo";
+      const grupoId = s.grupoId || "";
+      return `<div style="padding:10px 12px;border-radius:10px;border:1px solid var(--border-card);margin-bottom:6px;">
+        <div style="font-weight:600;color:var(--text-main);font-size:13px;margin-bottom:2px;">${titulo}</div>
+        <div style="color:var(--text-muted);font-size:11px;margin-bottom:8px;">${subtitulo}</div>
         <div style="display:flex;gap:6px;">
-          <button onclick="responderSolicitud('${s.id}','${s.de}','${s.deTag}',true)" style="flex:1;background:#22c55e;color:white;border:none;border-radius:6px;padding:5px;cursor:pointer;font-size:12px;">✓ Aceptar</button>
-          <button onclick="responderSolicitud('${s.id}','${s.de}','${s.deTag}',false)" style="flex:1;background:#7f1d1d;color:#fca5a5;border:none;border-radius:6px;padding:5px;cursor:pointer;font-size:12px;">✕ Rechazar</button>
-        </div>
-      </div>`).join('');
-  }
-
-  window.eliminarAmigo = async function(nombre, chatId) {
-    if (!confirm(`¿Eliminar a ${localStorage.getItem('apodo_' + nombre) || nombre} de tu lista de amigos?`)) return;
-    await chatFetch({ action: "eliminar_amigo", otroNombre: nombre, chatId });
-    localStorage.removeItem('apodo_' + nombre);
-    localStorage.removeItem('ultimo_visto_' + chatId);
-    delete msgsByChatId[chatId];
-    // Actualizar mis_chats en localStorage
-    const misChats = JSON.parse(localStorage.getItem('mis_chats') || '[]').filter(c => c.chatId !== chatId);
-    localStorage.setItem('mis_chats', JSON.stringify(misChats));
-    chatAmigos = chatAmigos.filter(a => a.nombre !== nombre);
-    cargarAmigos();
-  };
-
-  window.editarApodo = function(nombre) {
-    const actual = localStorage.getItem('apodo_' + nombre) || '';
-    const nuevo = prompt('Apodo para ' + nombre + ':', actual);
-    if (nuevo === null) return;
-    if (nuevo.trim()) localStorage.setItem('apodo_' + nombre, nuevo.trim());
-    else localStorage.removeItem('apodo_' + nombre);
-    cargarAmigos();
-  };
-
-  window.filtrarAmigos = function(query) {
-    const q = query.trim().toLowerCase();
-    const overlay = document.getElementById("chat-overlay");
-    if (!overlay) return;
-    const lista = overlay.querySelector("#chat-lista");
-    if (!q) { cargarAmigos(); return; }
-    const filtrados = chatAmigos.filter((a, i) => {
-      const apodo = (localStorage.getItem('apodo_' + a.nombre) || '').toLowerCase();
-      return a.nombre.toLowerCase().includes(q) || (a.tag || '').toLowerCase().includes(q) || apodo.includes(q);
-    });
-    if (!filtrados.length) {
-      lista.innerHTML = '<p style="color:var(--text-muted);font-size:12px;padding:8px;text-align:center;">Sin resultados</p>';
-      return;
-    }
-    lista.innerHTML = filtrados.map((a) => {
-      const idx = chatAmigos.indexOf(a);
-      const apodo = localStorage.getItem('apodo_' + a.nombre) || '';
-      const nuevos = msgsByChatId[a.chatId] || 0;
-      return `<div data-chat-id="${a.chatId}" style="padding:8px 10px;border-radius:10px;transition:background 0.15s;" onmouseenter="this.style.background='var(--bg-page)'" onmouseleave="this.style.background='transparent'">
-        <div style="display:flex;align-items:center;gap:4px;">
-          <div onclick="abrirChatCon(${idx})" style="flex:1;cursor:pointer;min-width:0;">
-            <div style="font-weight:600;color:var(--text-main);font-size:13px;display:flex;align-items:center;gap:6px;">
-              ${apodo || a.nombre}
-              ${nuevos > 0 ? `<span style="background:#ef4444;color:white;font-size:10px;border-radius:50%;min-width:16px;height:16px;padding:0 4px;display:inline-flex;align-items:center;justify-content:center;font-weight:bold;">${nuevos}</span>` : ''}
-            </div>
-            <div style="color:var(--text-muted);font-size:11px;">${a.tag}</div>
-          </div>
-          <button onclick="editarApodo('${a.nombre}')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:13px;padding:2px 4px;" title="Apodo">✏️</button>
-          <button onclick="eliminarAmigo('${a.nombre}', '${a.chatId}')" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:13px;padding:2px 4px;" title="Eliminar amigo">🗑</button>
+          <button onclick="responderSolicitud('${s.id}','${s.de}','${s.deTag}',true,'${tipo}','${grupoId}')" style="flex:1;background:#22c55e;color:white;border:none;border-radius:6px;padding:5px;cursor:pointer;font-size:11px;font-weight:600;">✓ Aceptar</button>
+          <button onclick="responderSolicitud('${s.id}','${s.de}','${s.deTag}',false,'${tipo}','${grupoId}')" style="flex:1;background:#ef4444;color:white;border:none;border-radius:6px;padding:5px;cursor:pointer;font-size:11px;font-weight:600;">✗ Rechazar</button>
         </div>
       </div>`;
     }).join('');
-  };
-
-  window.chatBuscarUsuario = async function() {
-    const overlay = document.getElementById("chat-overlay");
-    if (!overlay) return;
-    const tag = overlay.querySelector("#chat-buscar-input").value.trim();
-    const result = overlay.querySelector("#chat-buscar-result");
-    if (!tag) return;
-    result.innerHTML = '<span style="color:var(--text-muted);">Buscando...</span>';
-    const data = await chatFetch({ action: "buscar_usuario", tag });
-    if (!data.ok) { result.innerHTML = '<span style="color:#ef4444;">No encontrado</span>'; return; }
-    const u = data.usuario;
-    if (u.nombre === getMiNombre()) { result.innerHTML = '<span style="color:#ef4444;">Sos vos mismo</span>'; return; }
-    if (chatAmigos.some(a => a.nombre === u.nombre)) { result.innerHTML = '<span style="color:#94a3b8;">Ya son amigos</span>'; return; }
-    result.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg-page);border-radius:8px;padding:6px 10px;">
-      <div><div style="color:var(--text-main);font-size:12px;font-weight:600;">${u.nombre}</div><div style="color:var(--text-muted);font-size:11px;">${u.tag}</div></div>
-      <button onclick="enviarSolicitud('${u.nombre}','${u.tag}')" style="background:#3b82f6;color:white;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px;">+ Agregar</button>
-    </div>`;
-  };
-
-  window.enviarSolicitud = async function(destinoNombre, destinoTag) {
-    const overlay = document.getElementById("chat-overlay");
-    const result = overlay?.querySelector("#chat-buscar-result");
-    const data = await chatFetch({ action: "enviar_solicitud", destinoId: destinoNombre, destinoTag });
-    if (data.ok && result) result.innerHTML = '<span style="color:#22c55e;">✅ Solicitud enviada</span>';
-  };
-
-  window.responderSolicitud = async function(solicitudId, otroNombre, otroTag, aceptar) {
-    await chatFetch({ action: "responder_solicitud", solicitudId, otroNombre, otroTag, aceptar });
+  }
+  window.responderSolicitud = async function(solicitudId, otroNombre, otroTag, aceptar, tipo, grupoId) {
+    await chatFetch({ action: "responder_solicitud", solicitudId, otroNombre, otroTag, aceptar, tipo: tipo||"amigo", grupoId: grupoId||"" });
     actualizarBadgeSolicitudes();
     cargarSolicitudesChat();
-    if (aceptar) cargarAmigos();
+    if (aceptar && tipo !== "grupo") cargarAmigos();
   };
 
-
   // ── GRUPOS ──
-  let chatGrupos = [];
 
   async function cargarGrupos() {
     const overlay = document.getElementById("chat-overlay");
@@ -2602,28 +2530,37 @@
     }).join('');
   }
 
-  window.mostrarCrearGrupo = function() {
+  window.mostrarCrearGrupo = async function() {
     const overlay = document.getElementById("chat-overlay");
     if (!overlay) return;
     const lista = overlay.querySelector("#chat-lista");
-    const amigosOpts = chatAmigos.map((a,i) => {
+    // Si no hay amigos cargados, cargarlos primero
+    if (!chatAmigos.length) {
+      const data = await chatFetch({ action: "mis_amigos" });
+      chatAmigos = data.amigos || [];
+    }
+    const amigosOpts = chatAmigos.map(a => {
       const apodo = localStorage.getItem('apodo_' + a.nombre) || '';
-      return `<label style="display:flex;align-items:center;gap:6px;padding:4px 0;cursor:pointer;color:var(--text-main);font-size:12px;">
-        <input type="checkbox" value="${a.nombre}" style="cursor:pointer;"> ${apodo || a.nombre} <span style="color:var(--text-muted);font-size:10px;">${a.tag}</span>
+      return `<label style="display:flex;align-items:center;gap:6px;padding:6px 0;cursor:pointer;color:var(--text-main);font-size:12px;border-bottom:1px solid var(--border-card);">
+        <input type="checkbox" value="${a.nombre}" style="cursor:pointer;accent-color:#3b82f6;width:14px;height:14px;"> 
+        <span style="font-weight:600;">${apodo || a.nombre}</span>
+        <span style="color:var(--text-muted);font-size:10px;">${a.tag}</span>
       </label>`;
     }).join('');
     lista.innerHTML = `
-      <div style="padding:8px;">
-        <p style="color:var(--text-muted);font-size:12px;margin:0 0 6px;">Nombre del grupo:</p>
-        <input id="grupo-nombre-input" type="text" placeholder="Nombre..." style="width:100%;background:var(--bg-page);border:1px solid var(--border-card);border-radius:8px;padding:6px 10px;color:var(--text-main);font-size:12px;outline:none;box-sizing:border-box;margin-bottom:8px;">
-        <p style="color:var(--text-muted);font-size:12px;margin:0 0 6px;">Agregar amigos:</p>
-        <div style="max-height:160px;overflow-y:auto;">${amigosOpts || '<p style="color:var(--text-muted);font-size:11px;">Sin amigos para agregar</p>'}</div>
-        <div style="display:flex;gap:6px;margin-top:8px;">
-          <button onclick="crearGrupo()" style="flex:1;background:#3b82f6;color:white;border:none;border-radius:8px;padding:7px;cursor:pointer;font-size:12px;font-weight:600;">Crear</button>
-          <button onclick="chatTab('grupos')" style="flex:1;background:#334155;color:#94a3b8;border:none;border-radius:8px;padding:7px;cursor:pointer;font-size:12px;">Cancelar</button>
+      <div style="padding:10px;">
+        <p style="color:var(--text-main);font-size:13px;font-weight:600;margin:0 0 8px;">Nuevo grupo</p>
+        <input id="grupo-nombre-input" type="text" placeholder="Nombre del grupo..." style="width:100%;background:var(--bg-page);border:1px solid var(--border-card);border-radius:8px;padding:7px 10px;color:var(--text-main);font-size:12px;outline:none;box-sizing:border-box;margin-bottom:10px;">
+        <p style="color:var(--text-muted);font-size:11px;margin:0 0 4px;text-transform:uppercase;letter-spacing:0.05em;">Invitar amigos</p>
+        <div style="max-height:180px;overflow-y:auto;margin-bottom:8px;">${amigosOpts || '<p style="color:var(--text-muted);font-size:11px;padding:4px 0;">Sin amigos para invitar</p>'}</div>
+        <div style="display:flex;gap:6px;">
+          <button onclick="crearGrupo()" style="flex:1;background:#3b82f6;color:white;border:none;border-radius:8px;padding:8px;cursor:pointer;font-size:12px;font-weight:600;">Crear</button>
+          <button onclick="chatTab('grupos')" style="flex:1;background:#334155;color:#94a3b8;border:none;border-radius:8px;padding:8px;cursor:pointer;font-size:12px;">Cancelar</button>
         </div>
-        <p id="grupo-msg" style="font-size:11px;margin-top:6px;display:none;"></p>
+        <p id="grupo-msg" style="font-size:11px;margin-top:6px;color:#ef4444;display:none;"></p>
       </div>`;
+    // Focus en el input
+    setTimeout(() => overlay.querySelector("#grupo-nombre-input")?.focus(), 50);
   };
 
   window.crearGrupo = async function() {
