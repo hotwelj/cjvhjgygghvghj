@@ -1030,16 +1030,18 @@
         body: JSON.stringify({ action: "get_anuncio", adminToken: "public" }),
       });
       const data = await res.json();
-      if (!data.anuncio) return;
-      const banner = document.createElement("div");
-      banner.id = "anuncio-banner";
-      banner.style.cssText = "position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:8888;background:var(--bg-card);border:1px solid var(--border-card);border-radius:16px;padding:12px 20px 12px 16px;box-shadow:0 8px 32px rgba(0,0,0,0.3);display:flex;align-items:center;gap:12px;max-width:500px;width:calc(100% - 48px);animation:bubblePop 0.4s cubic-bezier(0.34,1.56,0.64,1);";
-      banner.innerHTML = `
-        <span style="font-size:18px;">📢</span>
-        <p style="margin:0;font-size:14px;color:var(--text-main);line-height:1.4;flex:1;">${data.anuncio.mensaje}</p>
-        <button onclick="document.getElementById('anuncio-banner').remove()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;padding:0;line-height:1;flex-shrink:0;">✕</button>
-      `;
-      document.body.appendChild(banner);
+      if (!data.anuncios || !data.anuncios.length) return;
+      data.anuncios.forEach((anuncio, i) => {
+        const banner = document.createElement("div");
+        banner.id = `anuncio-banner-${i}`;
+        banner.style.cssText = `position:fixed;top:${16 + i * 70}px;left:50%;transform:translateX(-50%);z-index:8888;background:var(--bg-card);border:1px solid var(--border-card);border-radius:16px;padding:12px 20px 12px 16px;box-shadow:0 8px 32px rgba(0,0,0,0.3);display:flex;align-items:center;gap:12px;max-width:500px;width:calc(100% - 48px);animation:bubblePop 0.4s cubic-bezier(0.34,1.56,0.64,1);animation-delay:${i * 0.1}s;`;
+        banner.innerHTML = `
+          <span style="font-size:18px;">📢</span>
+          <p style="margin:0;font-size:14px;color:var(--text-main);line-height:1.4;flex:1;">${anuncio.mensaje}</p>
+          <button onclick="this.closest('[id^=anuncio-banner]').remove()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;padding:0;line-height:1;flex-shrink:0;">✕</button>
+        `;
+        document.body.appendChild(banner);
+      });
     } catch {}
   }
 
@@ -1522,11 +1524,7 @@
               <button id="anuncio-del-btn" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:14px;">🗑 Eliminar</button>
             </div>
             <p id="anuncio-msg-status" style="margin-top:10px;font-size:13px;display:none;"></p>
-            <div id="anuncio-actual" style="margin-top:16px;padding:12px;background:#0f172a;border-radius:8px;border:1px solid #334155;display:none;">
-              <p style="color:#64748b;font-size:12px;margin:0 0 4px;">Anuncio activo:</p>
-              <p id="anuncio-actual-msg" style="color:#cbd5e1;font-size:14px;margin:0 0 4px;"></p>
-              <p id="anuncio-actual-expira" style="color:#475569;font-size:12px;margin:0;"></p>
-            </div>
+            <div id="anuncios-lista" style="margin-top:16px;"></div>
           </div>
         </div>
 
@@ -1778,19 +1776,70 @@
 
     // Anuncios
     async function cargarAnuncioActual() {
+      const lista = overlay.querySelector("#anuncios-lista");
+      lista.innerHTML = '<p style="color:#475569;font-size:13px;">Cargando...</p>';
       const res = await fetch(ADMIN_URL, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "get_anuncio", adminToken }),
+        body: JSON.stringify({ action: "list_anuncios", adminToken }),
       });
       const data = await res.json();
-      const actual = overlay.querySelector("#anuncio-actual");
-      if (data.anuncio) {
-        actual.style.display = "block";
-        overlay.querySelector("#anuncio-actual-msg").textContent = data.anuncio.mensaje;
-        const exp = new Date(data.anuncio.expira).toLocaleString("es-AR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" });
-        overlay.querySelector("#anuncio-actual-expira").textContent = `Expira: ${exp}`;
-      } else { actual.style.display = "none"; }
+      if (!data.ok || !data.anuncios.length) {
+        lista.innerHTML = '<p style="color:#475569;font-size:13px;">No hay anuncios activos.</p>';
+        return;
+      }
+      window._anuncios = data.anuncios;
+      lista.innerHTML = data.anuncios.map((a, idx) => {
+        const exp = new Date(a.expira).toLocaleString("es-AR", { day:"2-digit", month:"2-digit", year:"numeric" });
+        return `<div id="anuncio-item-${idx}" style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:12px;margin-bottom:8px;">
+          <div id="anuncio-view-${idx}">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <p style="color:#cbd5e1;font-size:14px;margin:0 0 4px;flex:1;">${a.mensaje}</p>
+              <div style="display:flex;gap:6px;flex-shrink:0;">
+                <button onclick="editarAnuncio(${idx})" style="background:#1e3a5f;color:#93c5fd;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;">✏️ Editar</button>
+                <button onclick="eliminarAnuncioLista('${a.id}', ${idx})" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;">🗑</button>
+              </div>
+            </div>
+            <p style="color:#475569;font-size:11px;margin:0;">Expira: ${exp}</p>
+          </div>
+          <div id="anuncio-edit-${idx}" style="display:none;">
+            <textarea id="anuncio-edit-msg-${idx}" style="width:100%;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:8px;color:#f1f5f9;font-size:13px;outline:none;resize:vertical;min-height:60px;box-sizing:border-box;margin-bottom:8px;">${a.mensaje}</textarea>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <input type="date" id="anuncio-edit-fecha-${idx}" value="${a.expira.slice(0,10)}" style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:6px 10px;color:#f1f5f9;font-size:13px;outline:none;">
+              <button onclick="guardarEdicionAnuncio(${idx}, '${a.id}')" style="background:#22c55e;color:white;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:13px;font-weight:600;">Guardar</button>
+              <button onclick="cancelarEdicionAnuncio(${idx})" style="background:#334155;color:#94a3b8;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">Cancelar</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
     }
+
+    window.editarAnuncio = function(idx) {
+      overlay.querySelector(`#anuncio-view-${idx}`).style.display = "none";
+      overlay.querySelector(`#anuncio-edit-${idx}`).style.display = "block";
+    };
+    window.cancelarEdicionAnuncio = function(idx) {
+      overlay.querySelector(`#anuncio-view-${idx}`).style.display = "block";
+      overlay.querySelector(`#anuncio-edit-${idx}`).style.display = "none";
+    };
+    window.guardarEdicionAnuncio = async function(idx, id) {
+      const msg = overlay.querySelector(`#anuncio-edit-msg-${idx}`).value.trim();
+      const fecha = overlay.querySelector(`#anuncio-edit-fecha-${idx}`).value;
+      if (!msg) return;
+      const expira = new Date(fecha + "T23:59:59").toISOString();
+      await fetch(ADMIN_URL, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "set_anuncio", adminToken, mensaje: msg, expira, id }),
+      });
+      cargarAnuncioActual();
+    };
+    window.eliminarAnuncioLista = async function(id, idx) {
+      if (!confirm("¿Eliminar este anuncio?")) return;
+      await fetch(ADMIN_URL, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "delete_anuncio", adminToken, id }),
+      });
+      cargarAnuncioActual();
+    };
 
     // Sincronizar días ↔ fecha
     const diasInput = overlay.querySelector("#anuncio-dias");
@@ -1836,6 +1885,8 @@
       if (data.ok) {
         status.style.color="#22c55e"; status.textContent="✅ Anuncio publicado."; status.style.display="block";
         overlay.querySelector("#anuncio-msg").value = "";
+        fechaInput.value = diasAFecha(7);
+        diasInput.value = 7;
         cargarAnuncioActual();
       }
     };
