@@ -559,13 +559,14 @@ window.abrirChat = function() {
   window.location.href = "/?chat=1";
 };
 // Mostrar botón si autenticado
-if (sessionStorage.getItem("auth_piratas") === "ok") {
-  document.addEventListener("DOMContentLoaded", () => {
+// Mostrar botón chat si ya está autenticado
+(function() {
+  if (sessionStorage.getItem("auth_piratas") === "ok") {
     const btn = document.getElementById("header-chat-btn");
     if (btn) btn.style.display = "flex";
     iniciarChatPolling();
-  });
-}
+  }
+})();
 </script>
 </body>
 </html>
