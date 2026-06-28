@@ -958,6 +958,55 @@
 
 <script>
   const $ = id => document.getElementById(id);
+  // Chat variables
+  const CHAT_URL = "https://ort-admin.simonabulafia.workers.dev";
+  let chatAmigos = [];
+  let chatActivo = null;
+  let chatPollInterval = null;
+  let solicitudesPendientes = 0;
+
+  function getMiNombre() { return sessionStorage.getItem("auth_userid") || ""; }
+  function getMiTag() { return sessionStorage.getItem("auth_tag") || ""; }
+  function getMiToken() { return sessionStorage.getItem("auth_token") || ""; }
+
+  async function chatFetch(body) {
+    const res = await fetch(CHAT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...body, token: getMiToken(), miNombre: getMiNombre(), miTag: getMiTag() }),
+    });
+    return res.json();
+  }
+
+  function iniciarChatPolling() {
+    if (chatPollInterval) clearInterval(chatPollInterval);
+    actualizarBadgeSolicitudes();
+    chatPollInterval = setInterval(actualizarBadgeSolicitudes, 15000);
+  }
+
+  async function actualizarBadgeSolicitudes() {
+    if (!getMiNombre()) return;
+    try {
+      const data = await chatFetch({ action: "mis_solicitudes" });
+      solicitudesPendientes = data.solicitudes?.length || 0;
+      const badge = $("chat-badge");
+      if (badge) {
+        if (solicitudesPendientes > 0) { badge.textContent = solicitudesPendientes; badge.style.display = "flex"; }
+        else { badge.style.display = "none"; }
+      }
+    } catch {}
+  }
+
+  window.toggleChatPanel = function() {
+    const existing = document.getElementById("chat-overlay");
+    if (existing) {
+      existing.style.animation = "bubbleClose 0.22s cubic-bezier(0.4,0,1,1) forwards";
+      setTimeout(() => existing.remove(), 200);
+      return;
+    }
+    abrirChat();
+  };
+
 
   // ── DESCRIPCIONES LARGAS (para modal) ──
   const DESC_LARGAS = {
@@ -2120,56 +2169,6 @@
   }
 
 
-  // ══════════════════════════════════════════
-  // CHAT
-  // ══════════════════════════════════════════
-  const CHAT_URL = "https://ort-admin.simonabulafia.workers.dev";
-  let chatAmigos = [];
-  let chatActivo = null;
-  let chatPollInterval = null;
-  let solicitudesPendientes = 0;
-
-  function getMiNombre() { return sessionStorage.getItem("auth_userid") || ""; }
-  function getMiTag() { return sessionStorage.getItem("auth_tag") || ""; }
-  function getMiToken() { return sessionStorage.getItem("auth_token") || ""; }
-
-  async function chatFetch(body) {
-    const res = await fetch(CHAT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...body, token: getMiToken(), miNombre: getMiNombre(), miTag: getMiTag() }),
-    });
-    return res.json();
-  }
-
-  function iniciarChatPolling() {
-    if (chatPollInterval) clearInterval(chatPollInterval);
-    actualizarBadgeSolicitudes();
-    chatPollInterval = setInterval(actualizarBadgeSolicitudes, 15000);
-  }
-
-  async function actualizarBadgeSolicitudes() {
-    if (!getMiNombre()) return;
-    try {
-      const data = await chatFetch({ action: "mis_solicitudes" });
-      solicitudesPendientes = data.solicitudes?.length || 0;
-      const badge = $("chat-badge");
-      if (badge) {
-        if (solicitudesPendientes > 0) { badge.textContent = solicitudesPendientes; badge.style.display = "flex"; }
-        else { badge.style.display = "none"; }
-      }
-    } catch {}
-  }
-
-  window.toggleChatPanel = function() {
-    const existing = document.getElementById("chat-overlay");
-    if (existing) {
-      existing.style.animation = "bubbleClose 0.22s cubic-bezier(0.4,0,1,1) forwards";
-      setTimeout(() => existing.remove(), 200);
-      return;
-    }
-    abrirChat();
-  };
 
   window.abrirChat = function() {
     if (document.getElementById("chat-overlay")) return;
