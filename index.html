@@ -2,6 +2,9 @@
 <html lang="es" data-theme="light">
 <head>
   <meta charset="UTF-8">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
+
   <title>Ort piratas - Menú</title>
   <link rel="icon" href="https://i.imgur.com/CD8poZf.png" type="image/png">
   <link rel="stylesheet" href="/style.css">
@@ -111,6 +114,7 @@
   </div>
   <div class="header-right">
     <button id="header-theme-btn" onclick="toggleTheme()" title="Cambiar tema"></button>
+    <button id="header-chat-btn" onclick="abrirChat()" title="Mensajes" style="position:relative;background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:18px;transition:background 0.2s;">💬<span id="chat-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:#ef4444;color:white;font-size:10px;border-radius:50%;width:16px;height:16px;align-items:center;justify-content:center;"></span></button>
     <div class="person-dropdown" id="dropdown-person">
       <button class="person-icon" onclick="toggleDropdown('dropdown-person')">
         <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
@@ -944,7 +948,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.160</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.161</span>
   </div>
 </div>
 
@@ -1086,6 +1090,8 @@
       sessionStorage.setItem("auth_piratas", "ok");
       sessionStorage.setItem("auth_token", data.token);
       sessionStorage.setItem("auth_nombre", data.nombre || "");
+      sessionStorage.setItem("auth_tag", data.tag || "");
+      sessionStorage.setItem("auth_userid", data.nombre || "");
       $("pwd-lock").textContent = "✅";
       btn.textContent = "¡Acceso concedido!";
       btn.classList.add("ok");
@@ -1098,7 +1104,7 @@
       initFavBtns(); updateCounts();
       setTimeout(() => {
         $("pwd-overlay").classList.add("saliendo");
-        setTimeout(() => { $("pwd-overlay").style.display = "none"; cargarBannerAnuncio(); }, 600);
+        setTimeout(() => { $("pwd-overlay").style.display = "none"; cargarBannerAnuncio(); const cb=$("header-chat-btn");if(cb)cb.style.display="flex"; iniciarChatPolling(); }, 600);
       }, 700);
     } else {
       btn.textContent = "Entrar";
@@ -1117,6 +1123,9 @@
     if (nombre) $("session-label").textContent = "Sesión iniciada";
     favs = JSON.parse(localStorage.getItem(getFavsKey()) || "[]");
     cargarBannerAnuncio();
+    const chatBtn = $("header-chat-btn");
+    if (chatBtn) chatBtn.style.display = "flex";
+    iniciarChatPolling();
   }
 
   async function cargarBannerAnuncio() {
@@ -1607,7 +1616,7 @@
         <div id="panel-anuncios" style="display:none;">
           <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;">
             <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;">Publicar anuncio</h2>
-            <textarea id="anuncio-msg" placeholder="Escribí el anuncio..." style="width:100%;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 14px;color:#f1f5f9;font-size:14px;outline:none;resize:vertical;min-height:80px;box-sizing:border-box;margin-bottom:10px;"></textarea>
+            <div id="anuncio-editor" style="margin-bottom:10px;border-radius:8px;overflow:hidden;"></div>
             <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">
               <div style="display:flex;align-items:center;gap:6px;">
                 <label style="color:#94a3b8;font-size:13px;">Durar</label>
@@ -1672,6 +1681,7 @@
             <div>
               <div style="display:flex;align-items:center;gap:6px;">
                 <span style="color:#f1f5f9;font-weight:600;">${u.nombre}</span>
+                ${u.tag ? `<span style="color:#3b82f6;font-size:11px;background:rgba(59,130,246,0.1);padding:1px 6px;border-radius:10px;">${u.tag}</span>` : ''}
                 ${u.sospechoso ? `<span style="cursor:pointer;font-size:14px;position:relative;" onmouseenter="showTooltip(this,${idx})" onmouseleave="hideTooltip()">🚨</span>` : ''}
                 <button onclick="const s=this.nextElementSibling;s.style.display=s.style.display==='none'?'inline':'none';this.textContent=s.style.display==='none'?'👁️':'🙈'" style="background:none;border:none;cursor:pointer;font-size:13px;padding:0;">👁️</button>
                 <span style="color:#64748b;font-size:12px;display:none;">${u.nombreReal || '—'}</span>
@@ -1873,7 +1883,28 @@
     };
 
     // Anuncios
+    // Inicializar Quill editor
+    let quillEditor = null;
+    function initQuill() {
+      if (quillEditor) return;
+      const editorDiv = overlay.querySelector("#anuncio-editor");
+      if (!editorDiv || typeof Quill === 'undefined') return;
+      quillEditor = new Quill(editorDiv, {
+        theme: 'snow',
+        placeholder: 'Escribí el anuncio...',
+        modules: {
+          toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'color': [] }],
+            ['link', 'image'],
+            ['clean']
+          ]
+        }
+      });
+    }
+
     async function cargarAnuncioActual() {
+      initQuill();
       const lista = overlay.querySelector("#anuncios-lista");
       lista.innerHTML = '<p style="color:#475569;font-size:13px;">Cargando...</p>';
       const res = await fetch(ADMIN_URL, {
@@ -1900,7 +1931,7 @@
             <p style="color:#475569;font-size:11px;margin:0;">Expira: ${exp}</p>
           </div>
           <div id="anuncio-edit-${idx}" style="display:none;">
-            <textarea id="anuncio-edit-msg-${idx}" style="width:100%;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:8px;color:#f1f5f9;font-size:13px;outline:none;resize:vertical;min-height:60px;box-sizing:border-box;margin-bottom:8px;">${a.mensaje}</textarea>
+            <div id="anuncio-edit-quill-${idx}" style="margin-bottom:8px;border-radius:8px;overflow:hidden;"></div>
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
               <input type="date" id="anuncio-edit-fecha-${idx}" value="${a.expira.slice(0,10)}" style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:6px 10px;color:#f1f5f9;font-size:13px;outline:none;">
               <button onclick="guardarEdicionAnuncio(${idx}, '${a.id}')" style="background:#22c55e;color:white;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:13px;font-weight:600;">Guardar</button>
@@ -1911,16 +1942,24 @@
       }).join('');
     }
 
+    window._quillEdits = {};
     window.editarAnuncio = function(idx) {
       overlay.querySelector(`#anuncio-view-${idx}`).style.display = "none";
       overlay.querySelector(`#anuncio-edit-${idx}`).style.display = "block";
+      if (!window._quillEdits[idx] && typeof Quill !== 'undefined') {
+        window._quillEdits[idx] = new Quill(`#anuncio-edit-quill-${idx}`, {
+          theme: 'snow',
+          modules: { toolbar: [['bold','italic','underline'],['link'],['clean']] }
+        });
+        window._quillEdits[idx].root.innerHTML = window._anuncios[idx]?.mensaje || '';
+      }
     };
     window.cancelarEdicionAnuncio = function(idx) {
       overlay.querySelector(`#anuncio-view-${idx}`).style.display = "block";
       overlay.querySelector(`#anuncio-edit-${idx}`).style.display = "none";
     };
     window.guardarEdicionAnuncio = async function(idx, id) {
-      const msg = overlay.querySelector(`#anuncio-edit-msg-${idx}`).value.trim();
+      const msg = window._quillEdits[idx] ? window._quillEdits[idx].root.innerHTML.trim() : "";
       const fecha = overlay.querySelector(`#anuncio-edit-fecha-${idx}`).value;
       if (!msg) return;
       const expira = new Date(fecha + "T23:59:59").toISOString();
@@ -1962,7 +2001,8 @@
     });
 
     overlay.querySelector("#anuncio-pub-btn").onclick = async function() {
-      const msg = overlay.querySelector("#anuncio-msg").value.trim();
+      const msg = quillEditor ? quillEditor.root.innerHTML.trim() : "";
+      const isEmpty = !msg || msg === '<p><br></p>';
       const status = overlay.querySelector("#anuncio-msg-status");
       // Usar la fecha si está seteada, sino los días
       let expira;
@@ -1972,7 +2012,7 @@
         const dias = parseInt(diasInput.value) || 7;
         expira = new Date(Date.now() + dias * 24 * 60 * 60 * 1000).toISOString();
       }
-      if (!msg) { status.style.color="#ef4444"; status.textContent="Escribí algo primero."; status.style.display="block"; return; }
+      if (isEmpty) { status.style.color="#ef4444"; status.textContent="Escribí algo primero."; status.style.display="block"; return; }
       this.textContent = "..."; this.disabled = true;
       const res = await fetch(ADMIN_URL, {
         method: "POST", headers: { "Content-Type": "application/json" },
@@ -1982,7 +2022,7 @@
       this.textContent = "📢 Publicar"; this.disabled = false;
       if (data.ok) {
         status.style.color="#22c55e"; status.textContent="✅ Anuncio publicado."; status.style.display="block";
-        overlay.querySelector("#anuncio-msg").value = "";
+        if (quillEditor) quillEditor.setText('');
         fechaInput.value = diasAFecha(7);
         diasInput.value = 7;
         cargarAnuncioActual();
@@ -2042,7 +2082,7 @@
       this.textContent = "+ Agregar"; this.disabled = false;
       if (data.ok) {
         msg.style.color="#22c55e";
-        msg.textContent = `✅ Usuario agregado correctamente.`;
+        msg.textContent = `✅ Usuario agregado. Tag asignado: ${data.tag || '—'}`;
         msg.style.display="block";
         overlay.querySelector("#admin-pwd-new").value = "";
         cargarUsuarios();
@@ -2071,7 +2111,251 @@
     })();
   }
 
+
+  // ══════════════════════════════════════════
+  // CHAT
+  // ══════════════════════════════════════════
+  const CHAT_URL = "https://ort-admin.simonabulafia.workers.dev";
+  let chatAmigos = [];
+  let chatActivo = null;
+  let chatPollInterval = null;
+  let solicitudesPendientes = 0;
+
+  function getMiNombre() { return sessionStorage.getItem("auth_userid") || ""; }
+  function getMiTag() { return sessionStorage.getItem("auth_tag") || ""; }
+  function getMiToken() { return sessionStorage.getItem("auth_token") || ""; }
+
+  async function chatFetch(body) {
+    const res = await fetch(CHAT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...body, token: getMiToken(), miNombre: getMiNombre(), miTag: getMiTag() }),
+    });
+    return res.json();
+  }
+
+  function iniciarChatPolling() {
+    if (chatPollInterval) clearInterval(chatPollInterval);
+    actualizarBadgeSolicitudes();
+    chatPollInterval = setInterval(actualizarBadgeSolicitudes, 15000);
+  }
+
+  async function actualizarBadgeSolicitudes() {
+    if (!getMiNombre()) return;
+    try {
+      const data = await chatFetch({ action: "mis_solicitudes" });
+      solicitudesPendientes = data.solicitudes?.length || 0;
+      const badge = $("chat-badge");
+      if (badge) {
+        if (solicitudesPendientes > 0) { badge.textContent = solicitudesPendientes; badge.style.display = "flex"; }
+        else { badge.style.display = "none"; }
+      }
+    } catch {}
+  }
+
+  window.abrirChat = function() {
+    if (document.getElementById("chat-overlay")) return;
+    const overlay = document.createElement("div");
+    overlay.id = "chat-overlay";
+    overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;";
+    overlay.innerHTML = `
+      <div style="background:var(--bg-card);border:1px solid var(--border-card);border-radius:18px;width:100%;max-width:820px;height:560px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.4);animation:bubblePop 0.35s cubic-bezier(0.34,1.56,0.64,1);">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border-card);">
+          <h2 style="color:var(--text-main);font-size:16px;margin:0;">💬 Mensajes</h2>
+          <div style="display:flex;gap:12px;align-items:center;">
+            <span style="color:var(--text-muted);font-size:12px;">Tu tag: <strong style="color:#3b82f6;">${getMiTag()}</strong></span>
+            <button onclick="document.getElementById('chat-overlay').remove();iniciarChatPolling();" style="background:var(--bg-page);border:none;border-radius:8px;padding:6px 12px;color:var(--text-muted);cursor:pointer;font-size:13px;">✕</button>
+          </div>
+        </div>
+        <div style="display:flex;flex:1;overflow:hidden;">
+          <div style="width:220px;border-right:1px solid var(--border-card);display:flex;flex-direction:column;overflow:hidden;">
+            <div style="display:flex;border-bottom:1px solid var(--border-card);">
+              <button onclick="chatTab('amigos')" id="chat-tab-amigos" style="flex:1;padding:10px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:#3b82f6;color:white;">Amigos</button>
+              <button onclick="chatTab('solicitudes')" id="chat-tab-solicitudes" style="flex:1;padding:10px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:transparent;color:var(--text-muted);position:relative;">Solicitudes<span id="chat-sol-badge" style="display:none;position:absolute;top:4px;right:4px;background:#ef4444;color:white;font-size:9px;border-radius:50%;width:14px;height:14px;align-items:center;justify-content:center;font-weight:bold;"></span></button>
+            </div>
+            <div style="padding:8px;border-bottom:1px solid var(--border-card);" id="chat-buscar-wrap">
+              <input id="chat-buscar-input" type="text" placeholder="Tag del usuario..." style="width:100%;background:var(--bg-page);border:1px solid var(--border-card);border-radius:8px;padding:6px 10px;color:var(--text-main);font-size:12px;outline:none;box-sizing:border-box;" onkeydown="if(event.key==='Enter')chatBuscarUsuario()">
+              <button onclick="chatBuscarUsuario()" style="width:100%;margin-top:6px;background:#3b82f6;color:white;border:none;border-radius:8px;padding:6px;cursor:pointer;font-size:12px;">Agregar amigo</button>
+              <div id="chat-buscar-result" style="margin-top:6px;font-size:12px;"></div>
+            </div>
+            <div id="chat-lista" style="flex:1;overflow-y:auto;padding:4px;"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+            <div id="chat-panel-empty" style="flex:1;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:14px;">Seleccioná un amigo para chatear</div>
+            <div id="chat-panel-msgs" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+              <div id="chat-msgs-header" style="padding:12px 16px;border-bottom:1px solid var(--border-card);font-weight:600;color:var(--text-main);font-size:14px;"></div>
+              <div id="chat-msgs-list" style="flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px;"></div>
+              <div style="padding:10px 12px;border-top:1px solid var(--border-card);display:flex;gap:8px;">
+                <input id="chat-msg-input" type="text" placeholder="Escribí un mensaje..." style="flex:1;background:var(--bg-page);border:1px solid var(--border-card);border-radius:10px;padding:8px 14px;color:var(--text-main);font-size:14px;outline:none;" onkeydown="if(event.key==='Enter')chatEnviarMensaje()">
+                <button onclick="chatEnviarMensaje()" style="background:#3b82f6;color:white;border:none;border-radius:10px;padding:8px 16px;cursor:pointer;font-weight:600;">➤</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.onclick = e => { if (e.target === overlay) { overlay.remove(); iniciarChatPolling(); } };
+    chatTab('amigos');
+    cargarAmigos();
+    if (solicitudesPendientes > 0) {
+      const b = overlay.querySelector("#chat-sol-badge");
+      if (b) { b.textContent = solicitudesPendientes; b.style.display = "flex"; }
+    }
+  };
+
+  window.chatTab = function(tab) {
+    const overlay = document.getElementById("chat-overlay");
+    if (!overlay) return;
+    overlay.querySelector("#chat-tab-amigos").style.background = tab === "amigos" ? "#3b82f6" : "transparent";
+    overlay.querySelector("#chat-tab-amigos").style.color = tab === "amigos" ? "white" : "var(--text-muted)";
+    overlay.querySelector("#chat-tab-solicitudes").style.background = tab === "solicitudes" ? "#3b82f6" : "transparent";
+    overlay.querySelector("#chat-tab-solicitudes").style.color = tab === "solicitudes" ? "white" : "var(--text-muted)";
+    overlay.querySelector("#chat-buscar-wrap").style.display = tab === "amigos" ? "block" : "none";
+    if (tab === "amigos") cargarAmigos();
+    else cargarSolicitudesChat();
+  };
+
+  async function cargarAmigos() {
+    const overlay = document.getElementById("chat-overlay");
+    if (!overlay) return;
+    const lista = overlay.querySelector("#chat-lista");
+    lista.innerHTML = '<p style="color:var(--text-muted);font-size:12px;padding:8px;text-align:center;">Cargando...</p>';
+    const data = await chatFetch({ action: "mis_amigos" });
+    chatAmigos = data.amigos || [];
+    if (!chatAmigos.length) {
+      lista.innerHTML = '<p style="color:var(--text-muted);font-size:12px;padding:8px;text-align:center;">Sin amigos todavía</p>';
+      return;
+    }
+    lista.innerHTML = chatAmigos.map((a, i) => `
+      <div onclick="abrirChatCon(${i})" style="padding:10px 12px;border-radius:10px;cursor:pointer;transition:background 0.15s;" onmouseenter="this.style.background='var(--bg-page)'" onmouseleave="this.style.background='transparent'">
+        <div style="font-weight:600;color:var(--text-main);font-size:13px;">${a.nombre}</div>
+        <div style="color:var(--text-muted);font-size:11px;">${a.tag}</div>
+      </div>`).join('');
+  }
+
+  async function cargarSolicitudesChat() {
+    const overlay = document.getElementById("chat-overlay");
+    if (!overlay) return;
+    const lista = overlay.querySelector("#chat-lista");
+    lista.innerHTML = '<p style="color:var(--text-muted);font-size:12px;padding:8px;text-align:center;">Cargando...</p>';
+    const data = await chatFetch({ action: "mis_solicitudes" });
+    const sols = data.solicitudes || [];
+    if (!sols.length) {
+      lista.innerHTML = '<p style="color:var(--text-muted);font-size:12px;padding:8px;text-align:center;">Sin solicitudes</p>';
+      return;
+    }
+    lista.innerHTML = sols.map(s => `
+      <div style="padding:10px 12px;border-radius:10px;border:1px solid var(--border-card);margin-bottom:6px;">
+        <div style="font-weight:600;color:var(--text-main);font-size:13px;">${s.de}</div>
+        <div style="color:var(--text-muted);font-size:11px;margin-bottom:8px;">${s.deTag}</div>
+        <div style="display:flex;gap:6px;">
+          <button onclick="responderSolicitud('${s.id}','${s.de}','${s.deTag}',true)" style="flex:1;background:#22c55e;color:white;border:none;border-radius:6px;padding:5px;cursor:pointer;font-size:12px;">✓ Aceptar</button>
+          <button onclick="responderSolicitud('${s.id}','${s.de}','${s.deTag}',false)" style="flex:1;background:#7f1d1d;color:#fca5a5;border:none;border-radius:6px;padding:5px;cursor:pointer;font-size:12px;">✕ Rechazar</button>
+        </div>
+      </div>`).join('');
+  }
+
+  window.chatBuscarUsuario = async function() {
+    const overlay = document.getElementById("chat-overlay");
+    if (!overlay) return;
+    const tag = overlay.querySelector("#chat-buscar-input").value.trim();
+    const result = overlay.querySelector("#chat-buscar-result");
+    if (!tag) return;
+    result.innerHTML = '<span style="color:var(--text-muted);">Buscando...</span>';
+    const data = await chatFetch({ action: "buscar_usuario", tag });
+    if (!data.ok) { result.innerHTML = '<span style="color:#ef4444;">No encontrado</span>'; return; }
+    const u = data.usuario;
+    if (u.nombre === getMiNombre()) { result.innerHTML = '<span style="color:#ef4444;">Sos vos mismo</span>'; return; }
+    result.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg-page);border-radius:8px;padding:6px 10px;">
+      <div><div style="color:var(--text-main);font-size:12px;font-weight:600;">${u.nombre}</div><div style="color:var(--text-muted);font-size:11px;">${u.tag}</div></div>
+      <button onclick="enviarSolicitud('${u.nombre}','${u.tag}')" style="background:#3b82f6;color:white;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px;">+ Agregar</button>
+    </div>`;
+  };
+
+  window.enviarSolicitud = async function(destinoNombre, destinoTag) {
+    const overlay = document.getElementById("chat-overlay");
+    const result = overlay?.querySelector("#chat-buscar-result");
+    const data = await chatFetch({ action: "enviar_solicitud", destinoId: destinoNombre, destinoTag });
+    if (data.ok && result) result.innerHTML = '<span style="color:#22c55e;">✅ Solicitud enviada</span>';
+  };
+
+  window.responderSolicitud = async function(solicitudId, otroNombre, otroTag, aceptar) {
+    await chatFetch({ action: "responder_solicitud", solicitudId, otroNombre, otroTag, aceptar });
+    actualizarBadgeSolicitudes();
+    cargarSolicitudesChat();
+    if (aceptar) cargarAmigos();
+  };
+
+  window.abrirChatCon = async function(idx) {
+    const amigo = chatAmigos[idx];
+    if (!amigo) return;
+    chatActivo = amigo;
+    const overlay = document.getElementById("chat-overlay");
+    if (!overlay) return;
+    overlay.querySelector("#chat-panel-empty").style.display = "none";
+    const panel = overlay.querySelector("#chat-panel-msgs");
+    panel.style.display = "flex";
+    overlay.querySelector("#chat-msgs-header").textContent = amigo.nombre + " · " + amigo.tag;
+    if (chatPollInterval) clearInterval(chatPollInterval);
+    cargarMensajes(amigo.chatId);
+    chatPollInterval = setInterval(() => cargarMensajes(amigo.chatId), 3000);
+  };
+
+  async function cargarMensajes(chatId) {
+    const overlay = document.getElementById("chat-overlay");
+    if (!overlay || !chatId) return;
+    try {
+      const res = await fetch(`https://firestore.googleapis.com/v1/projects/ortpiratas/databases/(default)/documents/chats/${chatId}/msgs?pageSize=50`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const msgs = (data.documents || []).map(d => ({
+        de: d.fields?.de?.stringValue || "",
+        texto: d.fields?.texto?.stringValue || "",
+        fecha: d.fields?.fecha?.stringValue || "",
+      })).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
+      const lista = overlay.querySelector("#chat-msgs-list");
+      const wasAtBottom = lista.scrollHeight - lista.scrollTop <= lista.clientHeight + 40;
+      lista.innerHTML = msgs.map(m => {
+        const esMio = m.de === getMiNombre();
+        const hora = new Date(m.fecha).toLocaleTimeString("es-AR", { hour:"2-digit", minute:"2-digit" });
+        return `<div style="display:flex;justify-content:${esMio ? 'flex-end' : 'flex-start'};">
+          <div style="max-width:70%;background:${esMio ? '#1d4ed8' : 'var(--bg-page)'};color:${esMio ? 'white' : 'var(--text-main)'};padding:8px 12px;border-radius:${esMio ? '14px 14px 4px 14px' : '14px 14px 14px 4px'};font-size:14px;line-height:1.4;">
+            ${m.texto}
+            <div style="font-size:10px;opacity:0.6;margin-top:3px;text-align:right;">${hora}</div>
+          </div>
+        </div>`;
+      }).join('');
+      if (wasAtBottom) lista.scrollTop = lista.scrollHeight;
+    } catch {}
+  }
+
+  window.chatEnviarMensaje = async function() {
+    const overlay = document.getElementById("chat-overlay");
+    if (!overlay || !chatActivo) return;
+    const input = overlay.querySelector("#chat-msg-input");
+    const texto = input.value.trim();
+    if (!texto) return;
+    input.value = "";
+    await chatFetch({ action: "enviar_mensaje", chatId: chatActivo.chatId, de: getMiNombre(), mensaje: texto });
+    cargarMensajes(chatActivo.chatId);
+  };
+
 </script>
 
 </body>
 </html>
+    /* Quill overrides para tema oscuro */
+    .ql-toolbar { background:#1e293b !important; border:1px solid #334155 !important; border-radius:8px 8px 0 0 !important; }
+    .ql-container { background:#0f172a !important; border:1px solid #334155 !important; border-top:none !important; border-radius:0 0 8px 8px !important; min-height:100px; }
+    .ql-editor { color:#f1f5f9 !important; font-size:14px !important; }
+    .ql-editor.ql-blank::before { color:#475569 !important; }
+    .ql-stroke { stroke:#94a3b8 !important; }
+    .ql-fill { fill:#94a3b8 !important; }
+    .ql-picker { color:#94a3b8 !important; }
+    .ql-picker-options { background:#1e293b !important; border-color:#334155 !important; }
+    .ql-toolbar button:hover .ql-stroke, .ql-toolbar button.ql-active .ql-stroke { stroke:#3b82f6 !important; }
+    .ql-toolbar button:hover .ql-fill, .ql-toolbar button.ql-active .ql-fill { fill:#3b82f6 !important; }
+    /* Quill edit en lista */
+    .ql-editor-edit { background:#0f172a; border:1px solid #334155; border-radius:8px; min-height:70px; }
+    .ql-toolbar-edit { background:#1e293b; border:1px solid #334155; border-top:none; border-radius:0 0 8px 8px; }
+
