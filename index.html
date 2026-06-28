@@ -1065,29 +1065,20 @@
       // Mensajes no vistos — recorrer chats conocidos
       let msgsNuevos = 0;
       const misChats = chatAmigos.length ? chatAmigos : JSON.parse(localStorage.getItem('mis_chats') || '[]');
+      let listaRefrescada = false;
       for (const amigo of misChats) {
         if (!amigo.chatId) continue;
         const ultimoVisto = localStorage.getItem('ultimo_visto_' + amigo.chatId) || "";
         try {
           const r = await chatFetch({ action: "get_mensajes_nuevos", chatId: amigo.chatId, ultimoVisto });
           const nuevos = r.nuevos || 0;
+          msgsByChatId[amigo.chatId] = nuevos;
           msgsNuevos += nuevos;
-          // Badge en la lista de amigos (si el panel está abierto)
-          if (nuevos > 0) {
-            const panel = document.getElementById("chat-overlay");
-            if (panel) {
-              const items = panel.querySelectorAll("[data-chat-id]");
-              items.forEach(item => {
-                if (item.dataset.chatId === amigo.chatId) {
-                  let b = item.querySelector(".amigo-badge");
-                  if (!b) { b = document.createElement("span"); b.className = "amigo-badge"; b.style.cssText = "background:#ef4444;color:white;font-size:10px;border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-weight:bold;margin-left:4px;"; item.querySelector("div").appendChild(b); }
-                  b.textContent = nuevos;
-                }
-              });
-            }
-          }
         } catch {}
       }
+      // Refrescar lista de amigos si el panel está abierto
+      const panel = document.getElementById("chat-overlay");
+      if (panel && misChats.length) cargarAmigos();
 
       const total = solicitudesPendientes + msgsNuevos;
       const badge = $("chat-badge");
@@ -1278,12 +1269,15 @@
     $("pwd-overlay").style.display = "none";
     const chatBtnInit = $("header-chat-btn"); if (chatBtnInit) chatBtnInit.style.display = "flex";
     const nombre = sessionStorage.getItem("auth_nombre") || "";
-    if (nombre) $("session-label").textContent = "Sesión iniciada";
+    const tag = sessionStorage.getItem("auth_tag") || "";
+    if (nombre) {
+      $("session-label").textContent = nombre;
+      const tagEl = $("session-tag");
+      if (tagEl && tag) { tagEl.textContent = "Tag: " + tag; tagEl.style.display = "block"; }
+    }
     favs = JSON.parse(localStorage.getItem(getFavsKey()) || "[]");
     cargarBannerAnuncio();
     cargarRatingsCards();
-    const chatBtn = $("header-chat-btn");
-    if (chatBtn) chatBtn.style.display = "flex";
     iniciarChatPolling();
   }
 
@@ -2414,6 +2408,8 @@
     else cargarSolicitudesChat();
   };
 
+  const msgsByChatId = {};  // cache de mensajes no leídos por chatId
+
   async function cargarAmigos() {
     const overlay = document.getElementById("chat-overlay");
     if (!overlay) return;
@@ -2428,10 +2424,14 @@
     }
     lista.innerHTML = chatAmigos.map((a, i) => {
       const apodo = localStorage.getItem('apodo_' + a.nombre) || '';
+      const nuevos = msgsByChatId[a.chatId] || 0;
       return `<div data-chat-id="${a.chatId}" style="padding:8px 10px;border-radius:10px;transition:background 0.15s;" onmouseenter="this.style.background='var(--bg-page)'" onmouseleave="this.style.background='transparent'">
         <div style="display:flex;align-items:center;gap:4px;">
           <div onclick="abrirChatCon(${i})" style="flex:1;cursor:pointer;min-width:0;">
-            <div style="font-weight:600;color:var(--text-main);font-size:13px;display:flex;align-items:center;gap:4px;">${apodo || a.nombre}</div>
+            <div style="font-weight:600;color:var(--text-main);font-size:13px;display:flex;align-items:center;gap:6px;">
+              ${apodo || a.nombre}
+              ${nuevos > 0 ? `<span style="background:#ef4444;color:white;font-size:10px;border-radius:50%;min-width:16px;height:16px;padding:0 4px;display:inline-flex;align-items:center;justify-content:center;font-weight:bold;">${nuevos}</span>` : ''}
+            </div>
             <div style="color:var(--text-muted);font-size:11px;">${a.tag}</div>
           </div>
           <button onclick="editarApodo('${a.nombre}')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:13px;padding:2px 4px;" title="Apodo">✏️</button>
@@ -2546,7 +2546,7 @@
         const esMio = m.de === getMiNombre();
         const hora = new Date(m.fecha).toLocaleTimeString("es-AR", { hour:"2-digit", minute:"2-digit" });
         return `<div style="display:flex;justify-content:${esMio ? 'flex-end' : 'flex-start'};">
-          <div style="max-width:70%;background:${esMio ? '#1d4ed8' : 'var(--bg-page)'};color:${esMio ? 'white' : 'var(--text-main)'};padding:8px 12px;border-radius:${esMio ? '14px 14px 4px 14px' : '14px 14px 14px 4px'};font-size:14px;line-height:1.4;">
+          <div style="max-width:70%;background:${esMio ? '#1d4ed8' : 'var(--bg-page)'};color:${esMio ? 'white' : 'var(--text-main)'};padding:8px 12px;border-radius:${esMio ? '14px 14px 4px 14px' : '14px 14px 14px 4px'};font-size:14px;line-height:1.4;word-break:break-word;overflow-wrap:anywhere;">
             ${m.texto}
             <div style="font-size:10px;opacity:0.6;margin-top:3px;text-align:right;">${hora}</div>
           </div>
