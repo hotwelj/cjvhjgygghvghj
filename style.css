@@ -342,7 +342,7 @@
       .dropdown.open .dropdown-menu { transform:scaleY(1); opacity:1; pointer-events:all; }
     }
 
-    /* Quill */
+    .chat-float-panel { background:var(--bg-card); border:1px solid var(--border-card); }
 /* Quill overrides para tema oscuro */
     .ql-toolbar { background:#1e293b !important; border:1px solid #334155 !important; border-radius:8px 8px 0 0 !important; }
     .ql-container { background:#0f172a !important; border:1px solid #334155 !important; border-top:none !important; border-radius:0 0 8px 8px !important; min-height:100px; }
