@@ -196,6 +196,7 @@ textarea { min-height:110px; }
   </div>
   <div class="header-right">
     <button id="header-theme-btn" onclick="toggleTheme()" title="Cambiar tema"></button>
+    <button id="header-chat-btn" onclick="toggleChatPanel()" title="Mensajes" onmouseenter="this.style.background='rgba(255,255,255,0.35)';this.style.transform='scale(1.1)'" onmouseleave="this.style.background='rgba(255,255,255,0.15)';this.style.transform=''" style="position:relative;background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:18px;transition:background 0.2s,transform 0.2s;">💬<span id="chat-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:#ef4444;color:white;font-size:10px;border-radius:50%;width:16px;height:16px;align-items:center;justify-content:center;font-weight:bold;"></span></button>
     <div class="person-dropdown" id="dropdown-person">
       <button class="person-icon" onclick="toggleDropdown('dropdown-person')">
         <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
@@ -285,7 +286,7 @@ textarea { min-height:110px; }
 <!-- FOOTER -->
 <div class="footer">
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.161</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.162</span>
   </div>
 </div>
 
@@ -511,5 +512,60 @@ textarea { min-height:110px; }
   });
 </script>
 
+<!-- Chat panel flotante -->
+<div id="chat-panel-placeholder"></div>
+<script>
+// Chat mínimo para sugerencias.html
+const CHAT_URL_S = "https://ort-admin.simonabulafia.workers.dev";
+let chatAmigos = [], chatActivo = null, chatPollInterval = null, solicitudesPendientes = 0;
+const $ = id => document.getElementById(id);
+function getMiNombre() { return sessionStorage.getItem("auth_userid") || ""; }
+function getMiTag() { return sessionStorage.getItem("auth_tag") || ""; }
+function getMiToken() { return sessionStorage.getItem("auth_token") || ""; }
+async function chatFetch(body) {
+  const res = await fetch(CHAT_URL_S, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({...body, token:getMiToken(), miNombre:getMiNombre(), miTag:getMiTag()}) });
+  return res.json();
+}
+function iniciarChatPolling() {
+  if (chatPollInterval) clearInterval(chatPollInterval);
+  actualizarBadge();
+  chatPollInterval = setInterval(actualizarBadge, 15000);
+}
+async function actualizarBadge() {
+  if (!getMiNombre()) return;
+  try {
+    const data = await chatFetch({ action:"mis_solicitudes" });
+    const sols = data.solicitudes?.length || 0;
+    let msgs = 0;
+    const misChats = chatAmigos.length ? chatAmigos : JSON.parse(localStorage.getItem("mis_chats")||"[]");
+    for (const a of misChats) {
+      const uv = localStorage.getItem("ultimo_visto_"+a.chatId)||"";
+      const r = await chatFetch({action:"get_mensajes_nuevos",chatId:a.chatId,ultimoVisto:uv});
+      msgs += r.nuevos||0;
+    }
+    const total = sols + msgs;
+    const badge = document.getElementById("chat-badge");
+    if (badge) { badge.textContent = total; badge.style.display = total > 0 ? "flex" : "none"; }
+  } catch {}
+}
+window.toggleChatPanel = function() {
+  const ex = document.getElementById("chat-overlay");
+  if (ex) { ex.style.animation="bubbleClose 0.22s forwards"; setTimeout(()=>ex.remove(),200); return; }
+  abrirChat();
+};
+window.abrirChat = function() {
+  if (document.getElementById("chat-overlay")) return;
+  // Redirigir al index con flag para abrir chat
+  window.location.href = "/?chat=1";
+};
+// Mostrar botón si autenticado
+if (sessionStorage.getItem("auth_piratas") === "ok") {
+  document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("header-chat-btn");
+    if (btn) btn.style.display = "flex";
+    iniciarChatPolling();
+  });
+}
+</script>
 </body>
 </html>

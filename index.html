@@ -931,6 +931,19 @@
         <button id="modal-download" class="btn-download" onclick="descargarDesdeModal()">⬇ Descargar</button>
         <button id="modal-fav" onclick="toggleFavModal()">🤍</button>
       </div>
+      <div id="modal-resenas-wrap" style="margin-top:16px;border-top:1px solid var(--border-card);padding-top:14px;display:none;">
+        <div id="modal-resenas-promedio" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span id="modal-estrellas-promedio" style="color:#fbbf24;font-size:18px;"></span>
+          <span id="modal-promedio-txt" style="color:var(--text-muted);font-size:13px;"></span>
+        </div>
+        <div id="mi-resena-wrap">
+          <p style="color:var(--text-muted);font-size:12px;margin:0 0 6px;">Tu reseña:</p>
+          <div id="modal-estrellas-input" style="font-size:24px;cursor:pointer;margin-bottom:8px;letter-spacing:2px;"></div>
+          <textarea id="modal-resena-comentario" placeholder="Comentario opcional..." style="width:100%;background:var(--bg-page);border:1px solid var(--border-card);border-radius:8px;padding:8px 10px;color:var(--text-main);font-size:13px;outline:none;resize:none;height:60px;box-sizing:border-box;margin-bottom:8px;"></textarea>
+          <button id="modal-resena-btn" onclick="guardarResena()" style="background:#3b82f6;color:white;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-size:13px;font-weight:600;">Guardar reseña</button>
+          <span id="modal-resena-msg" style="font-size:12px;margin-left:10px;"></span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -950,7 +963,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.161</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.162</span>
   </div>
 </div>
 
@@ -987,11 +1000,25 @@
   async function actualizarBadgeSolicitudes() {
     if (!getMiNombre()) return;
     try {
+      // Solicitudes pendientes
       const data = await chatFetch({ action: "mis_solicitudes" });
       solicitudesPendientes = data.solicitudes?.length || 0;
+
+      // Mensajes no vistos en todos los chats
+      let msgsNuevos = 0;
+      const misChats = chatAmigos.length ? chatAmigos : JSON.parse(localStorage.getItem('mis_chats') || '[]');
+      if (misChats.length) {
+        for (const amigo of misChats) {
+          const ultimoVisto = localStorage.getItem('ultimo_visto_' + amigo.chatId) || "";
+          const res = await chatFetch({ action: "get_mensajes_nuevos", chatId: amigo.chatId, ultimoVisto });
+          msgsNuevos += res.nuevos || 0;
+        }
+      }
+
+      const total = solicitudesPendientes + msgsNuevos;
       const badge = $("chat-badge");
       if (badge) {
-        if (solicitudesPendientes > 0) { badge.textContent = solicitudesPendientes; badge.style.display = "flex"; }
+        if (total > 0) { badge.textContent = total; badge.style.display = "flex"; }
         else { badge.style.display = "none"; }
       }
     } catch {}
@@ -1426,8 +1453,7 @@
     const img = card.dataset.img;
     const dl = card.dataset.dl;
     modalDlKey = dl;
-
-    $("modal-cover").src = img;
+    cargarResenaModal(dl);
     $("modal-cover").style.display = img ? "block" : "none";
     $("modal-title").textContent = name;
     $("modal-desc").textContent = DESC_LARGAS[dl] || desc;
@@ -1652,6 +1678,7 @@
           <button id="tab-contras" onclick="switchTab('contras')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#3b82f6;color:white;">🔑 Contraseñas</button>
           <button id="tab-sugerencias" onclick="switchTab('sugerencias')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">💬 Sugerencias <span id="sug-badge" style="display:none;background:#ef4444;color:white;font-size:11px;padding:1px 7px;border-radius:20px;margin-left:4px;"></span></button>
           <button id="tab-anuncios" onclick="switchTab('anuncios')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">📢 Anuncios</button>
+          <button id="tab-resenas" onclick="switchTab('resenas')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">⭐ Reseñas</button>
         </div>
 
         <div id="panel-contras">
@@ -1667,6 +1694,13 @@
             <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;">Usuarios registrados</h2>
             <input id="admin-search" type="text" placeholder="🔍 Buscar por user o contraseña..." oninput="buscarUsuario(this.value)" style="width:100%;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:8px 12px;color:#f1f5f9;font-size:13px;outline:none;margin-bottom:12px;box-sizing:border-box;">
             <div id="admin-user-list" style="color:#94a3b8;font-size:14px;">Cargando...</div>
+          </div>
+        </div>
+
+        <div id="panel-resenas" style="display:none;">
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;">
+            <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;">Reseñas recibidas</h2>
+            <div id="admin-resenas-list" style="color:#94a3b8;font-size:14px;">Cargando...</div>
           </div>
         </div>
 
@@ -1718,13 +1752,15 @@
       overlay.querySelector("#panel-contras").style.display = tab === "contras" ? "block" : "none";
       overlay.querySelector("#panel-sugerencias").style.display = tab === "sugerencias" ? "block" : "none";
       overlay.querySelector("#panel-anuncios").style.display = tab === "anuncios" ? "block" : "none";
-      ["contras","sugerencias","anuncios"].forEach(t => {
+      overlay.querySelector("#panel-resenas").style.display = tab === "resenas" ? "block" : "none";
+      ["contras","sugerencias","anuncios","resenas"].forEach(t => {
         const btn = overlay.querySelector(`#tab-${t}`);
         btn.style.background = tab === t ? "#3b82f6" : "#1e293b";
         btn.style.color = tab === t ? "white" : "#94a3b8";
       });
       if (tab === "sugerencias") cargarSugerencias();
       if (tab === "anuncios") cargarAnuncioActual();
+      if (tab === "resenas") cargarResenasAdmin();
     };
 
     function renderUsuarios(usuarios, list) {
@@ -2150,6 +2186,43 @@
 
     cargarUsuarios();
 
+    // Cargar reseñas admin
+    async function cargarResenasAdmin() {
+      const lista = overlay.querySelector("#admin-resenas-list");
+      lista.innerHTML = '<p style="color:#475569;font-size:13px;">Cargando...</p>';
+      const res = await fetch(ADMIN_URL, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "list_resenas_admin", adminToken }),
+      });
+      const data = await res.json();
+      if (!data.ok || !data.resenas.length) { lista.innerHTML = '<p style="color:#475569;font-size:13px;">Sin reseñas todavía.</p>'; return; }
+      lista.innerHTML = data.resenas.map(r => {
+        const estrellas = '★'.repeat(r.puntaje) + '☆'.repeat(5 - r.puntaje);
+        const fecha = new Date(r.fecha).toLocaleString("es-AR", { day:"2-digit", month:"2-digit", year:"numeric" });
+        return `<div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+              <span style="color:#fbbf24;font-size:14px;">${estrellas}</span>
+              <span style="color:#f1f5f9;font-weight:600;font-size:13px;">${r.juego}</span>
+            </div>
+            <div style="color:#64748b;font-size:12px;margin-bottom:4px;">${r.usuario} · ${fecha}</div>
+            ${r.comentario ? `<div style="color:#94a3b8;font-size:13px;">${r.comentario}</div>` : ''}
+          </div>
+          <button onclick="eliminarResena('${r.id}', this)" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;flex-shrink:0;">🗑</button>
+        </div>`;
+      }).join('');
+    }
+
+    window.eliminarResena = async function(id, btn) {
+      if (!confirm("¿Eliminar esta reseña?")) return;
+      btn.textContent = "..."; btn.disabled = true;
+      await fetch(ADMIN_URL, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "delete_resena", adminToken, id }),
+      });
+      cargarResenasAdmin();
+    };
+
     // Badge de sugerencias no leídas
     (async () => {
       try {
@@ -2203,8 +2276,9 @@
             <div id="chat-panel-msgs" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
               <div id="chat-msgs-header" style="padding:12px 16px;border-bottom:1px solid var(--border-card);font-weight:600;color:var(--text-main);font-size:14px;"></div>
               <div id="chat-msgs-list" style="flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px;"></div>
+              <div id="chat-typing-indicator" style="display:none;color:var(--text-muted);font-size:12px;padding:2px 16px;font-style:italic;"></div>
               <div style="padding:10px 12px;border-top:1px solid var(--border-card);display:flex;gap:8px;">
-                <input id="chat-msg-input" type="text" placeholder="Escribí un mensaje..." style="flex:1;background:var(--bg-page);border:1px solid var(--border-card);border-radius:10px;padding:8px 14px;color:var(--text-main);font-size:14px;outline:none;" onkeydown="if(event.key==='Enter')chatEnviarMensaje()">
+                <input id="chat-msg-input" type="text" placeholder="Escribí un mensaje..." style="flex:1;background:var(--bg-page);border:1px solid var(--border-card);border-radius:10px;padding:8px 14px;color:var(--text-main);font-size:14px;outline:none;" onkeydown="if(event.key==='Enter')chatEnviarMensaje();else chatSetTyping()">
                 <button onclick="chatEnviarMensaje()" style="background:#3b82f6;color:white;border:none;border-radius:10px;padding:8px 16px;cursor:pointer;font-weight:600;">➤</button>
               </div>
             </div>
@@ -2239,6 +2313,7 @@
     lista.innerHTML = '<p style="color:var(--text-muted);font-size:12px;padding:8px;text-align:center;">Cargando...</p>';
     const data = await chatFetch({ action: "mis_amigos" });
     chatAmigos = data.amigos || [];
+    localStorage.setItem('mis_chats', JSON.stringify(chatAmigos.map(a => ({ nombre: a.nombre, chatId: a.chatId }))));
     if (!chatAmigos.length) {
       lista.innerHTML = '<p style="color:var(--text-muted);font-size:12px;padding:8px;text-align:center;">Sin amigos todavía</p>';
       return;
@@ -2319,6 +2394,15 @@
     if (aceptar) cargarAmigos();
   };
 
+  window.chatSetTyping = async function() {
+    if (!chatActivo) return;
+    if (typingTimeout) clearTimeout(typingTimeout);
+    await chatFetch({ action: "set_typing", chatId: chatActivo.chatId, typing: true });
+    typingTimeout = setTimeout(async () => {
+      await chatFetch({ action: "set_typing", chatId: chatActivo.chatId, typing: false });
+    }, 4000);
+  };
+
   window.abrirChatCon = async function(idx) {
     const amigo = chatAmigos[idx];
     if (!amigo) return;
@@ -2331,7 +2415,9 @@
     overlay.querySelector("#chat-msgs-header").textContent = amigo.nombre + " · " + amigo.tag;
     if (chatPollInterval) clearInterval(chatPollInterval);
     cargarMensajes(amigo.chatId);
-    chatPollInterval = setInterval(() => cargarMensajes(amigo.chatId), 3000);
+    localStorage.setItem("ultimo_visto_" + amigo.chatId, new Date().toISOString());
+    chatPollInterval = setInterval(() => { cargarMensajes(amigo.chatId); localStorage.setItem("ultimo_visto_" + amigo.chatId, new Date().toISOString()); }, 3000);
+    iniciarTypingPoll(amigo.chatId, amigo.nombre);
   };
 
   async function cargarMensajes(chatId) {
@@ -2372,6 +2458,102 @@
     await chatFetch({ action: "enviar_mensaje", chatId: chatActivo.chatId, de: getMiNombre(), mensaje: texto });
     cargarMensajes(chatActivo.chatId);
   };
+  // ── RESEÑAS ──
+  let resenaSeleccionada = 0;
+  const RESENAS_URL = "https://ort-admin.simonabulafia.workers.dev";
+
+  async function cargarResenaModal(juego) {
+    const wrap = $("modal-resenas-wrap");
+    if (!sessionStorage.getItem("auth_piratas")) return;
+    wrap.style.display = "block";
+
+    // Cargar promedio
+    try {
+      const res = await fetch(RESENAS_URL, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "get_resenas_juego", juego, token: getMiToken() }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        const prom = data.promedio;
+        $("modal-estrellas-promedio").textContent = prom >= 1 ? "★".repeat(Math.round(prom)) + "☆".repeat(5-Math.round(prom)) : "☆☆☆☆☆";
+        $("modal-promedio-txt").textContent = prom ? `${prom}/5 · ${data.resenas.length} reseña${data.resenas.length !== 1 ? 's' : ''}` : "Sin reseñas aún";
+      }
+    } catch {}
+
+    // Mi reseña actual
+    try {
+      const res2 = await fetch(RESENAS_URL, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "get_mi_resena", juego, usuario: getMiNombre(), token: getMiToken() }),
+      });
+      const data2 = await res2.json();
+      if (data2.ok && data2.resena) {
+        resenaSeleccionada = data2.resena.puntaje;
+        $("modal-resena-comentario").value = data2.resena.comentario;
+      } else {
+        resenaSeleccionada = 0;
+        $("modal-resena-comentario").value = "";
+      }
+    } catch {}
+    renderEstrellas();
+  }
+
+  function renderEstrellas() {
+    const wrap = $("modal-estrellas-input");
+    if (!wrap) return;
+    wrap.innerHTML = [1,2,3,4,5].map(i =>
+      `<span onclick="setResena(${i})" onmouseenter="hoverEstrellas(${i})" onmouseleave="renderEstrellas()" style="cursor:pointer;color:${i <= resenaSeleccionada ? '#fbbf24' : '#334155'};transition:color 0.1s;">★</span>`
+    ).join('');
+  }
+
+  window.hoverEstrellas = function(n) {
+    const wrap = $("modal-estrellas-input");
+    if (!wrap) return;
+    wrap.querySelectorAll('span').forEach((s,i) => s.style.color = i < n ? '#fbbf24' : '#334155');
+  };
+
+  window.setResena = function(n) { resenaSeleccionada = n; renderEstrellas(); };
+
+  window.guardarResena = async function() {
+    const juego = modalDlKey;
+    if (!resenaSeleccionada) { $("modal-resena-msg").textContent = "Elegí una puntuación"; $("modal-resena-msg").style.color="#ef4444"; return; }
+    const comentario = $("modal-resena-comentario").value.trim();
+    const btn = $("modal-resena-btn");
+    btn.disabled = true; btn.textContent = "...";
+    try {
+      await fetch(RESENAS_URL, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "guardar_resena", juego, puntaje: resenaSeleccionada, comentario, usuario: getMiNombre(), token: getMiToken() }),
+      });
+      $("modal-resena-msg").textContent = "✅ Guardado";
+      $("modal-resena-msg").style.color="#22c55e";
+      cargarResenaModal(juego);
+    } catch {}
+    btn.disabled = false; btn.textContent = "Guardar reseña";
+  };
+
+  // ── TYPING ──
+  let typingTimeout = null;
+  let typingPollInterval = null;
+
+  function iniciarTypingPoll(chatId, otroNombre) {
+    if (typingPollInterval) clearInterval(typingPollInterval);
+    typingPollInterval = setInterval(async () => {
+      try {
+        const res = await chatFetch({ action: "get_typing", chatId, otroNombre });
+        const indicator = document.getElementById("chat-typing-indicator");
+        if (indicator) indicator.style.display = res.typing ? "block" : "none";
+        if (indicator && res.typing) indicator.textContent = `${otroNombre} está escribiendo...`;
+      } catch {}
+    }, 2000);
+  }
+
+  function detenerTypingPoll() {
+    if (typingPollInterval) clearInterval(typingPollInterval);
+  }
+
+
 
 </script>
 </body>
