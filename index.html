@@ -1508,15 +1508,16 @@
           <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;">
             <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;">Publicar anuncio</h2>
             <textarea id="anuncio-msg" placeholder="Escribí el anuncio..." style="width:100%;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 14px;color:#f1f5f9;font-size:14px;outline:none;resize:vertical;min-height:80px;box-sizing:border-box;margin-bottom:10px;"></textarea>
-            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-              <label style="color:#94a3b8;font-size:13px;">Duración:</label>
-              <select id="anuncio-dias" style="background:#0f172a;border:1px solid #334155;border-radius:8px;padding:8px 12px;color:#f1f5f9;font-size:13px;outline:none;">
-                <option value="1">1 día</option>
-                <option value="3">3 días</option>
-                <option value="7" selected>7 días</option>
-                <option value="14">14 días</option>
-                <option value="30">30 días</option>
-              </select>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <label style="color:#94a3b8;font-size:13px;">Durar</label>
+                <input id="anuncio-dias" type="number" min="1" max="365" value="7" style="width:60px;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:6px 10px;color:#f1f5f9;font-size:13px;outline:none;text-align:center;">
+                <label style="color:#94a3b8;font-size:13px;">días</label>
+              </div>
+              <span style="color:#475569;font-size:13px;">o hasta</span>
+              <input id="anuncio-fecha" type="date" style="background:#0f172a;border:1px solid #334155;border-radius:8px;padding:6px 10px;color:#f1f5f9;font-size:13px;outline:none;cursor:pointer;">
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
               <button id="anuncio-pub-btn" style="background:#3b82f6;color:white;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-weight:600;font-size:14px;">📢 Publicar</button>
               <button id="anuncio-del-btn" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:14px;">🗑 Eliminar</button>
             </div>
@@ -1791,15 +1792,44 @@
       } else { actual.style.display = "none"; }
     }
 
+    // Sincronizar días ↔ fecha
+    const diasInput = overlay.querySelector("#anuncio-dias");
+    const fechaInput = overlay.querySelector("#anuncio-fecha");
+
+    function diasAFecha(dias) {
+      const d = new Date(Date.now() + dias * 24 * 60 * 60 * 1000);
+      return d.toISOString().slice(0, 10);
+    }
+    function fechaADias(fecha) {
+      return Math.max(1, Math.round((new Date(fecha) - Date.now()) / (24 * 60 * 60 * 1000)));
+    }
+
+    // Setear fecha inicial
+    fechaInput.value = diasAFecha(7);
+
+    diasInput.addEventListener("input", () => {
+      if (diasInput.value) fechaInput.value = diasAFecha(parseInt(diasInput.value));
+    });
+    fechaInput.addEventListener("change", () => {
+      if (fechaInput.value) diasInput.value = fechaADias(fechaInput.value);
+    });
+
     overlay.querySelector("#anuncio-pub-btn").onclick = async function() {
       const msg = overlay.querySelector("#anuncio-msg").value.trim();
-      const dias = overlay.querySelector("#anuncio-dias").value;
       const status = overlay.querySelector("#anuncio-msg-status");
+      // Usar la fecha si está seteada, sino los días
+      let expira;
+      if (fechaInput.value) {
+        expira = new Date(fechaInput.value + "T23:59:59").toISOString();
+      } else {
+        const dias = parseInt(diasInput.value) || 7;
+        expira = new Date(Date.now() + dias * 24 * 60 * 60 * 1000).toISOString();
+      }
       if (!msg) { status.style.color="#ef4444"; status.textContent="Escribí algo primero."; status.style.display="block"; return; }
       this.textContent = "..."; this.disabled = true;
       const res = await fetch(ADMIN_URL, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "set_anuncio", adminToken, mensaje: msg, dias: parseInt(dias) }),
+        body: JSON.stringify({ action: "set_anuncio", adminToken, mensaje: msg, expira }),
       });
       const data = await res.json();
       this.textContent = "📢 Publicar"; this.disabled = false;
