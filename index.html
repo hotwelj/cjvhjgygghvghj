@@ -1037,7 +1037,7 @@
   let typingTimeout = null;
   let typingPollInterval = null;
 
-  function getMiNombre() { return sessionStorage.getItem("auth_userid") || ""; }
+  function getMiNombre() { return sessionStorage.getItem("auth_userid") || sessionStorage.getItem("auth_nombre") || ""; }
   function getMiTag() { return sessionStorage.getItem("auth_tag") || ""; }
   function getMiToken() { return sessionStorage.getItem("auth_token") || ""; }
 
