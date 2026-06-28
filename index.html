@@ -1034,11 +1034,13 @@
       data.anuncios.forEach((anuncio, i) => {
         const banner = document.createElement("div");
         banner.id = `anuncio-banner-${i}`;
-        banner.style.cssText = `position:fixed;top:${16 + i * 70}px;left:50%;transform:translateX(-50%);z-index:8888;background:var(--bg-card);border:1px solid var(--border-card);border-radius:16px;padding:12px 20px 12px 16px;box-shadow:0 8px 32px rgba(0,0,0,0.3);display:flex;align-items:center;gap:12px;max-width:500px;width:calc(100% - 48px);animation:bubblePop 0.4s cubic-bezier(0.34,1.56,0.64,1);animation-delay:${i * 0.1}s;`;
+        banner.style.cssText = `position:fixed;top:${28 + i * 80}px;left:0;right:0;z-index:8888;display:flex;justify-content:center;pointer-events:none;`;
         banner.innerHTML = `
-          <span style="font-size:18px;">📢</span>
-          <p style="margin:0;font-size:14px;color:var(--text-main);line-height:1.4;flex:1;">${anuncio.mensaje}</p>
-          <button onclick="this.closest('[id^=anuncio-banner]').remove()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;padding:0;line-height:1;flex-shrink:0;">✕</button>
+          <div style="background:var(--bg-card);border:1px solid var(--border-card);border-radius:16px;padding:14px 22px 14px 18px;box-shadow:0 8px 32px rgba(0,0,0,0.3);display:flex;align-items:center;gap:14px;max-width:560px;width:calc(100% - 48px);pointer-events:all;animation:bubblePop 0.4s cubic-bezier(0.34,1.56,0.64,1);">
+            <span style="font-size:20px;">📢</span>
+            <p style="margin:0;font-size:15px;color:var(--text-main);line-height:1.5;flex:1;font-weight:500;">${anuncio.mensaje}</p>
+            <button onclick="this.closest('[id^=anuncio-banner]').remove()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:20px;padding:0;line-height:1;flex-shrink:0;">✕</button>
+          </div>
         `;
         document.body.appendChild(banner);
       });
