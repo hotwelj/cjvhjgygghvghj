@@ -1669,7 +1669,8 @@
 
   document.addEventListener("click", e => {
     document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => {
-      if (!d.contains(e.target) && d.classList.contains("open")) {
+      const isLink = e.target.closest("a");
+      if ((!d.contains(e.target) || isLink) && d.classList.contains("open")) {
         d.classList.remove("open");
         d.classList.add("closing");
         setTimeout(() => d.classList.remove("closing"), 300);
@@ -1719,7 +1720,7 @@
       if (personDropdown.classList.contains('open') && !personDropdown.contains(e.target)) {
         personDropdown.classList.remove('open');
         personDropdown.classList.add('closing');
-        setTimeout(() => personDropdown.classList.remove('closing'), 220);
+        setTimeout(() => personDropdown.classList.remove('closing'), 300);
       }
     }, true);
   }

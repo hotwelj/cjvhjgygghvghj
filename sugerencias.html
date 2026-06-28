@@ -516,13 +516,24 @@ textarea { min-height:110px; }
   // ── DROPDOWNS ──
   function toggleDropdown(id) {
     const t = $(id), open = t.classList.contains("open");
-    document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => d.classList.remove("open"));
+    document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => {
+      if (d.classList.contains("open")) {
+        d.classList.remove("open");
+        d.classList.add("closing");
+        setTimeout(() => d.classList.remove("closing"), 300);
+      }
+    });
     if (!open) t.classList.add("open");
   }
 
   document.addEventListener("click", e => {
     document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => {
-      if (!d.contains(e.target)) d.classList.remove("open");
+      const isLink = e.target.closest("a");
+      if ((!d.contains(e.target) || isLink) && d.classList.contains("open")) {
+        d.classList.remove("open");
+        d.classList.add("closing");
+        setTimeout(() => d.classList.remove("closing"), 300);
+      }
     });
   });
 </script>
