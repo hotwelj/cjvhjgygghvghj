@@ -2435,6 +2435,7 @@
             <div style="color:var(--text-muted);font-size:11px;">${a.tag}</div>
           </div>
           <button onclick="editarApodo('${a.nombre}')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:13px;padding:2px 4px;" title="Apodo">✏️</button>
+          <button onclick="eliminarAmigo('${a.nombre}', '${a.chatId}')" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:13px;padding:2px 4px;" title="Eliminar amigo">🗑</button>
         </div>
       </div>`;
     }).join('');
@@ -2461,6 +2462,19 @@
         </div>
       </div>`).join('');
   }
+
+  window.eliminarAmigo = async function(nombre, chatId) {
+    if (!confirm(`¿Eliminar a ${localStorage.getItem('apodo_' + nombre) || nombre} de tu lista de amigos?`)) return;
+    await chatFetch({ action: "eliminar_amigo", otroNombre: nombre, chatId });
+    localStorage.removeItem('apodo_' + nombre);
+    localStorage.removeItem('ultimo_visto_' + chatId);
+    delete msgsByChatId[chatId];
+    // Actualizar mis_chats en localStorage
+    const misChats = JSON.parse(localStorage.getItem('mis_chats') || '[]').filter(c => c.chatId !== chatId);
+    localStorage.setItem('mis_chats', JSON.stringify(misChats));
+    chatAmigos = chatAmigos.filter(a => a.nombre !== nombre);
+    cargarAmigos();
+  };
 
   window.editarApodo = function(nombre) {
     const actual = localStorage.getItem('apodo_' + nombre) || '';
@@ -2673,7 +2687,8 @@
         const indicator = panel.querySelector("#chat-typing-indicator");
         if (!indicator) return;
         if (res.typing) {
-          indicator.textContent = `${otroNombre} está escribiendo...`;
+          const apodoTyping = localStorage.getItem('apodo_' + otroNombre) || otroNombre;
+          indicator.textContent = `${apodoTyping} está escribiendo...`;
           indicator.style.display = "block";
         } else {
           indicator.style.display = "none";
