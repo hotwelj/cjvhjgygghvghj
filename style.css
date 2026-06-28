@@ -346,7 +346,7 @@
       100% { width:100%; }
     }
 
-    .dropdown-menu-cols {
+    .dropdown.open .dropdown-menu-cols, .dropdown.closing .dropdown-menu-cols {
       display: grid !important;
     }
     .dropdown.open .dropdown-menu {
