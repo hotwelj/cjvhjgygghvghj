@@ -48,8 +48,8 @@
   <div class="header-left">
     <div class="logo"><a href="index.html"><img src="https://i.imgur.com/CD8poZf.png"></a></div>
     <div class="nav">
-      <a href="index.html" id="nav-home" class="active"><span class="sweep"></span>Home</a>
-      <a href="sugerencias.html" id="nav-sug"><span class="sweep"></span>Sugerencias</a>
+      <a href="index.html" id="nav-home" class="active">Home</a>
+      <a href="sugerencias.html" id="nav-sug">Sugerencias</a>
       <div class="dropdown" id="dropdown-chrome">
         <button class="dropdown-btn" onclick="toggleDropdown('dropdown-chrome')">Extensiones Chrome <span class="arrow">▼</span></button>
         <div class="dropdown-menu dropdown-menu-cols">
@@ -1357,7 +1357,16 @@
 
   function toggleDropdown(id) {
     const t = $(id), open = t.classList.contains("open");
-    document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => d.classList.remove("open"));
+    // Cerrar todos con animación si es person-dropdown
+    document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => {
+      if (d.classList.contains("open")) {
+        d.classList.remove("open");
+        if (d.classList.contains("person-dropdown")) {
+          d.classList.add("closing");
+          setTimeout(() => d.classList.remove("closing"), 220);
+        }
+      }
+    });
     if (!open) t.classList.add("open");
   }
 
@@ -1367,19 +1376,52 @@
     });
   });
 
-  // Nav sweep effect
-  document.querySelectorAll('.nav a').forEach(link => {
-    link.addEventListener('click', function(e) {
-      const href = this.getAttribute('href');
-      const current = window.location.pathname.endsWith('sugerencias.html') ? 'sugerencias.html' : 'index.html';
-      if (href === current) return;
-      e.preventDefault();
-      // Quitar active del actual, poner sweeping en el clickeado
-      document.querySelectorAll('.nav a').forEach(l => l.classList.remove('active'));
-      this.classList.add('sweeping');
-      setTimeout(() => { window.location.href = href; }, 320);
+  // Nav sliding indicator
+  (function() {
+    const nav = document.querySelector('.nav');
+    const indicator = document.createElement('div');
+    indicator.className = 'nav-indicator';
+    nav.insertBefore(indicator, nav.firstChild);
+
+    function positionIndicator(el) {
+      indicator.style.left = el.offsetLeft + 'px';
+      indicator.style.width = el.offsetWidth + 'px';
+      indicator.style.height = el.offsetHeight + 'px';
+      indicator.style.top = el.offsetTop + 'px';
+    }
+
+    const activeLink = nav.querySelector('a.active');
+    if (activeLink) {
+      // Sin transición para la posición inicial
+      indicator.style.transition = 'none';
+      positionIndicator(activeLink);
+      requestAnimationFrame(() => {
+        indicator.style.transition = '';
+      });
+    }
+
+    nav.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+        if (href === 'index.html' || href === window.location.pathname.split('/').pop()) return;
+        e.preventDefault();
+        positionIndicator(this);
+        setTimeout(() => { window.location.href = href; }, 320);
+      });
     });
-  });
+  })();
+
+  // Animated close for person dropdown
+  const personDropdown = document.getElementById('dropdown-person');
+  if (personDropdown) {
+    document.addEventListener('click', function(e) {
+      if (personDropdown.classList.contains('open') && !personDropdown.contains(e.target)) {
+        personDropdown.classList.remove('open');
+        personDropdown.classList.add('closing');
+        setTimeout(() => personDropdown.classList.remove('closing'), 220);
+      }
+    }, true);
+  }
 
   // Staggered fade-in
   document.querySelectorAll(".game-card").forEach((c, i) => {
@@ -1481,7 +1523,7 @@
                 <button onclick="const s=this.nextElementSibling;s.style.display=s.style.display==='none'?'inline':'none';this.textContent=s.style.display==='none'?'👁️':'🙈'" style="background:none;border:none;cursor:pointer;font-size:13px;padding:0;">👁️</button>
                 <span style="color:#64748b;font-size:12px;display:none;">${u.nombreReal || '—'}</span>
               </div>
-              <div style="color:#64748b;font-size:11px;margin-top:2px;">Última conexión: <span style="color:#94a3b8;">${ultima}</span> · <span style="color:#94a3b8;">${u.totalLogins} login${u.totalLogins !== 1 ? 's' : ''}</span></div>
+              <div style="color:#64748b;font-size:11px;margin-top:2px;">Última: <span style="color:#94a3b8;">${ultima}</span> · <span style="color:#94a3b8;">${u.totalLogins} login${u.totalLogins !== 1 ? 's' : ''}</span></div>
             </div>
           </div>
           <button onclick="eliminarUsuario('${u.id}', this)" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;flex-shrink:0;margin-left:8px;">Eliminar</button>

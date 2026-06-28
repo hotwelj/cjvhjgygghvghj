@@ -133,8 +133,8 @@ textarea { min-height:110px; }
   <div class="header-left">
     <div class="logo"><a href="index.html"><img src="https://i.imgur.com/CD8poZf.png"></a></div>
     <div class="nav">
-      <a href="index.html" id="nav-home"><span class="sweep"></span>Home</a>
-      <a href="sugerencias.html" id="nav-sug" class="active"><span class="sweep"></span>Sugerencias</a>
+      <a href="index.html" id="nav-home">Home</a>
+      <a href="sugerencias.html" id="nav-sug" class="active">Sugerencias</a>
       <div class="dropdown" id="dropdown-chrome">
         <button class="dropdown-btn" onclick="toggleDropdown('dropdown-chrome')">Extensiones Chrome <span class="arrow">▼</span></button>
         <div class="dropdown-menu dropdown-menu-cols">
@@ -327,17 +327,49 @@ textarea { min-height:110px; }
   });
   $("pwd-input").addEventListener("keypress", e => { if (e.key === "Enter") verificarClave(); });
 
-  // Nav sweep effect
-  document.querySelectorAll('.nav a').forEach(link => {
-    link.addEventListener('click', function(e) {
-      const href = this.getAttribute('href');
-      if (href === 'sugerencias.html') return;
-      e.preventDefault();
-      document.querySelectorAll('.nav a').forEach(l => l.classList.remove('active'));
-      this.classList.add('sweeping');
-      setTimeout(() => { window.location.href = href; }, 320);
+  // Nav sliding indicator
+  (function() {
+    const nav = document.querySelector('.nav');
+    const indicator = document.createElement('div');
+    indicator.className = 'nav-indicator';
+    nav.insertBefore(indicator, nav.firstChild);
+
+    function positionIndicator(el) {
+      indicator.style.left = el.offsetLeft + 'px';
+      indicator.style.width = el.offsetWidth + 'px';
+      indicator.style.height = el.offsetHeight + 'px';
+      indicator.style.top = el.offsetTop + 'px';
+    }
+
+    const activeLink = nav.querySelector('a.active');
+    if (activeLink) {
+      indicator.style.transition = 'none';
+      positionIndicator(activeLink);
+      requestAnimationFrame(() => { indicator.style.transition = ''; });
+    }
+
+    nav.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+        if (href === 'sugerencias.html') return;
+        e.preventDefault();
+        positionIndicator(this);
+        setTimeout(() => { window.location.href = href; }, 320);
+      });
     });
-  });
+  })();
+
+  // Animated close for person dropdown
+  const personDropdown = document.getElementById('dropdown-person');
+  if (personDropdown) {
+    document.addEventListener('click', function(e) {
+      if (personDropdown.classList.contains('open') && !personDropdown.contains(e.target)) {
+        personDropdown.classList.remove('open');
+        personDropdown.classList.add('closing');
+        setTimeout(() => personDropdown.classList.remove('closing'), 220);
+      }
+    }, true);
+  }
 
   async function verificarClave() {
     const val = $("pwd-input").value;

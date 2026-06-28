@@ -85,12 +85,12 @@
     .dropdown-btn:hover { opacity:1; background:rgba(255,255,255,0.15); }
     .dropdown-btn .arrow { font-size:10px; transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1); display:inline-block; }
     .dropdown.open .arrow, .dropdown:hover .arrow { transform:rotate(180deg) scale(1.2); }
-    .nav a { color:white; text-decoration:none; font-weight:bold; font-size:14px; padding:8px 12px; border-radius:6px; opacity:0.9; transition:background 0.2s, opacity 0.2s; position:relative; overflow:hidden; }
-    .nav a:hover { opacity:1; background:rgba(255,255,255,0.15); }
-    .nav a.active { opacity:1; background:rgba(255,255,255,0.18); }
-    .nav a.active::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:white; border-radius:2px; }
-    .nav a .sweep { position:absolute; inset:0; background:rgba(255,255,255,0.15); transform:translateX(-100%); transition:transform 0.35s cubic-bezier(0.22,1,0.36,1); border-radius:6px; pointer-events:none; }
-    .nav a.sweeping .sweep { transform:translateX(0); }
+    .nav { position:relative; display:flex; align-items:center; gap:4px; }
+    .nav a { color:white; text-decoration:none; font-weight:bold; font-size:14px; padding:8px 12px; border-radius:6px; opacity:0.9; transition:opacity 0.2s; position:relative; z-index:1; }
+    .nav a:hover { opacity:1; }
+    .nav a.active { opacity:1; }
+    .nav-indicator { position:absolute; background:rgba(255,255,255,0.18); border-radius:6px; pointer-events:none; transition:left 0.35s cubic-bezier(0.22,1,0.36,1), width 0.35s cubic-bezier(0.22,1,0.36,1); z-index:0; }
+    .nav-indicator::after { content:''; position:absolute; bottom:0; left:6px; right:6px; height:2px; background:white; border-radius:2px; }
     .dropdown-menu { position:absolute; top:calc(100% + 8px); left:0; background:var(--bg-card); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.2); min-width:200px; max-height:70vh; overflow-y:auto; z-index:100; border:1px solid var(--border-card); }
     .dropdown.open .dropdown-menu { display:block; }
     .dropdown-menu a { display:block; padding:10px 16px; text-decoration:none; color:var(--text-main); font-size:14px; font-weight:bold; text-align:left; transition:background 0.15s; }
@@ -114,7 +114,9 @@
     .person-icon svg { width:20px; height:20px; fill:white; }
     .person-menu { display:none; position:absolute; top:calc(100% + 12px); right:0; background:var(--bg-card); border-radius:14px; box-shadow:0 12px 32px rgba(0,0,0,0.3); min-width:210px; padding:16px; z-index:100; text-align:left; border:1px solid var(--border-card); transform-origin:top right; }
     .person-dropdown.open .person-menu { display:block; animation:bubblePop 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+    .person-dropdown.closing .person-menu { display:block; animation:bubbleClose 0.22s cubic-bezier(0.4,0,1,1) forwards; }
     @keyframes bubblePop { 0%{opacity:0;transform:scale(0.7) translateY(-8px);} 100%{opacity:1;transform:scale(1) translateY(0);} }
+    @keyframes bubbleClose { 0%{opacity:1;transform:scale(1) translateY(0);} 100%{opacity:0;transform:scale(0.7) translateY(-8px);} }
     #session-label { margin:0 0 12px; font-size:12px; color:var(--text-muted); border-bottom:1px solid var(--border-card); padding-bottom:10px; }
     .logout-btn { display:flex; align-items:center; gap:10px; width:100%; background:none; border:none; cursor:pointer; padding:6px 4px; border-radius:8px; transition:background 0.15s; }
     .logout-btn:hover { background:#fef2f2; }
