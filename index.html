@@ -1656,14 +1656,12 @@
 
   function toggleDropdown(id) {
     const t = $(id), open = t.classList.contains("open");
-    // Cerrar todos con animación si es person-dropdown
+    // Cerrar todos con animación
     document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => {
       if (d.classList.contains("open")) {
         d.classList.remove("open");
-        if (d.classList.contains("person-dropdown")) {
-          d.classList.add("closing");
-          setTimeout(() => d.classList.remove("closing"), 220);
-        }
+        d.classList.add("closing");
+        setTimeout(() => d.classList.remove("closing"), 300);
       }
     });
     if (!open) t.classList.add("open");
@@ -1671,7 +1669,11 @@
 
   document.addEventListener("click", e => {
     document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => {
-      if (!d.contains(e.target)) d.classList.remove("open");
+      if (!d.contains(e.target) && d.classList.contains("open")) {
+        d.classList.remove("open");
+        d.classList.add("closing");
+        setTimeout(() => d.classList.remove("closing"), 300);
+      }
     });
   });
 

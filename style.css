@@ -92,7 +92,8 @@
     .nav-indicator { position:absolute; background:rgba(255,255,255,0.18); border-radius:6px; pointer-events:none; transition:left 0.35s cubic-bezier(0.22,1,0.36,1), width 0.35s cubic-bezier(0.22,1,0.36,1); z-index:0; }
     .nav-indicator::after { content:''; position:absolute; bottom:0; left:6px; right:6px; height:2px; background:white; border-radius:2px; }
     .dropdown-menu { position:absolute; top:calc(100% + 8px); left:0; background:var(--bg-card); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.2); min-width:200px; max-height:70vh; overflow-y:auto; z-index:100; border:1px solid var(--border-card); }
-    .dropdown.open .dropdown-menu { display:block; }
+    .dropdown.open .dropdown-menu { display:block; animation:dropdownOpen 0.4s ease-out; transform-origin:top left; }
+    .dropdown.closing .dropdown-menu { display:block; animation:dropdownClose 0.3s ease-in forwards; transform-origin:top left; }
     .dropdown-menu a { display:block; padding:10px 16px; text-decoration:none; color:var(--text-main); font-size:14px; font-weight:bold; text-align:left; transition:background 0.15s; }
     .dropdown-menu a:hover { background:var(--bg-page); color:#3b82f6; }
     .dropdown-menu a + a { border-top:1px solid var(--border-card); }
@@ -113,10 +114,23 @@
     .person-icon:hover { background:rgba(255,255,255,0.35); transform:scale(1.1); }
     .person-icon svg { width:20px; height:20px; fill:white; }
     .person-menu { display:none; position:absolute; top:calc(100% + 12px); right:0; background:var(--bg-card); border-radius:14px; box-shadow:0 12px 32px rgba(0,0,0,0.3); min-width:210px; padding:16px; z-index:100; text-align:left; border:1px solid var(--border-card); transform-origin:top right; }
-    .person-dropdown.open .person-menu { display:block; animation:bubblePop 0.3s cubic-bezier(0.34,1.56,0.64,1); }
-    .person-dropdown.closing .person-menu { display:block; animation:bubbleClose 0.22s cubic-bezier(0.4,0,1,1) forwards; }
+    .person-dropdown.open .person-menu { display:block; animation:chatPanelOpen 0.4s ease-out; }
+    .person-dropdown.closing .person-menu { display:block; animation:chatPanelClose 0.3s ease-in forwards; }
     @keyframes bubblePop { 0%{opacity:0;transform:scale(0.7) translateY(-8px);} 100%{opacity:1;transform:scale(1) translateY(0);} }
     @keyframes bubbleClose { 0%{opacity:1;transform:scale(1) translateY(0);} 100%{opacity:0;transform:scale(0.7) translateY(-8px);} }
+    @keyframes dropdownOpen {
+      0%   { opacity:0; transform:scaleY(0.02) scaleX(0.1) translateY(-200px); clip-path:polygon(45% 100%, 55% 100%, 55% 100%, 45% 100%); }
+      35%  { opacity:1; transform:scaleY(0.2) scaleX(0.5) translateY(-120px); clip-path:polygon(20% 70%, 80% 70%, 95% 100%, 5% 100%); }
+      65%  { transform:scaleY(0.8) scaleX(0.95) translateY(-20px); clip-path:polygon(2% 15%, 98% 15%, 100% 100%, 0% 100%); }
+      85%  { transform:scaleY(1.03) scaleX(1.01) translateY(2px); clip-path:polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); }
+      100% { opacity:1; transform:scaleY(1) scaleX(1) translateY(0); clip-path:polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); }
+    }
+    @keyframes dropdownClose {
+      0%   { opacity:1; transform:scaleY(1) scaleX(1) translateY(0); clip-path:polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); }
+      35%  { transform:scaleY(0.8) scaleX(0.95) translateY(-20px); clip-path:polygon(2% 15%, 98% 15%, 100% 100%, 0% 100%); }
+      70%  { opacity:1; transform:scaleY(0.2) scaleX(0.5) translateY(-120px); clip-path:polygon(20% 70%, 80% 70%, 95% 100%, 5% 100%); }
+      100% { opacity:0; transform:scaleY(0.02) scaleX(0.1) translateY(-200px); clip-path:polygon(45% 100%, 55% 100%, 55% 100%, 45% 100%); }
+    }
     @keyframes chatPanelOpen {
       0%   { opacity:0; transform:scaleY(0.02) scaleX(0.1) translateY(-480px); clip-path:polygon(45% 100%, 55% 100%, 55% 100%, 45% 100%); }
       30%  { opacity:1; transform:scaleY(0.15) scaleX(0.4) translateY(-350px); clip-path:polygon(30% 80%, 70% 80%, 90% 100%, 10% 100%); }
