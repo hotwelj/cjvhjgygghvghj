@@ -27,7 +27,7 @@
     <span class="pwd-lock" id="pwd-lock">🔒</span>
     <h2>Ort Piratas</h2>
     <p class="pwd-sub">Ingresá la contraseña para acceder</p>
-    <p style="margin-top:6px;font-size:11px;"><span onclick="document.getElementById('disclaimer-modal').style.display='flex'" style="color:var(--text-muted);text-decoration:underline;cursor:pointer;">Disclaimer</span></p>
+    <p style="margin-top:6px;font-size:11px;"><span onclick="abrirDisclaimer()" style="color:var(--text-muted);text-decoration:underline;cursor:pointer;">Disclaimer</span></p>
     <div style="position:relative; margin-bottom:12px;">
       <input type="password" id="pwd-input" placeholder="Contraseña..." autofocus>
       <button id="show-pwd-btn"
@@ -358,19 +358,7 @@
         </div>
       </div>
 
-      <div class="game-card" onclick="abrirModal(this)" data-name='The Simpsons: Hit &amp; Run' data-desc='GTA pero en Springfield. Manejá por la ciudad, completá misiones y descubrí la conspiración.' data-img='/images/hitandrun.jpg' data-dl='simpsons-hit-and-run' data-weight-class='weight-pesado' data-weight-label='📦 Pesado · 1.5GB' data-genres="accion aventura">
-        <img class="game-cover" src="/images/hitandrun.jpg"loading="lazy" onerror="this.style.display='none'">
-        <div class="game-card-body">
-          <div class="game-name-row"><p class="game-name">The Simpsons: Hit &amp; Run</p><span class="weight-tag weight-pesado">📦 Pesado · 1.5GB</span></div>
-          <p class="game-desc">GTA pero en Springfield. Manejá por la ciudad, completá misiones y descubrí la conspiración.</p>
-          <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Aventura</span></div>
-          <div class="card-rating" style="font-size:12px;color:#fbbf24;letter-spacing:1px;min-height:16px;margin-bottom:4px;"></div>
-          <div class="card-actions">
-          <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'simpsons-hit-and-run')">⬇ Descargar</button>
-          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
-        </div>
-        </div>
-      </div>
+      
 
       <div class="game-card" onclick="abrirModal(this)" data-name='The Henry Stickmin Collection' data-desc='Elegí cómo actúa Henry en cada situación. Fallar es tan divertido como ganar.' data-img='/images/henrystickmin.jpg' data-dl='henry-stickmin' data-weight-class='weight-normal' data-weight-label='✅ Normal · 500MB' data-genres="humor aventura">
         <img class="game-cover" src="/images/henrystickmin.jpg" alt="The Henry Stickmin Collection" loading="lazy" onerror="this.style.display='none'">
@@ -728,32 +716,8 @@
         </div>
         </div>
       </div>
-      <div class="game-card" onclick="abrirModal(this)" data-name='GTA III' data-desc='El inicio del GTA 3D: manejás a Claude (sin voz) en Liberty City haciendo trabajos para distintas mafias. Mundo abierto, misiones variadas y total libertad para el caos.' data-img='/images/gta3.png' data-dl='gta-3' data-weight-class='weight-muypesado' data-weight-label='🏋️ Muy pesado · 1.8GB' data-genres="accion aventura">
-        <img class="game-cover" src="/images/gta3.png" alt="GTA III" loading="lazy" onerror="this.style.display='none'">
-        <div class="game-card-body">
-          <div class="game-name-row"><p class="game-name">GTA III</p><span class="weight-tag weight-muypesado">🏋️ Muy pesado · 1.8GB</span></div>
-          <p class="game-desc">El inicio del GTA 3D: manejás a Claude en Liberty City haciendo trabajos para distintas mafias. Mundo abierto, misiones variadas y total libertad para el caos.</p>
-          <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Aventura</span></div>
-          <div class="card-rating" style="font-size:12px;color:#fbbf24;letter-spacing:1px;min-height:16px;margin-bottom:4px;"></div>
-          <div class="card-actions">
-          <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'gta-3')">⬇ Descargar</button>
-          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
-        </div>
-        </div>
-      </div>
-      <div class="game-card" onclick="abrirModal(this)" data-name='Mafia' data-desc='Sos Tommy Angelo, un taxista que entra al crimen organizado en los años 30. Historia cinematográfica, misiones lineales y un mundo que te hace sentir parte de una película de gángsters.' data-img='/images/mafia.png' data-dl='mafia' data-weight-class='weight-pesado' data-weight-label='📦 Pesado · 1.5GB' data-genres="accion aventura">
-        <img class="game-cover" src="/images/mafia.png" alt="Mafia" loading="lazy" onerror="this.style.display='none'">
-        <div class="game-card-body">
-          <div class="game-name-row"><p class="game-name">Mafia</p><span class="weight-tag weight-pesado">📦 Pesado · 1.5GB</span></div>
-          <p class="game-desc">Sos Tommy Angelo, un taxista que entra al crimen organizado en los años 30. Historia cinematográfica, misiones lineales y un mundo que te hace sentir parte de una película de gángsters.</p>
-          <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Aventura</span></div>
-          <div class="card-rating" style="font-size:12px;color:#fbbf24;letter-spacing:1px;min-height:16px;margin-bottom:4px;"></div>
-          <div class="card-actions">
-          <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'mafia')">⬇ Descargar</button>
-          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
-        </div>
-        </div>
-      </div>
+      
+      
       <div class="game-card" onclick="abrirModal(this)" data-name='LIMBO' data-desc='Un nene atraviesa un mundo oscuro y siniestro buscando a su hermana. Puzzles con física, atmósfera opresiva y una estética en blanco y negro que no se olvida fácil.' data-img='/images/limbo.png' data-dl='limbo' data-weight-class='weight-normal' data-weight-label='✅ Normal · 200MB' data-genres="puzzle terror indie">
         <img class="game-cover" src="/images/limbo.png" alt="LIMBO" loading="lazy" onerror="this.style.display='none'">
         <div class="game-card-body">
@@ -949,19 +913,7 @@
         </div>
         </div>
       </div>
-      <div class="game-card" onclick="abrirModal(this)" data-name='Caesar III' data-desc='Construís y administrás ciudades romanas desde cero. Balanceás economía, empleo, servicios y defensa militar mientras cumplís misiones para el Senado. Un clásico de gestión y urbanismo.' data-img='/images/caesar-3.jpg' data-dl='caesar-3' data-weight-class='weight-normal' data-weight-label='✅ Normal · 539MB' data-genres="estrategia simulacion">
-        <img class="game-cover" src="/images/caesar-3.jpg" alt="Caesar III" loading="lazy" onerror="this.style.display='none'">
-        <div class="game-card-body">
-          <div class="game-name-row"><p class="game-name">Caesar III</p><span class="weight-tag weight-normal">✅ Normal · 539MB</span></div>
-          <p class="game-desc">Construís y administrás ciudades romanas desde cero. Balanceás economía, empleo, servicios y defensa militar mientras cumplís misiones para el Senado. Un clásico de gestión y urbanismo.</p>
-          <div class="game-tags"><span class="game-tag">Estrategia</span><span class="game-tag">Simulación</span></div>
-          <div class="card-rating" style="font-size:12px;color:#fbbf24;letter-spacing:1px;min-height:16px;margin-bottom:4px;"></div>
-          <div class="card-actions">
-          <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'caesar-3')">⬇ Descargar</button>
-          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
-        </div>
-        </div>
-      </div>
+      
       <div class="game-card" onclick="abrirModal(this)" data-name='Broforce' data-desc='Un juego de acción 2D donde controlás parodias de héroes de acción de los 80/90 (Rambo, Terminator, etc.) destruyendo todo a su paso. Cooperativo, caótico y muy divertido.' data-img='/images/Broforce.webp' data-dl='broforce' data-weight-class='weight-normal' data-weight-label='✅ Normal · 467MB' data-genres="accion cooperativo">
         <img class="game-cover" src="/images/Broforce.webp" alt="Broforce" loading="lazy" onerror="this.style.display='none'">
         <div class="game-card-body">
@@ -1030,7 +982,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div style="text-align:center;margin-top:12px;padding-bottom:4px;">
-    <span onclick="document.getElementById('disclaimer-modal').style.display='flex'" style="color:var(--text-muted);font-size:12px;text-decoration:underline;cursor:pointer;">Disclaimer</span>
+    <span onclick="abrirDisclaimer()" style="color:var(--text-muted);font-size:12px;text-decoration:underline;cursor:pointer;">Disclaimer</span>
   </div>
 </div>
 
@@ -3000,16 +2952,39 @@
 
 
 
+  function abrirDisclaimer() {
+    const modal = document.getElementById('disclaimer-modal');
+    const card = document.getElementById('disclaimer-card');
+    const backdrop = document.getElementById('disclaimer-backdrop');
+    modal.style.display = 'flex';
+    card.style.animation = 'disclaimerIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards';
+    backdrop.style.animation = 'backdropIn 0.25s ease forwards';
+  }
+  function cerrarDisclaimer() {
+    const modal = document.getElementById('disclaimer-modal');
+    const card = document.getElementById('disclaimer-card');
+    const backdrop = document.getElementById('disclaimer-backdrop');
+    card.style.animation = 'disclaimerOut 0.25s ease-in forwards';
+    backdrop.style.animation = 'backdropOut 0.25s ease-in forwards';
+    setTimeout(() => { modal.style.display = 'none'; }, 250);
+  }
 </script>
 
 <!-- Modal Disclaimer -->
-<div id="disclaimer-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;align-items:center;justify-content:center;padding:24px;">
-  <div style="background:var(--bg-card);border-radius:18px;padding:32px;max-width:480px;width:100%;border:1px solid var(--border-card);box-shadow:0 24px 64px rgba(0,0,0,0.5);position:relative;">
-    <button onclick="document.getElementById('disclaimer-modal').style.display='none'" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;line-height:1;">✕</button>
+<div id="disclaimer-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:24px;">
+  <div id="disclaimer-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.7);" onclick="cerrarDisclaimer()"></div>
+  <div id="disclaimer-card" style="background:var(--bg-card);border-radius:18px;padding:32px;max-width:480px;width:100%;border:1px solid var(--border-card);box-shadow:0 24px 64px rgba(0,0,0,0.5);position:relative;z-index:1;">
+    <button onclick="cerrarDisclaimer()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;line-height:1;">✕</button>
     <h2 style="margin:0 0 16px;font-size:18px;font-weight:700;color:var(--text-main);letter-spacing:0.05em;">DISCLAIMER</h2>
     <p style="color:var(--text-muted);font-size:14px;line-height:1.7;margin:0 0 12px;">Este sitio no fue creado con el fin de evitar el estudio o reemplazar el trabajo en clase. Está pensado para quienes no pueden costear juegos o necesitan optimizar el espacio en sus dispositivos.</p>
     <p style="color:var(--text-muted);font-size:14px;line-height:1.7;margin:0;">Ninguna de las personas que participaron o colaboraron en este proyecto se hace responsable por el uso que se le dé al contenido aquí disponible.</p>
   </div>
 </div>
+<style>
+  @keyframes disclaimerIn { from { opacity:0; transform:scale(0.85) translateY(16px); } to { opacity:1; transform:scale(1) translateY(0); } }
+  @keyframes disclaimerOut { from { opacity:1; transform:scale(1) translateY(0); } to { opacity:0; transform:scale(0.85) translateY(16px); } }
+  @keyframes backdropIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes backdropOut { from { opacity:1; } to { opacity:0; } }
+</style>
 </body>
 </html>
