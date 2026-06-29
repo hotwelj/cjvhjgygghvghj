@@ -1044,6 +1044,7 @@
   const msgsByChatId = {};
   let chatGrupos = [];
   let chatModoCrearGrupo = false;
+  let chatTabActiva = "amigos";
   let typingTimeout = null;
   let typingPollInterval = null;
 
@@ -2429,6 +2430,7 @@
       if (btn) { btn.style.background = tab === t ? "#3b82f6" : "transparent"; btn.style.color = tab === t ? "white" : "var(--text-muted)"; }
     });
     overlay.querySelector("#chat-buscar-wrap").style.display = tab === "amigos" ? "block" : "none";
+    chatTabActiva = tab;
     // Limpiar lista inmediatamente para que no quede la anterior
     const lista = overlay.querySelector("#chat-lista");
     if (lista) lista.innerHTML = "";
@@ -2443,6 +2445,7 @@
     if (!overlay) return;
     const lista = overlay.querySelector("#chat-lista");
     const data = await chatFetch({ action: "mis_amigos" });
+    if (chatTabActiva !== "amigos" || chatModoCrearGrupo) return;
     chatAmigos = data.amigos || [];
     localStorage.setItem('mis_chats', JSON.stringify(chatAmigos.map(a => ({ nombre: a.nombre, chatId: a.chatId }))));
     if (!chatAmigos.length) {
@@ -2473,6 +2476,7 @@
     if (!overlay) return;
     const lista = overlay.querySelector("#chat-lista");
     const data = await chatFetch({ action: "mis_solicitudes" });
+    if (chatTabActiva !== "solicitudes") return;
     const sols = data.solicitudes || [];
     if (!sols.length) {
       lista.innerHTML = '<p style="color:var(--text-muted);font-size:12px;padding:8px;text-align:center;">Sin solicitudes</p>';
@@ -2512,6 +2516,7 @@
     if (!overlay) return;
     const lista = overlay.querySelector("#chat-lista");
     const data = await chatFetch({ action: "mis_grupos" });
+    if (chatTabActiva !== "grupos") return;
     chatGrupos = data.grupos || [];
     if (!chatGrupos.length) {
       lista.innerHTML = `<p style="color:var(--text-muted);font-size:12px;padding:8px;text-align:center;">Sin grupos</p>
@@ -2797,9 +2802,11 @@
       const wasAtBottom = lista.scrollHeight - lista.scrollTop <= lista.clientHeight + 40;
       lista.innerHTML = msgs.map(m => {
         const esMio = m.de === getMiNombre();
+        const apodoRem = localStorage.getItem('apodo_' + m.de) || m.de;
         const hora = new Date(m.fecha).toLocaleTimeString("es-AR", { hour:"2-digit", minute:"2-digit" });
         return `<div style="display:flex;justify-content:${esMio ? 'flex-end' : 'flex-start'};">
           <div style="max-width:70%;background:${esMio ? '#1d4ed8' : 'var(--bg-page)'};color:${esMio ? 'white' : 'var(--text-main)'};padding:8px 12px;border-radius:${esMio ? '14px 14px 4px 14px' : '14px 14px 14px 4px'};font-size:14px;line-height:1.4;word-break:break-word;overflow-wrap:anywhere;">
+            ${(!esMio && chatActivo?.esGrupo) ? `<div style="font-size:11px;font-weight:600;color:#93c5fd;margin-bottom:3px;">${apodoRem}</div>` : ''}
             ${m.texto}
             <div style="font-size:10px;opacity:0.6;margin-top:3px;text-align:right;">${hora}</div>
           </div>
