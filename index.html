@@ -2365,6 +2365,7 @@
 
           let _adminMsgN = 0;
           const renderMsgs = function(msgs) {
+            msgs = msgs || [];
             if (!msgs.length) return "<p style='color:#475569;font-size:12px;'>Sin mensajes recientes</p>";
             let ld = "";
             const renderRow = function(m) {
