@@ -2310,70 +2310,41 @@
       btnGrup.style.background = modo === 'grupos' ? '#3b82f6' : '#0f172a';
       btnGrup.style.color = modo === 'grupos' ? 'white' : '#94a3b8';
       lista.innerHTML = '<p style="color:#64748b;">Cargando...</p>';
-      const CHAT_BASE = "https://firestore.googleapis.com/v1/projects/ortpiratas-chat/databases/(default)/documents";
-      const limite = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString();
       try {
+        const res = await fetch("https://ort-admin.simonabulafia.workers.dev", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "list_chats_admin", adminToken, modo }),
+        });
+        const data = await res.json();
+        if (!data.ok) { lista.innerHTML = '<p style="color:#ef4444;">Error al cargar</p>'; return; }
+
+        const renderMsgs = (msgs) => {
+          let ld = '';
+          return msgs.map(m => {
+            const fo = new Date(m.fecha);
+            const fs = fo.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'});
+            const hora = fo.toLocaleString('es-AR',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});
+            const sep = fs!==ld ? '<div style="text-align:center;margin:6px 0 4px;"><span style="background:#1e293b;color:#64748b;font-size:10px;padding:2px 8px;border-radius:10px;">'+fs+'</span></div>' : '';
+            ld = fs;
+            return sep+'<div style="padding:5px 0;border-bottom:1px solid #1e293b;display:flex;gap:8px;align-items:baseline;"><span style="color:#3b82f6;font-size:11px;font-weight:600;flex-shrink:0;">'+m.de+'</span><span style="color:#e2e8f0;font-size:13px;flex:1;word-break:break-word;">'+m.texto+'</span><span style="color:#475569;font-size:10px;flex-shrink:0;">'+hora+'</span></div>';
+          }).join('');
+        };
+
         if (modo === 'privados') {
-          const res = await fetch(`${CHAT_BASE}/chats?pageSize=200`);
-          const data = await res.json();
-          const chats = data.documents || [];
-          if (!chats.length) { lista.innerHTML = '<p style="color:#64748b;">Sin chats</p>'; return; }
-          let html = '';
-          for (const chat of chats) {
-            const chatId = chat.name.split('/').pop();
-            const msgsRes = await fetch(`${CHAT_BASE}/chats/${chatId}/msgs?pageSize=50`);
-            const msgsData = await msgsRes.json();
-            const msgs = (msgsData.documents || [])
-              .filter(m => (m.fields?.fecha?.stringValue || '') >= limite)
-              .sort((a,b) => (a.fields?.fecha?.stringValue||'') > (b.fields?.fecha?.stringValue||'') ? 1 : -1);
-            if (!msgs.length) continue;
-            html += `<div style="background:#0f172a;border:1px solid #1e3a5f;border-radius:10px;padding:14px;margin-bottom:12px;">
-              <div style="color:#93c5fd;font-size:12px;font-weight:600;margin-bottom:10px;">💬 ${chatId.replace(/_/g,' — ')}</div>
-              ${(() => { let ld=''; return msgs.map(m => {
-                const de = m.fields?.de?.stringValue || '?';
-                const texto = m.fields?.texto?.stringValue || '';
-                const fo = new Date(m.fields?.fecha?.stringValue||'');
-                const fs = fo.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'});
-                const hora = fo.toLocaleString('es-AR',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});
-                const sep = fs!==ld ? '<div style="text-align:center;margin:6px 0 4px;"><span style="background:#1e293b;color:#64748b;font-size:10px;padding:2px 8px;border-radius:10px;">'+fs+'</span></div>' : '';
-                ld=fs;
-                return sep+'<div style="padding:5px 0;border-bottom:1px solid #1e293b;display:flex;gap:8px;align-items:baseline;"><span style="color:#3b82f6;font-size:11px;font-weight:600;flex-shrink:0;">'+de+'</span><span style="color:#e2e8f0;font-size:13px;flex:1;word-break:break-word;">'+texto+'</span><span style="color:#475569;font-size:10px;flex-shrink:0;">'+hora+'</span></div>';
-              }).join(''); })()}
-            </div>`;
-          }
-          lista.innerHTML = html || '<p style="color:#64748b;">Sin mensajes recientes (últimas 48h)</p>';
+          const chats = data.chats || [];
+          if (!chats.length) { lista.innerHTML = '<p style="color:#64748b;">Sin chats con mensajes recientes</p>'; return; }
+          lista.innerHTML = chats.map(c => `<div style="background:#0f172a;border:1px solid #1e3a5f;border-radius:10px;padding:14px;margin-bottom:12px;">
+            <div style="color:#93c5fd;font-size:12px;font-weight:600;margin-bottom:10px;">💬 ${c.chatId.replace(/_/g,' — ')}</div>
+            ${renderMsgs(c.msgs)}
+          </div>`).join('');
         } else {
-          const res = await fetch(`${CHAT_BASE}/grupos?pageSize=200`);
-          const data = await res.json();
-          const grupos = data.documents || [];
+          const grupos = data.grupos || [];
           if (!grupos.length) { lista.innerHTML = '<p style="color:#64748b;">Sin grupos</p>'; return; }
-          let html = '';
-          for (const grupo of grupos) {
-            const grupoId = grupo.name.split('/').pop();
-            const nombre = grupo.fields?.nombre?.stringValue || grupoId;
-            const creador = grupo.fields?.creador?.stringValue || '?';
-            const miembros = (grupo.fields?.miembros?.arrayValue?.values || []).map(v => v.stringValue).join(', ');
-            const msgsRes = await fetch(`${CHAT_BASE}/chats/${grupoId}/msgs?pageSize=50`);
-            const msgsData = await msgsRes.json();
-            const msgs = (msgsData.documents || [])
-              .filter(m => (m.fields?.fecha?.stringValue || '') >= limite)
-              .sort((a,b) => (a.fields?.fecha?.stringValue||'') > (b.fields?.fecha?.stringValue||'') ? 1 : -1);
-            html += `<div style="background:#0f172a;border:1px solid #1e3a5f;border-radius:10px;padding:14px;margin-bottom:12px;">
-              <div style="color:#93c5fd;font-size:12px;font-weight:600;margin-bottom:4px;">👥 ${nombre}</div>
-              <div style="color:#475569;font-size:11px;margin-bottom:10px;">Creador: ${creador} · Miembros: ${miembros}</div>
-              ${(() => { let ldg=''; return msgs.length ? msgs.map(m => {
-                const de = m.fields?.de?.stringValue || '?';
-                const texto = m.fields?.texto?.stringValue || '';
-                const fo = new Date(m.fields?.fecha?.stringValue||'');
-                const fs = fo.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'});
-                const hora = fo.toLocaleString('es-AR',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});
-                const sep = fs!==ldg ? '<div style="text-align:center;margin:6px 0 4px;"><span style="background:#1e293b;color:#64748b;font-size:10px;padding:2px 8px;border-radius:10px;">'+fs+'</span></div>' : '';
-                ldg=fs;
-                return sep+'<div style="padding:5px 0;border-bottom:1px solid #1e293b;display:flex;gap:8px;align-items:baseline;"><span style="color:#3b82f6;font-size:11px;font-weight:600;flex-shrink:0;">'+de+'</span><span style="color:#e2e8f0;font-size:13px;flex:1;word-break:break-word;">'+texto+'</span><span style="color:#475569;font-size:10px;flex-shrink:0;">'+hora+'</span></div>';
-              }).join('') : '<p style="color:#475569;font-size:12px;margin:4px 0 0;">Sin mensajes recientes</p>'; })()}
-            </div>`;
-          }
-          lista.innerHTML = html || '<p style="color:#64748b;">Sin grupos</p>';
+          lista.innerHTML = grupos.map(g => `<div style="background:#0f172a;border:1px solid #1e3a5f;border-radius:10px;padding:14px;margin-bottom:12px;">
+            <div style="color:#93c5fd;font-size:12px;font-weight:600;margin-bottom:4px;">👥 ${g.nombre}</div>
+            <div style="color:#475569;font-size:11px;margin-bottom:10px;">Creador: ${g.creador} · Miembros: ${g.miembros}</div>
+            ${g.msgs.length ? renderMsgs(g.msgs) : '<p style="color:#475569;font-size:12px;margin:4px 0 0;">Sin mensajes recientes</p>'}
+          </div>`).join('');
         }
       } catch(e) {
         lista.innerHTML = `<p style="color:#ef4444;">Error: ${e.message}</p>`;
