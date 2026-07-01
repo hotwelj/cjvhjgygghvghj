@@ -2871,16 +2871,10 @@
     }
 
     try {
-      const res = await fetch(`https://firestore.googleapis.com/v1/projects/ortpiratas-chat/databases/(default)/documents/chats/${chatId}/msgs?pageSize=50`);
-      if (res.status === 429) { renderMensajes(chatId, overlay); return; }
-      if (!res.ok) return;
+      const data = await chatFetch({ action: "get_mensajes", chatId });
+      if (!data.ok) { renderMensajes(chatId, overlay); return; }
       _ultimoFetch[chatId] = Date.now();
-      const data = await res.json();
-      _msgsCache[chatId] = (data.documents || []).map(d => ({
-        de: d.fields?.de?.stringValue || "",
-        texto: d.fields?.texto?.stringValue || "",
-        fecha: d.fields?.fecha?.stringValue || "",
-      })).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
+      _msgsCache[chatId] = (data.msgs || []).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
       renderMensajes(chatId, overlay);
     } catch(e) { console.error('cargarMensajes:', e); }
   }
