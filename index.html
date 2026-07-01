@@ -2381,6 +2381,18 @@
             const uid = "ac"+_adminMsgN;
             const restantes = msgs.length - 2;
             const preview = msgs.slice(-2).map(renderRow).join("");
+            const btnStyle = "width:100%;margin-top:6px;background:#0f172a;border:1px solid #1e3a5f;border-radius:6px;padding:4px;color:#64748b;font-size:11px;cursor:pointer;";
+            return "<div id='col_"+uid+"'>"+preview
+              +"<button class='admin-expand-btn' data-col='col_"+uid+"' data-hid='hid_"+uid+"' style='"+btnStyle+"'>&#9650; Ver "+restantes+" anteriores</button></div>"
+              +"<div id='hid_"+uid+"' style='display:none;'>"+all
+              +"<button class='admin-collapse-btn' data-col='col_"+uid+"' data-hid='hid_"+uid+"' style='"+btnStyle+"'>&#9660; Colapsar</button></div>";
+          };
+            const all = msgs.map(renderRow).join("");
+            if (msgs.length <= 2) return all;
+            _adminMsgN++;
+            const uid = "ac"+_adminMsgN;
+            const restantes = msgs.length - 2;
+            const preview = msgs.slice(-2).map(renderRow).join("");
             return "<div id='col_"+uid+"'>"+preview+"<button style='width:100%;margin-top:6px;background:#0f172a;border:1px solid #1e3a5f;border-radius:6px;padding:4px;color:#64748b;font-size:11px;cursor:pointer;' onclick='adminExpandMsg(this,"col_"+uid+"","hid_"+uid+"")'>&#9650; Ver "+restantes+" anteriores</button></div>"
               +"<div id='hid_"+uid+"' style='display:none;'>"+all+"<button style='width:100%;margin-top:6px;background:#0f172a;border:1px solid #1e3a5f;border-radius:6px;padding:4px;color:#64748b;font-size:11px;cursor:pointer;' onclick='adminCollapseMsg(this,"col_"+uid+"","hid_"+uid+"")'>&#9660; Colapsar</button></div>";
           };
@@ -2405,6 +2417,21 @@
       } catch(e) { lista.innerHTML = '<p style="color:#ef4444;">Error: '+e.message+'</p>'; }
     };
 
+    // Event delegation para botones de expandir/colapsar en admin chats
+    document.addEventListener("click", function(e) {
+      if (e.target.classList.contains("admin-expand-btn")) {
+        const col = document.getElementById(e.target.dataset.col);
+        const hid = document.getElementById(e.target.dataset.hid);
+        if (col) col.style.display = "none";
+        if (hid) hid.style.display = "block";
+      }
+      if (e.target.classList.contains("admin-collapse-btn")) {
+        const col = document.getElementById(e.target.dataset.col);
+        const hid = document.getElementById(e.target.dataset.hid);
+        if (col) col.style.display = "block";
+        if (hid) hid.style.display = "none";
+      }
+    });
     window.adminExpandMsg = function(btn, colId, hidId) {
       document.getElementById(colId).style.display = "none";
       document.getElementById(hidId).style.display = "block";
