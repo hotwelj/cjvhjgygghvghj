@@ -1012,14 +1012,41 @@
   function getMiTag() { return sessionStorage.getItem("auth_tag") || ""; }
   function getMiToken() { return sessionStorage.getItem("auth_token") || ""; }
 
+
+  let _chatQuotaAgotado = false;
+
   async function chatFetch(body) {
-    const res = await fetch(CHAT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...body, token: getMiToken(), miNombre: getMiNombre(), miTag: getMiTag() }),
-    });
-    return res.json();
+    try {
+      const res = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...body, token: getMiToken(), miNombre: getMiNombre(), miTag: getMiTag() }),
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        if (txt.includes('429') || txt.includes('Quota')) mostrarAvisoQuota();
+        return { ok: false };
+      }
+      const data = await res.json();
+      if (data?.error && data.error.includes('429')) mostrarAvisoQuota();
+      return data;
+    } catch(e) { return { ok: false }; }
   }
+
+  function mostrarAvisoQuota() {
+    if (_chatQuotaAgotado) return;
+    _chatQuotaAgotado = true;
+    const overlay = document.getElementById("chat-overlay");
+    if (!overlay) return;
+    const aviso = document.createElement("div");
+    aviso.style.cssText = "position:absolute;inset:0;background:var(--bg-card);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;";
+    aviso.innerHTML = '<div style="font-size:36px;margin-bottom:12px;">⏳</div>' +
+      '<p style="color:var(--text-main);font-weight:600;font-size:15px;margin:0 0 8px;">Chats temporalmente deshabilitados</p>' +
+      '<p style="color:var(--text-muted);font-size:13px;margin:0 0 16px;line-height:1.5;">Se alcanzó el límite de uso diario.<br>Volvé a intentar en unas horas.</p>' +
+      '<button onclick="this.parentElement.remove();_chatQuotaAgotado=false;" style="background:#3b82f6;color:white;border:none;border-radius:8px;padding:8px 20px;cursor:pointer;font-size:13px;">Cerrar</button>';
+    overlay.appendChild(aviso);
+  }
+
 
   function iniciarChatPolling() {
     if (badgePollInterval) clearInterval(badgePollInterval);
@@ -4069,12 +4096,15 @@
   function getMiToken() { return sessionStorage.getItem("auth_token") || ""; }
 
   async function chatFetch(body) {
-    const res = await fetch(CHAT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...body, token: getMiToken(), miNombre: getMiNombre(), miTag: getMiTag() }),
-    });
-    return res.json();
+    try {
+      const res = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...body, token: getMiToken(), miNombre: getMiNombre(), miTag: getMiTag() }),
+      });
+      if (!res.ok) return { ok: false };
+      return await res.json();
+    } catch(e) { return { ok: false }; }
   }
 
   function iniciarChatPolling() {
