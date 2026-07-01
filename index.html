@@ -1033,20 +1033,23 @@
       const data = await chatFetch({ action: "mis_solicitudes" });
       solicitudesPendientes = data.solicitudes?.length || 0;
 
-      // Mensajes no vistos — solo del chat activo, el resto usa caché
+      // Mensajes no vistos — batch de todos los chats conocidos
       let msgsNuevos = 0;
-      if (chatActivo?.chatId) {
+      const misChats = chatAmigos.length ? chatAmigos : JSON.parse(localStorage.getItem('mis_chats') || '[]');
+      if (misChats.length) {
         try {
-          const ultimoVisto = localStorage.getItem('ultimo_visto_' + chatActivo.chatId) || "";
-          const r = await chatFetch({ action: "get_mensajes_nuevos", chats: [{ chatId: chatActivo.chatId, ultimoVisto }] });
+          const chatsPayload = misChats.filter(a => a.chatId).map(a => ({
+            chatId: a.chatId,
+            ultimoVisto: localStorage.getItem('ultimo_visto_' + a.chatId) || ""
+          }));
+          const r = await chatFetch({ action: "get_mensajes_nuevos", chats: chatsPayload });
           const counts = r.counts || {};
           for (const [chatId, nuevos] of Object.entries(counts)) {
             msgsByChatId[chatId] = nuevos;
+            msgsNuevos += nuevos;
           }
         } catch {}
       }
-      // Sumar todo el caché
-      for (const n of Object.values(msgsByChatId)) msgsNuevos += (n || 0);
       // Refrescar lista de amigos si el panel está abierto
       const panel = document.getElementById("chat-overlay");
       if (panel && misChats.length) cargarAmigos();
@@ -2913,7 +2916,7 @@
           lista._lastScrollBottom = Date.now();
         }
       };
-    } catch {}
+    } catch {} finally { _cargandoMsgs = false; }
   }
 
   async function autoLimpiarMensajesViejos() {
