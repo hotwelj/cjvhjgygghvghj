@@ -1039,7 +1039,7 @@
     aviso.style.cssText = "position:absolute;inset:0;background:var(--bg-card);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;";
     aviso.innerHTML = '<div style="font-size:36px;margin-bottom:12px;">⏳</div>' +
       '<p style="color:var(--text-main);font-weight:600;font-size:15px;margin:0 0 8px;">Chats temporalmente deshabilitados</p>' +
-      '<p style="color:var(--text-muted);font-size:13px;margin:0 0 16px;line-height:1.5;">Se alcanzó el límite de uso diario.<br>Volvé a intentar en unas horas.</p>' +
+      '<p style="color:var(--text-muted);font-size:13px;margin:0 0 16px;line-height:1.5;">Se alcanzó el límite de lecturas diarias de la base de datos (Firestore free tier).<br>Volvé a intentar mañana cuando se resetee el quota.</p>' +
       '<button onclick="this.parentElement.remove();_chatQuotaAgotado=false;" style="background:#3b82f6;color:white;border:none;border-radius:8px;padding:8px 20px;cursor:pointer;font-size:13px;">Cerrar</button>';
     overlay.appendChild(aviso);
   }
