@@ -2390,13 +2390,6 @@
         if (!data.ok) { lista.innerHTML = '<p style="color:#ef4444;">Error al cargar</p>'; return; }
 
 
-            const all = msgs.map(renderRow).join("");
-            if (msgs.length <= 2) return all;
-            _adminMsgN++;
-            const uid = "ac"+_adminMsgN;
-            const restantes = msgs.length - 2;
-            const preview = msgs.slice(-2).map(renderRow).join("");
-
         if (modo === 'privados') {
           const chats = data.chats || [];
           if (!chats.length) { lista.innerHTML = '<p style="color:#64748b;">Sin chats recientes</p>'; return; }
