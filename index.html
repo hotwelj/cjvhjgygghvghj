@@ -2861,10 +2861,11 @@
       const data = await res.json();
       const msgs = (data.documents || []).map(d => ({
         de: d.fields?.de?.stringValue || "",
-        texto: d.fields?.texto?.stringValue || "",
+        texto: (d.fields?.texto?.stringValue || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"),
         fecha: d.fields?.fecha?.stringValue || "",
       })).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
       const lista = overlay.querySelector("#chat-msgs-list");
+      if (!msgs.length) { lista.innerHTML = '<p style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px;">Sin mensajes aún</p>'; return; }
       const wasAtBottom = lista.scrollHeight - lista.scrollTop <= lista.clientHeight + 40;
       let lastDateChat = '';
       lista.innerHTML = msgs.map(m => {
