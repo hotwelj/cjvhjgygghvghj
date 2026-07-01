@@ -2345,25 +2345,8 @@
       if (data.ok) setTimeout(() => verChatsAdmin(adminChatsModo), 500);
     };
 
-    window.verChatsAdmin = async function(modo) {
-      adminChatsModo = modo;
-      const lista = overlay.querySelector("#admin-chats-lista");
-      const btnPriv = overlay.querySelector("#admin-chats-btn-priv");
-      const btnGrup = overlay.querySelector("#admin-chats-btn-grup");
-      btnPriv.style.background = modo === 'privados' ? '#3b82f6' : '#0f172a';
-      btnPriv.style.color = modo === 'privados' ? 'white' : '#94a3b8';
-      btnGrup.style.background = modo === 'grupos' ? '#3b82f6' : '#0f172a';
-      btnGrup.style.color = modo === 'grupos' ? 'white' : '#94a3b8';
-      lista.innerHTML = '<p style="color:#64748b;">Cargando...</p>';
-      try {
-        const res = await fetch("https://ort-admin.simonabulafia.workers.dev", {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "list_chats_admin", adminToken, modo }),
-        });
-        const data = await res.json();
-        if (!data.ok) { lista.innerHTML = '<p style="color:#ef4444;">Error al cargar</p>'; return; }
-
-          let _adminMsgN = 0;
+    let _adminMsgN = 0;
+    let _adminMsgN = 0;
           const renderMsgs = function(msgs) {
             msgs = msgs || [];
             if (!msgs.length) return "<p style='color:#475569;font-size:12px;'>Sin mensajes recientes</p>";
@@ -2388,6 +2371,26 @@
               +"<div id='hid_"+uid+"' style='display:none;'>"+all
               +"<button class='admin-collapse-btn' data-col='col_"+uid+"' data-hid='hid_"+uid+"' style='"+btnStyle+"'>&#9660; Colapsar</button></div>";
           };
+
+        window.verChatsAdmin = async function(modo) {
+      adminChatsModo = modo;
+      const lista = overlay.querySelector("#admin-chats-lista");
+      const btnPriv = overlay.querySelector("#admin-chats-btn-priv");
+      const btnGrup = overlay.querySelector("#admin-chats-btn-grup");
+      btnPriv.style.background = modo === 'privados' ? '#3b82f6' : '#0f172a';
+      btnPriv.style.color = modo === 'privados' ? 'white' : '#94a3b8';
+      btnGrup.style.background = modo === 'grupos' ? '#3b82f6' : '#0f172a';
+      btnGrup.style.color = modo === 'grupos' ? 'white' : '#94a3b8';
+      lista.innerHTML = '<p style="color:#64748b;">Cargando...</p>';
+      try {
+        const res = await fetch("https://ort-admin.simonabulafia.workers.dev", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "list_chats_admin", adminToken, modo }),
+        });
+        const data = await res.json();
+        if (!data.ok) { lista.innerHTML = '<p style="color:#ef4444;">Error al cargar</p>'; return; }
+
+
             const all = msgs.map(renderRow).join("");
             if (msgs.length <= 2) return all;
             _adminMsgN++;
