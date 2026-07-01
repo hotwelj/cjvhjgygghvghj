@@ -1771,7 +1771,7 @@
               <div style="display:flex;gap:8px;margin-bottom:16px;">
                 <button onclick="verChatsAdmin('privados')" id="admin-chats-btn-priv" style="flex:1;padding:8px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:#3b82f6;color:white;">💬 Chats 1a1</button>
                 <button onclick="verChatsAdmin('grupos')" id="admin-chats-btn-grup" style="flex:1;padding:8px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:#0f172a;color:#94a3b8;">👥 Grupos</button>
-                <button onclick="migrarChats()" id="admin-chats-btn-migrar" style="padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-size:12px;background:#0f172a;color:#64748b;" title="Migrar chats existentes (se puede tocar varias veces, no rompe nada)">🔄</button>
+                <button onclick="migrarChats()" id="admin-chats-btn-migrar" style="padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-size:12px;background:#0f172a;color:#64748b;" title="Solo necesario la primera vez para cargar chats existentes. No es necesario tocarlo de nuevo.">🔄</button>
               </div>
               <div id="admin-chats-lista" style="color:#94a3b8;font-size:13px;">Cargando...</div>
             </div>
@@ -2354,7 +2354,8 @@
           const hidId = 'hidden_' + uid;
           return '<div id="' + colId + '">' + renderAll(ultimos) + '</div>' +
             '<div id="' + hidId + '" style="display:none;">' + renderAll(msgs) + '</div>' +
-            '<button onclick="document.getElementById(' + "'" + colId + "'" + ').style.display=' + "'none'" + ';document.getElementById(' + "'" + hidId + "'" + ').style.display=' + "'block'" + ';this.style.display=' + "'none'" + ';" style="width:100%;margin-top:6px;background:#0f172a;border:1px solid #1e3a5f;border-radius:6px;padding:4px;color:#64748b;font-size:11px;cursor:pointer;">&#9650; Ver ' + restantes + ' mensajes anteriores</button>';
+            '<button id="btn_expand_' + uid + '" onclick="document.getElementById(' + "'" + colId + "'" + ').style.display=' + "'none'" + ';document.getElementById(' + "'" + hidId + "'" + ').style.display=' + "'block'" + ';this.style.display=' + "'none'" + ';document.getElementById(' + "'btn_collapse_" + uid + "'" + ').style.display=' + "'block'" + ';" style="width:100%;margin-top:6px;background:#0f172a;border:1px solid #1e3a5f;border-radius:6px;padding:4px;color:#64748b;font-size:11px;cursor:pointer;">&#9650; Ver ' + restantes + ' mensajes anteriores</button>' +
+            '<button id="btn_collapse_' + uid + '" onclick="document.getElementById(' + "'" + colId + "'" + ').style.display=' + "'block'" + ';document.getElementById(' + "'" + hidId + "'" + ').style.display=' + "'none'" + ';this.style.display=' + "'none'" + ';document.getElementById(' + "'btn_expand_" + uid + "'" + ').style.display=' + "'block'" + ';" style="display:none;width:100%;margin-top:6px;background:#0f172a;border:1px solid #1e3a5f;border-radius:6px;padding:4px;color:#64748b;font-size:11px;cursor:pointer;">&#9660; Colapsar mensajes</button>';
         };
 
         if (modo === 'privados') {
