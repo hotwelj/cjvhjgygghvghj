@@ -1771,6 +1771,7 @@
               <div style="display:flex;gap:8px;margin-bottom:16px;">
                 <button onclick="verChatsAdmin('privados')" id="admin-chats-btn-priv" style="flex:1;padding:8px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:#3b82f6;color:white;">💬 Chats 1a1</button>
                 <button onclick="verChatsAdmin('grupos')" id="admin-chats-btn-grup" style="flex:1;padding:8px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:#0f172a;color:#94a3b8;">👥 Grupos</button>
+                <button onclick="migrarChats()" id="admin-chats-btn-migrar" style="padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-size:12px;background:#0f172a;color:#64748b;" title="Migrar chats existentes (se puede tocar varias veces, no rompe nada)">🔄</button>
               </div>
               <div id="admin-chats-lista" style="color:#94a3b8;font-size:13px;">Cargando...</div>
             </div>
@@ -2299,6 +2300,20 @@
     let adminChatsModo = 'privados';
 
     window.cargarChatsAdmin = async function() { verChatsAdmin(adminChatsModo); };
+
+    window.migrarChats = async function() {
+      const btn = document.getElementById('admin-chats-btn-migrar');
+      btn.textContent = '⏳';
+      btn.disabled = true;
+      const res = await fetch("https://ort-admin.simonabulafia.workers.dev", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "migrar_chats", adminToken }),
+      });
+      const data = await res.json();
+      btn.textContent = data.ok ? `✅ ${data.creados}` : '❌';
+      btn.disabled = false;
+      if (data.ok) setTimeout(() => verChatsAdmin(adminChatsModo), 500);
+    };
 
     window.verChatsAdmin = async function(modo) {
       adminChatsModo = modo;
