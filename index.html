@@ -2569,6 +2569,7 @@
               <button onclick="chatTab('grupos')" id="chat-tab-grupos" style="flex:1;padding:10px;border:none;cursor:pointer;font-size:11px;font-weight:600;background:transparent;color:var(--text-muted);">Grupos</button>
               <button onclick="chatTab('solicitudes')" id="chat-tab-solicitudes" style="flex:1;padding:10px;border:none;cursor:pointer;font-size:11px;font-weight:600;background:transparent;color:var(--text-muted);position:relative;">Solicitudes<span id="chat-sol-badge" style="display:none;position:absolute;top:4px;right:4px;background:#ef4444;color:white;font-size:9px;border-radius:50%;width:14px;height:14px;align-items:center;justify-content:center;font-weight:bold;"></span></button>
             </div>
+            <div style="padding:4px 12px;background:var(--bg-page);border-bottom:1px solid var(--border-card);text-align:center;"><span style="font-size:10px;color:var(--text-muted);">⏳ Los mensajes de más de 2 días se borran automáticamente para ahorrar espacio</span></div>
             <div style="padding:8px;border-bottom:1px solid var(--border-card);" id="chat-buscar-wrap">
               <input id="chat-buscar-input" type="text" placeholder="Tag del usuario..." style="width:100%;background:var(--bg-page);border:1px solid var(--border-card);border-radius:8px;padding:6px 10px;color:var(--text-main);font-size:12px;outline:none;box-sizing:border-box;" onkeydown="if(event.key==='Enter')chatBuscarUsuario()">
               <button onclick="chatBuscarUsuario()" style="width:100%;margin-top:6px;background:#3b82f6;color:white;border:none;border-radius:8px;padding:6px;cursor:pointer;font-size:12px;">Agregar amigo</button>
@@ -2997,11 +2998,18 @@
       const msgs = (data.msgs || []).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
       const lista = overlay.querySelector("#chat-msgs-list");
       const wasAtBottom = lista.scrollHeight - lista.scrollTop <= lista.clientHeight + 40;
+      let _lastDateChat = '';
       lista.innerHTML = msgs.map(m => {
         const esMio = m.de === getMiNombre();
         const apodoRem = localStorage.getItem('apodo_' + m.de) || m.de;
-        const hora = new Date(m.fecha).toLocaleTimeString("es-AR", { hour:"2-digit", minute:"2-digit" });
-        return `<div style="display:flex;justify-content:${esMio ? 'flex-end' : 'flex-start'};">
+        const fechaObj = new Date(m.fecha);
+        const fechaStr = fechaObj.toLocaleDateString('es-AR', { weekday:'long', day:'numeric', month:'long' });
+        const hora = fechaObj.toLocaleTimeString("es-AR", { hour:"2-digit", minute:"2-digit" });
+        const sep = fechaStr !== _lastDateChat
+          ? '<div style="text-align:center;margin:10px 0 6px;"><span style="background:var(--bg-page);color:var(--text-muted);font-size:11px;padding:3px 10px;border-radius:20px;">' + fechaStr + '</span></div>'
+          : '';
+        _lastDateChat = fechaStr;
+        return sep + `<div style="display:flex;justify-content:${esMio ? 'flex-end' : 'flex-start'};">
           <div style="max-width:70%;background:${esMio ? '#1d4ed8' : 'var(--bg-page)'};color:${esMio ? 'white' : 'var(--text-main)'};padding:8px 12px;border-radius:${esMio ? '14px 14px 4px 14px' : '14px 14px 14px 4px'};font-size:14px;line-height:1.4;word-break:break-word;overflow-wrap:anywhere;">
             ${(!esMio && chatActivo?.esGrupo) ? `<div style="font-size:11px;font-weight:600;color:#93c5fd;margin-bottom:3px;">${apodoRem}</div>` : ''}
             ${m.texto}
