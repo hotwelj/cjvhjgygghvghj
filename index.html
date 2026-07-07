@@ -2994,7 +2994,12 @@
     if (!overlay || !chatId) return;
     try {
       const data = await chatFetch({ action: "get_mensajes", chatId });
-      if (!data.ok) return;
+      if (!data.ok) {
+        console.error('get_mensajes falló:', JSON.stringify(data));
+        const lista2 = overlay.querySelector("#chat-msgs-list");
+        if (lista2 && !lista2.children.length) lista2.innerHTML = '<p style="color:var(--text-muted);font-size:12px;text-align:center;padding:20px;">Sin mensajes aún</p>';
+        return;
+      }
       const msgs = (data.msgs || []).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
       const lista = overlay.querySelector("#chat-msgs-list");
       const wasAtBottom = lista.scrollHeight - lista.scrollTop <= lista.clientHeight + 40;
@@ -3073,7 +3078,8 @@
     const texto = input.value.trim();
     if (!texto) return;
     input.value = "";
-    await chatFetch({ action: "enviar_mensaje", chatId: chatActivo.chatId, de: getMiNombre(), mensaje: texto });
+    const envRes = await chatFetch({ action: "enviar_mensaje", chatId: chatActivo.chatId, de: getMiNombre(), mensaje: texto });
+    console.log('enviar_mensaje result:', JSON.stringify(envRes));
     _ultimoTimestamp[chatActivo.chatId] = null; // forzar recarga inmediata
     cargarMensajes(chatActivo.chatId);
   };
