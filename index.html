@@ -1113,7 +1113,7 @@
   function iniciarChatPolling() {
     if (badgePollInterval) clearInterval(badgePollInterval);
     actualizarBadgeSolicitudes();
-    badgePollInterval = setInterval(actualizarBadgeSolicitudes, 30000);
+    badgePollInterval = setInterval(actualizarBadgeSolicitudes, 15000);
   }
 
   async function actualizarBadgeSolicitudes() {
@@ -1122,23 +1122,28 @@
       const data = await chatFetch({ action: "mis_solicitudes" });
       solicitudesPendientes = data.solicitudes?.length || 0;
 
-      // Mensajes no vistos — recorrer chats conocidos
+      // Mensajes no vistos — batch request
       let msgsNuevos = 0;
       const misChats = chatAmigos.length ? chatAmigos : JSON.parse(localStorage.getItem('mis_chats') || '[]');
-      let listaRefrescada = false;
-      for (const amigo of misChats) {
-        if (!amigo.chatId) continue;
-        const ultimoVisto = localStorage.getItem('ultimo_visto_' + amigo.chatId) || "";
+      if (misChats.length) {
         try {
-          const r = await chatFetch({ action: "get_mensajes_nuevos", chatId: amigo.chatId, ultimoVisto });
-          const nuevos = r.nuevos || 0;
-          msgsByChatId[amigo.chatId] = nuevos;
-          msgsNuevos += nuevos;
+          const chatsPayload = misChats.filter(a => a.chatId).map(a => ({
+            chatId: a.chatId,
+            ultimoVisto: localStorage.getItem('ultimo_visto_' + a.chatId) || ""
+          }));
+          const r = await chatFetch({ action: "get_mensajes_nuevos", chats: chatsPayload });
+          const counts = r.counts || {};
+          for (const [chatId, nuevos] of Object.entries(counts)) {
+            msgsByChatId[chatId] = nuevos;
+            msgsNuevos += nuevos;
+          }
+          // Refrescar lista solo si hubo cambios
+          if (msgsNuevos > 0) {
+            const panel = document.getElementById("chat-overlay");
+            if (panel) cargarAmigos();
+          }
         } catch {}
       }
-      // Refrescar lista de amigos si el panel está abierto
-      const panel = document.getElementById("chat-overlay");
-      if (panel && misChats.length) cargarAmigos();
 
       const total = solicitudesPendientes + msgsNuevos;
       const badge = $("chat-badge");
@@ -3061,6 +3066,7 @@
     if (!texto) return;
     input.value = "";
     await chatFetch({ action: "enviar_mensaje", chatId: chatActivo.chatId, de: getMiNombre(), mensaje: texto });
+    _ultimoTimestamp[chatActivo.chatId] = null; // forzar recarga inmediata
     cargarMensajes(chatActivo.chatId);
   };
   // ── RATINGS EN CARDS ──
