@@ -3001,7 +3001,9 @@
         return;
       }
       const msgs = (data.msgs || []).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
+      console.log('cargarMensajes:', chatId, 'msgs:', msgs.length, 'chatActivo:', chatActivo?.chatId);
       const lista = overlay.querySelector("#chat-msgs-list");
+      if (!lista) { console.error('lista #chat-msgs-list no encontrada'); return; }
       const wasAtBottom = lista.scrollHeight - lista.scrollTop <= lista.clientHeight + 40;
       let _lastDateChat = '';
       lista.innerHTML = msgs.map(m => {
