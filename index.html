@@ -997,6 +997,20 @@
         </div>
         </div>
       </div>
+      
+      <div class="game-card" onclick="abrirModal(this)" data-name='The Shivah' data-desc='Un rabino investiga la muerte de un ex-feligrés. Aventura gráfica corta, intensa y llena de dilemas morales judíos.' data-img='/images/theshivah.png' data-dl='the-shivah' data-weight-class='weight-liviano' data-weight-label='🪶 Liviano · 107MB' data-genres="aventura puzzle">
+        <img class="game-cover" src="/images/theshivah.png" alt="The Shivah" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <div class="game-name-row"><p class="game-name">The Shivah</p><span class="weight-tag weight-liviano">🪶 Liviano · 107MB</span></div>
+          <p class="game-desc">Un rabino investiga la muerte de un ex-feligrés. Aventura gráfica corta, intensa y llena de dilemas morales judíos.</p>
+          <div class="game-tags"><span class="game-tag">Aventura</span><span class="game-tag">Puzzle</span></div>
+          <div class="card-rating" style="font-size:12px;color:#fbbf24;letter-spacing:1px;min-height:16px;margin-bottom:4px;"></div>
+          <div class="card-actions">
+          <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'the-shivah')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
+        </div>
+      </div>
       </div>
   </div>
 </div>
@@ -2989,77 +3003,90 @@
 
   let _ultimoTimestamp = {};
 
-  async function cargarMensajes(chatId) {
+  let _msgsOffset = {}; // chatId -> cuántos mensajes saltear desde el final
+
+  async function cargarMensajes(chatId, masViejos = false) {
     const overlay = document.getElementById("chat-overlay");
     if (!overlay || !chatId) return;
+    if (masViejos) {
+      _msgsOffset[chatId] = (_msgsOffset[chatId] || 0) + 20;
+    } else {
+      _msgsOffset[chatId] = 0;
+    }
     try {
-      const data = await chatFetch({ action: "get_mensajes", chatId });
+      const data = await chatFetch({ action: "get_mensajes", chatId, pageSize: 20, offset: _msgsOffset[chatId] || 0 });
+      console.log('cargarMensajes:', chatId, 'msgs:', data.msgs?.length, 'total:', data.total, 'chatActivo:', chatActivo?.chatId);
       if (!data.ok) {
         console.error('get_mensajes falló:', JSON.stringify(data));
         const lista2 = overlay.querySelector("#chat-msgs-list");
         if (lista2 && !lista2.children.length) lista2.innerHTML = '<p style="color:var(--text-muted);font-size:12px;text-align:center;padding:20px;">Sin mensajes aún</p>';
         return;
       }
-      const msgs = (data.msgs || []).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
-      console.log('cargarMensajes:', chatId, 'msgs:', msgs.length, 'chatActivo:', chatActivo?.chatId);
+      const msgs = (data.msgs || []);
+      const total = data.total || msgs.length;
       const lista = overlay.querySelector("#chat-msgs-list");
       if (!lista) { console.error('lista #chat-msgs-list no encontrada'); return; }
-      const wasAtBottom = lista.scrollHeight - lista.scrollTop <= lista.clientHeight + 40;
-      let _lastDateChat = '';
-      lista.innerHTML = msgs.map(m => {
-        const esMio = m.de === getMiNombre();
-        const apodoRem = localStorage.getItem('apodo_' + m.de) || m.de;
-        const fechaObj = new Date(m.fecha);
-        const fechaStr = fechaObj.toLocaleDateString('es-AR', { weekday:'long', day:'numeric', month:'long' });
-        const hora = fechaObj.toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
-        const sep = fechaStr !== _lastDateChat
-          ? '<div style="text-align:center;margin:10px 0 6px;"><span style="background:var(--bg-page);color:var(--text-muted);font-size:11px;padding:3px 10px;border-radius:20px;">' + fechaStr + '</span></div>'
-          : '';
-        _lastDateChat = fechaStr;
-        const bg = esMio ? '#1d4ed8' : 'var(--bg-page)';
-        const col = esMio ? 'white' : 'var(--text-main)';
-        const rad = esMio ? '14px 14px 4px 14px' : '14px 14px 14px 4px';
-        const just = esMio ? 'flex-end' : 'flex-start';
-        const remNombre = (!esMio && chatActivo && chatActivo.esGrupo)
-          ? '<div style="font-size:11px;font-weight:600;color:#93c5fd;margin-bottom:3px;">' + apodoRem + '</div>'
-          : '';
-        return sep +
-          '<div style="display:flex;justify-content:' + just + ';">' +
-          '<div style="max-width:70%;background:' + bg + ';color:' + col + ';padding:8px 12px;border-radius:' + rad + ';font-size:14px;line-height:1.4;word-break:break-word;overflow-wrap:anywhere;">' +
-          remNombre +
-          m.texto +
-          '<div style="font-size:10px;opacity:0.6;margin-top:3px;text-align:right;">' + hora + '</div>' +
-          '</div></div>';
-      }).join('');
-      if (wasAtBottom) {
-        lista.scrollTop = lista.scrollHeight;
+
+      // Renderizar mensajes
+      const renderMsgs = (ms) => {
+        let lastDate = '';
+        return ms.map(m => {
+          const esMio = m.de === getMiNombre();
+          const apodoRem = localStorage.getItem('apodo_' + m.de) || m.de;
+          const fechaObj = new Date(m.fecha);
+          const fechaStr = fechaObj.toLocaleDateString('es-AR', { weekday:'long', day:'numeric', month:'long' });
+          const hora = fechaObj.toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
+          const sep = fechaStr !== lastDate
+            ? '<div style="text-align:center;margin:10px 0 6px;"><span style="background:var(--bg-page);color:var(--text-muted);font-size:11px;padding:3px 10px;border-radius:20px;">' + fechaStr + '</span></div>'
+            : '';
+          lastDate = fechaStr;
+          const bg = esMio ? '#1d4ed8' : 'var(--bg-page)';
+          const col = esMio ? 'white' : 'var(--text-main)';
+          const rad = esMio ? '14px 14px 4px 14px' : '14px 14px 14px 4px';
+          const just = esMio ? 'flex-end' : 'flex-start';
+          const remNombre = (!esMio && chatActivo && chatActivo.esGrupo)
+            ? '<div style="font-size:11px;font-weight:600;color:#93c5fd;margin-bottom:3px;">' + apodoRem + '</div>'
+            : '';
+          return sep +
+            '<div style="display:flex;justify-content:' + just + ';">' +
+            '<div style="max-width:70%;background:' + bg + ';color:' + col + ';padding:8px 12px;border-radius:' + rad + ';font-size:14px;line-height:1.4;word-break:break-word;overflow-wrap:anywhere;">' +
+            remNombre + m.texto +
+            '<div style="font-size:10px;opacity:0.6;margin-top:3px;text-align:right;">' + hora + '</div>' +
+            '</div></div>';
+        }).join('');
+      };
+
+      const offset = _msgsOffset[chatId] || 0;
+      const hayMas = total > 20 + offset;
+
+      if (masViejos) {
+        // Insertar arriba sin perder scroll
+        const scrollBottom = lista.scrollHeight - lista.scrollTop;
+        const btnExistente = lista.querySelector('#chat-load-more');
+        if (btnExistente) btnExistente.remove();
+        lista.insertAdjacentHTML('afterbegin', renderMsgs(msgs));
+        lista.scrollTop = lista.scrollHeight - scrollBottom;
       } else {
-        // Contar mensajes nuevos (después del último scroll)
-        const nuevosIndicador = lista.parentElement.querySelector('#chat-nuevos-btn');
-        const lastBottom = lista._lastScrollBottom || 0;
-        const nuevos = msgs.filter(m => m.de !== getMiNombre() && new Date(m.fecha).getTime() > lastBottom).length;
-        if (nuevos > 0) {
-          if (!nuevosIndicador) {
-            const btn = document.createElement('button');
-            btn.id = 'chat-nuevos-btn';
-            btn.style.cssText = 'position:absolute;bottom:70px;left:50%;transform:translateX(-50%);background:#3b82f6;color:white;border:none;border-radius:20px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,0.3);z-index:10;';
-            btn.onclick = () => { lista.scrollTop = lista.scrollHeight; btn.remove(); lista._lastScrollBottom = Date.now(); };
-            btn.textContent = `↓ ${nuevos} nuevo${nuevos > 1 ? 's' : ''}`;
-            lista.parentElement.style.position = 'relative';
-            lista.parentElement.appendChild(btn);
-          } else {
-            nuevosIndicador.textContent = `↓ ${nuevos} nuevo${nuevos > 1 ? 's' : ''}`;
-          }
-        }
+        lista.innerHTML = renderMsgs(msgs);
+        lista.scrollTop = lista.scrollHeight;
       }
-      // Ocultar indicador si llegó al fondo
+
+      // Botón "ver más" arriba si hay mensajes anteriores
+      if (hayMas && !lista.querySelector('#chat-load-more')) {
+        const btn = document.createElement('div');
+        btn.id = 'chat-load-more';
+        btn.innerHTML = '<button onclick="cargarMensajes(chatActivo.chatId, true)" style="width:100%;background:var(--bg-page);border:1px solid var(--border-card);border-radius:8px;padding:6px;color:var(--text-muted);font-size:12px;cursor:pointer;margin-bottom:8px;">⬆ Ver mensajes anteriores</button>';
+        lista.insertAdjacentElement('afterbegin', btn);
+      }
+
+      // Indicador de nuevos cuando no está al fondo
       lista.onscroll = () => {
         if (lista.scrollHeight - lista.scrollTop <= lista.clientHeight + 10) {
-          lista.parentElement.querySelector('#chat-nuevos-btn')?.remove();
+          lista.parentElement?.querySelector('#chat-nuevos-btn')?.remove();
           lista._lastScrollBottom = Date.now();
         }
       };
-    } catch {}
+    } catch(e) { console.error('cargarMensajes error:', e); }
   }
 
   async function autoLimpiarMensajesViejos() {
