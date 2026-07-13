@@ -1494,7 +1494,7 @@
           '<div class="game-tags">' + tags + '</div>' +
           '<div class="card-rating" style="font-size:12px;color:#fbbf24;letter-spacing:1px;min-height:16px;margin-bottom:4px;"></div>' +
           '<div class="card-actions">' +
-          '<button class="btn-download" onclick="event.stopPropagation();descargar(this,this.closest(\'.game-card\').dataset.dl)">⬇ Descargar</button>' +
+          '<button class="btn-download" onclick="event.stopPropagation(); descargar(this, \'' + j.dl + '\')">⬇ Descargar</button>' +
           '<button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>' +
           '</div>';
         div.appendChild(body);
@@ -2816,18 +2816,36 @@
     function renderJuegosAdmin(juegos) {
       const lista = overlay.querySelector("#admin-juegos-lista");
       if (!juegos.length) { lista.innerHTML = '<p style="color:#64748b;">Sin resultados</p>'; return; }
-      lista.innerHTML = juegos.map(j => {
-        return '<div style="background:#0f172a;border:1px solid #1e3a5f;border-radius:10px;padding:12px;margin-bottom:10px;display:flex;align-items:center;gap:12px;">' +
-          (j.img ? '<img src="' + j.img + '" style="width:48px;height:48px;object-fit:cover;border-radius:6px;" onerror="this.style.display='none'">' : '<div style="width:48px;height:48px;background:#1e293b;border-radius:6px;"></div>') +
-          '<div style="flex:1;min-width:0;">' +
-          '<div style="color:#f1f5f9;font-size:13px;font-weight:600;">' + j.name + '</div>' +
-          '<div style="color:#475569;font-size:11px;">' + j.dl + ' · ' + j.weightLabel + ' · ' + (j.genres || '—') + '</div>' +
-          '</div>' +
-          '<div style="display:flex;gap:6px;">' +
-          '<button onclick="editarJuegoAdmin('' + j.dl + '')" style="background:#1e3a5f;color:#93c5fd;border:none;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:11px;">✏️ Editar</button>' +
-          '<button onclick="eliminarJuegoAdmin('' + j.dl + '')" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:11px;">🗑</button>' +
-          '</div></div>';
-      }).join('');
+      lista.innerHTML = '';
+      juegos.forEach(function(j) {
+        const row = document.createElement('div');
+        row.style.cssText = 'background:#0f172a;border:1px solid #1e3a5f;border-radius:10px;padding:12px;margin-bottom:10px;display:flex;align-items:center;gap:12px;';
+        const imgEl = document.createElement('img');
+        imgEl.src = j.img || '';
+        imgEl.style.cssText = 'width:48px;height:48px;object-fit:cover;border-radius:6px;';
+        imgEl.onerror = function() { this.style.display = 'none'; };
+        if (!j.img) imgEl.style.display = 'none';
+        row.appendChild(imgEl);
+        const info = document.createElement('div');
+        info.style.cssText = 'flex:1;min-width:0;';
+        info.innerHTML = '<div style="color:#f1f5f9;font-size:13px;font-weight:600;">' + j.name + '</div>' +
+          '<div style="color:#475569;font-size:11px;">' + j.dl + ' · ' + j.weightLabel + ' · ' + (j.genres || '—') + '</div>';
+        row.appendChild(info);
+        const btns = document.createElement('div');
+        btns.style.cssText = 'display:flex;gap:6px;';
+        const btnEdit = document.createElement('button');
+        btnEdit.textContent = '✏️ Editar';
+        btnEdit.style.cssText = 'background:#1e3a5f;color:#93c5fd;border:none;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:11px;';
+        btnEdit.onclick = function() { editarJuegoAdmin(j.dl); };
+        const btnDel = document.createElement('button');
+        btnDel.textContent = '🗑';
+        btnDel.style.cssText = 'background:#7f1d1d;color:#fca5a5;border:none;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:11px;';
+        btnDel.onclick = function() { eliminarJuegoAdmin(j.dl); };
+        btns.appendChild(btnEdit);
+        btns.appendChild(btnDel);
+        row.appendChild(btns);
+        lista.appendChild(row);
+      });
     }
 
     window.adminExpandMsg = function(btn, colId, hidId) {
