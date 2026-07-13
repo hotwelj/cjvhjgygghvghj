@@ -1499,6 +1499,15 @@
         setTimeout(() => { c.style.animationDelay = '0ms'; }, i * 30 + 400);
       });
       initFavBtns(); updateCounts(); filterGames();
+      // Actualizar contador animado
+      const totalReal = document.querySelectorAll('.game-card').length;
+      let cnt = 0;
+      const ctrInterval = setInterval(() => {
+        cnt++;
+        if (cnt >= totalReal) { cnt = totalReal; clearInterval(ctrInterval); }
+        const el = document.getElementById('gameCount');
+        if (el) el.textContent = cnt;
+      }, 40);
       cargarRatingsCards();
     } catch(e) {
       // Si hay error, mostrar las cards estáticas del HTML como fallback
