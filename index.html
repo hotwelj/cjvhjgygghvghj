@@ -1445,6 +1445,7 @@
   }
 
   window.cargarJuegosDesdeFirestore = async function cargarJuegosDesdeFirestore() {
+    console.log('cargarJuegosDesdeFirestore iniciando...');
     try {
       const res = await fetch("https://ort-admin.simonabulafia.workers.dev", {
         method: "POST",
@@ -1452,6 +1453,7 @@
         body: JSON.stringify({ action: "list_juegos" }),
       });
       const data = await res.json();
+      console.log('list_juegos respuesta:', data.ok, 'juegos:', data.juegos?.length);
       if (!data.ok || !data.juegos || !data.juegos.length) {
         // Si falla Firestore, mostrar las cards estáticas del HTML
         document.querySelectorAll('.game-card[data-static]').forEach(c => {
