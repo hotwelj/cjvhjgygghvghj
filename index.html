@@ -1444,7 +1444,7 @@
     }
   }
 
-  async function cargarJuegosDesdeFirestore() {
+  window.cargarJuegosDesdeFirestore = async function cargarJuegosDesdeFirestore() {
     try {
       const res = await fetch("https://ort-admin.simonabulafia.workers.dev", {
         method: "POST",
@@ -1460,8 +1460,8 @@
         return;
       }
       const grid = document.querySelector('.games-grid');
-      // Remover cards estáticas
-      document.querySelectorAll('.game-card[data-static]').forEach(c => c.remove());
+      // Remover TODAS las cards (estáticas y dinámicas) antes de reinsertar
+      document.querySelectorAll('.game-card').forEach(c => c.remove());
       document.getElementById('cards-loading')?.remove();
       // Insertar cards desde Firestore
       data.juegos.forEach(j => {
