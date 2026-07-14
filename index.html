@@ -1409,7 +1409,7 @@
       initFavBtns(); updateCounts();
       setTimeout(() => {
         $("pwd-overlay").classList.add("saliendo");
-        setTimeout(() => { $("pwd-overlay").style.display = "none"; cargarBannerAnuncio(); const cb=$("header-chat-btn");if(cb)cb.style.display="flex"; iniciarChatPolling(); }, 600);
+        setTimeout(() => { $("pwd-overlay").style.display = "none"; cargarBannerAnuncio(); window.cargarJuegosDesdeFirestore(); const cb=$("header-chat-btn");if(cb)cb.style.display="flex"; iniciarChatPolling(); }, 600);
       }, 700);
     } else {
       btn.textContent = "Entrar";
