@@ -1434,7 +1434,7 @@
     }
     favs = JSON.parse(localStorage.getItem(getFavsKey()) || "[]");
     cargarBannerAnuncio();
-    cargarJuegosDesdeFirestore();
+    setTimeout(function() { window.cargarJuegosDesdeFirestore(); }, 0);
     iniciarChatPolling();
     // Auto-borrar mensajes viejos (>2 días) en background
     setTimeout(autoLimpiarMensajesViejos, 3000);
@@ -3702,4 +3702,3 @@ Link de descarga: https://github.com/...</pre>
 </style>
 </body>
 </html>
-
