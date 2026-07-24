@@ -2796,40 +2796,77 @@ Link de descarga: https://github.com/...</pre>
       overlay.querySelector("#admin-plantilla-msg").textContent = '';
     };
 
-    window.procesarPlantilla = function() {
+    window.procesarPlantilla = async function() {
       const txt = overlay.querySelector("#admin-plantilla-input").value;
       const msg = overlay.querySelector("#admin-plantilla-msg");
-      const get = (key) => {
-        const m = txt.match(new RegExp(key + ':\s*(.+)', 'i'));
+
+      // Separar múltiples juegos por línea vacía doble o por "---"
+      const bloques = txt.split(/\n\s*---\s*\n|\n{2,}(?=Nombre:)/i).map(b => b.trim()).filter(b => b.includes('Nombre:'));
+
+      if (!bloques.length) { msg.style.color='#ef4444'; msg.textContent = 'No se pudo parsear. Verificá el formato.'; return; }
+
+      const wcMap = { 'liviano':'weight-liviano', 'normal':'weight-normal', 'pesado':'weight-pesado', 'muypesado':'weight-muypesado', 'muy pesado':'weight-muypesado' };
+      const wcEmojis = { 'weight-liviano':'🪶 Liviano', 'weight-normal':'⚡ Normal', 'weight-pesado':'📦 Pesado', 'weight-muypesado':'🏋 Muy pesado' };
+
+      const get = (bloque, key) => {
+        const m = bloque.match(new RegExp(key + ':\s*(.+)', 'i'));
         return m ? m[1].trim() : '';
       };
-      const name = get('Nombre');
-      const dl = get('DL ID').toLowerCase().replace(/\s+/g, '-');
-      const img = get('Imagen');
-      const mb = get('Peso');
-      const catRaw = get('Catego[rí]?a').toLowerCase();
-      const genres = get('G[eé]neros').toLowerCase();
-      const desc = get('Descripci[oó]n');
-      if (!name || !dl) { msg.style.color='#ef4444'; msg.textContent = 'No se pudo parsear. Verificá el formato.'; return; }
-      const wcMap = { 'liviano':'weight-liviano', 'normal':'weight-normal', 'pesado':'weight-pesado', 'muypesado':'weight-muypesado', 'muy pesado':'weight-muypesado' };
-      const wc = wcMap[catRaw] || 'weight-liviano';
-      const wcEmojis = { 'weight-liviano':'🪶 Liviano', 'weight-normal':'⚡ Normal', 'weight-pesado':'📦 Pesado', 'weight-muypesado':'🏋 Muy pesado' };
-      // Rellenar el formulario manual con los datos parseados
-      overlay.querySelector("#form-name").value = name;
-      overlay.querySelector("#form-dl").value = dl;
-      overlay.querySelector("#form-dl").disabled = false;
-      overlay.querySelector("#form-desc").value = desc;
-      overlay.querySelector("#form-img").value = img;
-      overlay.querySelector("#form-mb").value = mb;
-      overlay.querySelector("#form-wc").value = wc;
-      overlay.querySelector("#form-genres").value = genres;
-      overlay.querySelector("#form-dl").disabled = false;
-      overlay.querySelector("#admin-form-titulo").textContent = "Nuevo juego (desde plantilla)";
-      overlay.querySelector("#admin-form-msg").textContent = '';
-      overlay.querySelector("#admin-plantilla-form").style.display = 'none';
-      overlay.querySelector("#admin-juego-form").style.display = 'block';
-      msg.style.color = '#22c55e';
-      msg.textContent = '✅ Datos cargados';
+
+      if (bloques.length === 1) {
+        // Un solo juego — rellenar formulario como antes
+        const b = bloques[0];
+        const name = get(b, 'Nombre');
+        const dl = get(b, 'DL ID').toLowerCase().replace(/\s+/g, '-');
+        const img = get(b, 'Imagen');
+        const mb = get(b, 'Peso');
+        const wc = wcMap[get(b, 'Catego[rí]?a').toLowerCase()] || 'weight-liviano';
+        const genres = get(b, 'G[eé]neros').toLowerCase();
+        const desc = get(b, 'Descripci[oó]n');
+        if (!name || !dl) { msg.style.color='#ef4444'; msg.textContent = 'No se pudo parsear.'; return; }
+        overlay.querySelector("#form-name").value = name;
+        overlay.querySelector("#form-dl").value = dl;
+        overlay.querySelector("#form-dl").disabled = false;
+        overlay.querySelector("#form-desc").value = desc;
+        overlay.querySelector("#form-img").value = img;
+        overlay.querySelector("#form-mb").value = mb;
+        overlay.querySelector("#form-wc").value = wc;
+        overlay.querySelector("#form-genres").value = genres;
+        overlay.querySelector("#admin-form-titulo").textContent = "Nuevo juego (desde plantilla)";
+        overlay.querySelector("#admin-form-msg").textContent = '';
+        overlay.querySelector("#admin-plantilla-form").style.display = 'none';
+        overlay.querySelector("#admin-juego-form").style.display = 'block';
+        msg.style.color = '#22c55e';
+        msg.textContent = '✅ Listo';
+      } else {
+        // Múltiples juegos — guardar todos directo a Firestore
+        msg.style.color='#94a3b8'; msg.textContent = 'Guardando ' + bloques.length + ' juegos...';
+        let ok = 0, err = 0;
+        for (const b of bloques) {
+          const name = get(b, 'Nombre');
+          const dl = get(b, 'DL ID').toLowerCase().replace(/\s+/g, '-');
+          const img = get(b, 'Imagen');
+          const mb = get(b, 'Peso');
+          const wc = wcMap[get(b, 'Catego[rí]?a').toLowerCase()] || 'weight-liviano';
+          const genres = get(b, 'G[eé]neros').toLowerCase();
+          const desc = get(b, 'Descripci[oó]n');
+          if (!name || !dl) { err++; continue; }
+          const weightLabel = wcEmojis[wc] + (mb ? ' · ' + mb : '');
+          try {
+            const res = await fetch("https://ort-admin.simonabulafia.workers.dev", {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "save_juego", adminToken, dl, name, desc, img, weightClass: wc, weightLabel, genres }),
+            });
+            const data = await res.json();
+            if (data.ok) ok++; else err++;
+          } catch(e) { err++; }
+        }
+        msg.style.color = err ? '#ef4444' : '#22c55e';
+        msg.textContent = '✅ ' + ok + ' guardados' + (err ? ', ❌ ' + err + ' errores' : '');
+        await cargarJuegosAdmin();
+        window.cargarJuegosDesdeFirestore();
+        if (!err) setTimeout(() => { overlay.querySelector("#admin-plantilla-form").style.display='none'; }, 1500);
+      }
     };
 
     window.mostrarFormNuevoJuego = function() {
@@ -3491,7 +3528,7 @@ Link de descarga: https://github.com/...</pre>
             : '';
           return sep +
             '<div style="display:flex;justify-content:' + just + ';">' +
-            '<div style="max-width:70%;background:' + bg + ';color:' + col + ';padding:8px 12px;border-radius:' + rad + ';font-size:14px;line-height:1.4;word-break:break-word;overflow-wrap:anywhere;">' +
+            '<div class="msg-bubble" style="max-width:70%;background:' + bg + ';color:' + col + ';padding:8px 12px;border-radius:' + rad + ';font-size:14px;line-height:1.4;word-break:break-word;overflow-wrap:anywhere;">' +
             remNombre + m.texto +
             '<div style="font-size:10px;opacity:0.6;margin-top:3px;text-align:right;">' + hora + '</div>' +
             '</div></div>';
@@ -3720,6 +3757,18 @@ Link de descarga: https://github.com/...</pre>
   @keyframes backdropIn { from { opacity:0; } to { opacity:1; } }
   @keyframes backdropOut { from { opacity:1; } to { opacity:0; } }
 .game-card[data-static] { display: none !important; }
+
+  /* Animación mensajes tipo Dynamic Island */
+  @keyframes msgPop {
+    0%   { opacity:0; transform: scale(0.72) translateY(10px); filter: blur(4px); }
+    60%  { opacity:1; transform: scale(1.04) translateY(-2px); filter: blur(0); }
+    80%  { transform: scale(0.98) translateY(1px); }
+    100% { transform: scale(1) translateY(0); }
+  }
+  .msg-bubble {
+    animation: msgPop 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    will-change: transform, opacity;
+  }
 </style>
 </body>
 </html>
