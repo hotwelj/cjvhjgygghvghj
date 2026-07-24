@@ -17,6 +17,25 @@
       });
     }
   </script>
+<style>
+  @keyframes chatPanelOpen {
+    0%   { opacity:0; transform: scale(0.88) translateY(-12px); filter: blur(6px); }
+    60%  { opacity:1; transform: scale(1.02) translateY(2px); filter: blur(0); }
+    100% { transform: scale(1) translateY(0); }
+  }
+  @keyframes chatPanelClose {
+    0%   { opacity:1; transform: scale(1) translateY(0); filter: blur(0); }
+    100% { opacity:0; transform: scale(0.88) translateY(-12px); filter: blur(6px); }
+  }
+  .chat-float-panel { animation: chatPanelOpen 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both; transform-origin: top right; }
+  @keyframes msgPop {
+    0%   { opacity:0; transform: scale(0.72) translateY(10px); filter: blur(4px); }
+    60%  { opacity:1; transform: scale(1.04) translateY(-2px); filter: blur(0); }
+    80%  { transform: scale(0.98) translateY(1px); }
+    100% { transform: scale(1) translateY(0); }
+  }
+  .msg-bubble { animation: msgPop 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) both; will-change: transform, opacity; }
+</style>
 </head>
 <body>
 
@@ -1213,6 +1232,13 @@
     overlay.appendChild(aviso);
   }
 
+  window.cerrarChat = function() {
+    const overlay = document.getElementById('chat-overlay');
+    if (!overlay) return;
+    overlay.style.animation = 'chatPanelClose 0.3s cubic-bezier(0.4, 0, 0.6, 1) forwards';
+    setTimeout(() => { overlay.remove(); iniciarChatPolling(); }, 300);
+  };
+
   function iniciarChatPolling() {
     if (badgePollInterval) clearInterval(badgePollInterval);
     actualizarBadgeSolicitudes();
@@ -1257,11 +1283,12 @@
     } catch {}
   }
 
+
+
   window.toggleChatPanel = function() {
     const existing = document.getElementById("chat-overlay");
     if (existing) {
-      existing.style.transformOrigin = "top right"; existing.style.animation = "chatPanelClose 0.4s ease-in forwards";
-      setTimeout(() => existing.remove(), 400);
+      window.cerrarChat();
       return;
     }
     abrirChat();
@@ -3040,6 +3067,16 @@ Link de descarga: https://github.com/...</pre>
 
 
 
+  // Cerrar chat al clickear afuera
+  document.addEventListener('click', function(e) {
+    const overlay = document.getElementById('chat-overlay');
+    if (!overlay) return;
+    const btn = document.getElementById('header-chat-btn');
+    if (!overlay.contains(e.target) && (!btn || !btn.contains(e.target))) {
+      window.cerrarChat();
+    }
+  });
+
   window.abrirChat = function() {
     if (document.getElementById("chat-overlay")) return;
     const overlay = document.createElement("div");
@@ -3052,7 +3089,7 @@ Link de descarga: https://github.com/...</pre>
           <h2 style="color:var(--text-main);font-size:16px;margin:0;">💬 Mensajes</h2>
           <div style="display:flex;gap:12px;align-items:center;">
             <span style="color:var(--text-muted);font-size:12px;">Tu tag: <strong style="color:#3b82f6;">${getMiTag()}</strong></span>
-            <button onclick="document.getElementById('chat-overlay').remove();iniciarChatPolling();" style="background:var(--bg-page);border:none;border-radius:8px;padding:6px 12px;color:var(--text-muted);cursor:pointer;font-size:13px;">✕</button>
+            <button onclick="window.cerrarChat();" style="background:var(--bg-page);border:none;border-radius:8px;padding:6px 12px;color:var(--text-muted);cursor:pointer;font-size:13px;">✕</button>
           </div>
         </div>
         <div style="display:flex;flex:1;overflow:hidden;">
@@ -3350,7 +3387,7 @@ Link de descarga: https://github.com/...</pre>
           localStorage.setItem("ultimo_visto_" + chatId, new Date().toISOString());
         }
       } catch {}
-    }, 5000);
+    }, 8000);
   };
 
   window.cargarAmigos = cargarAmigos;
@@ -3476,7 +3513,7 @@ Link de descarga: https://github.com/...</pre>
           localStorage.setItem("ultimo_visto_" + chatId, new Date().toISOString());
         }
       } catch {}
-    }, 5000);
+    }, 8000);
     iniciarTypingPoll(amigo.chatId, amigo.nombre);
   };
 
@@ -3758,17 +3795,7 @@ Link de descarga: https://github.com/...</pre>
   @keyframes backdropOut { from { opacity:1; } to { opacity:0; } }
 .game-card[data-static] { display: none !important; }
 
-  /* Animación mensajes tipo Dynamic Island */
-  @keyframes msgPop {
-    0%   { opacity:0; transform: scale(0.72) translateY(10px); filter: blur(4px); }
-    60%  { opacity:1; transform: scale(1.04) translateY(-2px); filter: blur(0); }
-    80%  { transform: scale(0.98) translateY(1px); }
-    100% { transform: scale(1) translateY(0); }
-  }
-  .msg-bubble {
-    animation: msgPop 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-    will-change: transform, opacity;
-  }
+
 </style>
 </body>
 </html>
