@@ -3565,7 +3565,7 @@ Link de descarga: https://github.com/...</pre>
             : '';
           return sep +
             '<div style="display:flex;justify-content:' + just + ';">' +
-            '<div class="msg-bubble" style="max-width:70%;background:' + bg + ';color:' + col + ';padding:8px 12px;border-radius:' + rad + ';font-size:14px;line-height:1.4;word-break:break-word;overflow-wrap:anywhere;">' +
+            '<div class="msg-bubble" data-fecha="' + m.fecha + '" style="max-width:70%;background:' + bg + ';color:' + col + ';padding:8px 12px;border-radius:' + rad + ';font-size:14px;line-height:1.4;word-break:break-word;overflow-wrap:anywhere;">' +
             remNombre + m.texto +
             '<div style="font-size:10px;opacity:0.6;margin-top:3px;text-align:right;">' + hora + '</div>' +
             '</div></div>';
@@ -3583,10 +3583,27 @@ Link de descarga: https://github.com/...</pre>
         lista.insertAdjacentHTML('afterbegin', renderMsgs(msgs));
         lista.scrollTop = lista.scrollHeight - scrollBottom;
       } else {
-        const htmlMsgs = renderMsgs(msgs);
-        console.log('renderMsgs chars:', htmlMsgs.length, 'lista existe:', !!lista);
-        lista.innerHTML = htmlMsgs;
-        lista.scrollTop = lista.scrollHeight;
+        // Diff: solo agregar mensajes que no están en el DOM
+        const fechasExistentes = new Set(
+          [...lista.querySelectorAll('[data-fecha]')].map(el => el.dataset.fecha)
+        );
+        const msgsNuevos = msgs.filter(m => !fechasExistentes.has(m.fecha));
+
+        if (fechasExistentes.size === 0) {
+          // Primera carga — renderizar todo
+          lista.innerHTML = renderMsgs(msgs);
+          lista.scrollTop = lista.scrollHeight;
+        } else if (msgsNuevos.length > 0) {
+          // Solo agregar los mensajes nuevos al final
+          const estabaAbajo = lista.scrollHeight - lista.scrollTop <= lista.clientHeight + 60;
+          const htmlNuevos = renderMsgs(msgsNuevos);
+          const tmp = document.createElement('div');
+          tmp.innerHTML = htmlNuevos;
+          // Asegurarse de que cada burbuja tenga data-fecha para el diff
+          while (tmp.firstChild) lista.appendChild(tmp.firstChild);
+          if (estabaAbajo) lista.scrollTop = lista.scrollHeight;
+        }
+        // Si no hay mensajes nuevos, no hacer nada (no resetear scroll)
       }
 
       // Botón "ver más" arriba si hay mensajes anteriores
