@@ -2369,7 +2369,7 @@ Link de descarga: https://github.com/...</pre>
           btn.textContent = estaPausado ? '⏸ Pausar' : '▶ Reactivar';
           btn.style.background = estaPausado ? '#1e3a5f' : '#854d0e';
           btn.style.color = estaPausado ? '#93c5fd' : '#fde047';
-          btn.setAttribute('onclick', \`pausarUsuario('\${hash}', \${!estaPausado}, this)\`);
+          btn.setAttribute('onclick', "pausarUsuario('" + hash + "', " + (!estaPausado) + ", this)");
         } else {
           alert('Error al ' + accion + ' usuario');
         }
