@@ -8,7 +8,7 @@
 </div><div class="footer"><div class="footer-item"><div class="footer-icon">🛡️</div><div><strong>Seguro</strong><p>Todos los archivos fueron escaneados.</p></div></div><div class="footer-item"><div class="footer-icon">🚀</div><div><strong>Fácil de usar</strong><p>Descargá, descomprimí y jugá.</p></div></div><div class="footer-item"><div class="footer-icon">🩵</div><div><strong>Hecho con pasión</strong><p>Para todos los jugadores.</p></div></div>
 </div><div id="chat-panel-placeholder"></div>
 <script>
-const $=id=>document.getElementById(id);const ADMIN_URL="https://ort-admin.simonabulafia.workers.dev";const USERNAME_KEY=["js","_","username"].join("");const ADMIN_TOKEN_KEY=["js","_","admin","Token"].join("");function getMiUsername(){return sessionStorage.getItem(USERNAME_KEY)||"";}
+const $=id=>document.getElementById(id);const ADMIN_URL=["","a","pi"].join("/");const USERNAME_KEY=["js","_","username"].join("");const ADMIN_TOKEN_KEY=["js","_","admin","Token"].join("");function getMiUsername(){return sessionStorage.getItem(USERNAME_KEY)||"";}
 function estaLogueado(){return!!getMiUsername()||!!sessionStorage.getItem(ADMIN_TOKEN_KEY);};
 (function(){const t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);})();window.toggleTheme=function(){const html=document.documentElement;const t=html.getAttribute("data-theme")==="dark"?"light":"dark";html.setAttribute("data-theme",t);localStorage.setItem("theme",t);}
 window.loginUser=async function(){const username=($("login-username").value||"").trim().toLowerCase();const password=$("login-password").value||"";const err=$("login-error"),btn=$("login-btn");if(!username||!password){err.textContent="Completá los dos campos.";return;}
