@@ -1969,6 +1969,20 @@
     $("backToTop").classList.toggle("visible", window.scrollY > 300);
   });
   // ── PANEL ADMIN ──
+
+  function togglePwd(span) {
+    const username = span.dataset.user;
+    const pwd = span.dataset.pwd;
+    const btn = span.nextElementSibling;
+    if (span.textContent === username) {
+      span.textContent = pwd;
+      btn.textContent = '🙈';
+    } else {
+      span.textContent = username;
+      btn.textContent = '👁';
+    }
+  }
+
   async function mostrarPanelAdmin(adminToken) {
     const ADMIN_URL = "https://ort-admin.simonabulafia.workers.dev";
 
@@ -1989,7 +2003,6 @@
           <button id="tab-anuncios" onclick="switchTab('anuncios')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">📢 Anuncios</button>
           <button id="tab-resenas" onclick="switchTab('resenas')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">⭐ Reseñas</button>
           <button id="tab-juegos" onclick="switchTab('juegos')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">🎮 Juegos</button>
-          <button id="tab-storage" onclick="switchTab('storage')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">🗄 Storage</button>
         </div>
 
         <div id="panel-contras">
@@ -2032,14 +2045,6 @@
           </div>
         </div>
 
-        <div id="panel-storage" style="display:none;">
-          <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;">
-            <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Limpieza de almacenamiento</h2>
-            <p style="color:#475569;font-size:13px;margin-bottom:16px;">Elimina mensajes de chat de más de 2 días para liberar espacio en Firestore.</p>
-            <button id="btn-limpiar-msgs" onclick="limpiarMensajes()" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-weight:600;font-size:14px;">🗑 Borrar todos los mensajes</button>
-            <p id="limpiar-msg" style="margin-top:10px;font-size:13px;display:none;"></p>
-          </div>
-        </div>
         <div id="panel-juegos" style="display:none;">
           <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
@@ -2172,7 +2177,7 @@ Link de descarga: https://github.com/...</pre>
 
     // Cambiar tab
     window.switchTab = function(tab) {
-      ["contras","sugerencias","anuncios","resenas","storage","juegos"].forEach(t => {
+      ["contras","sugerencias","anuncios","resenas","juegos"].forEach(t => {
         const panel = overlay.querySelector(`#panel-${t}`);
         if (panel) panel.style.display = tab === t ? "block" : "none";
         const btn = overlay.querySelector(`#tab-${t}`);
@@ -2198,7 +2203,8 @@ Link de descarga: https://github.com/...</pre>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1e293b;">
           <div style="flex:1;min-width:0;">
             <div style="display:flex;align-items:center;gap:8px;">
-              <span style="color:#f1f5f9;font-weight:600;">${u.displayName || u.username}</span>
+              <span style="color:#f1f5f9;font-weight:600;" data-user="${u.username}" data-pwd="${u.displayName || u.username}">${u.username}</span>
+              <button onclick="togglePwd(this.previousElementSibling)" style="background:none;border:none;cursor:pointer;font-size:14px;color:#64748b;padding:0;line-height:1;" title="Ver contraseña">👁</button>
               ${pausado ? '<span style="font-size:11px;background:#854d0e;color:#fde047;padding:1px 7px;border-radius:10px;">⏸ Pausado</span>' : ''}
             </div>
             <div style="color:#64748b;font-size:11px;margin-top:2px;">@${u.username} · Registrado: ${fechaReg}</div>
