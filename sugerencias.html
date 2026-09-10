@@ -102,27 +102,23 @@ textarea { min-height:110px; }
     <span class="pwd-lock" id="pwd-lock">🔒</span>
     <h2>Juegos Sort</h2>
     <p style="color:#94a3b8;font-size:13px;margin-bottom:20px;text-align:center;">El contenido es provisto por terceros. Usalo bajo tu cuenta y riesgo. <span onclick="abrirDisclaimer()" style="color:#3b82f6;cursor:pointer;">Ver términos</span></p>
-
-    <!-- Login -->
     <div id="login-form">
       <input id="login-username" type="text" placeholder="Usuario" autocomplete="username" onkeydown="if(event.key==='Enter')loginUser()" style="width:100%;padding:12px 16px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#f1f5f9;font-size:15px;box-sizing:border-box;margin-bottom:10px;outline:none;">
       <div style="position:relative;margin-bottom:10px;">
         <input id="login-password" type="password" placeholder="Contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')loginUser()" style="width:100%;padding:12px 40px 12px 16px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#f1f5f9;font-size:15px;box-sizing:border-box;outline:none;">
         <button onclick="const i=document.getElementById('login-password');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈';" tabindex="-1" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:#64748b;padding:0;">👁</button>
       </div>
-      <button onclick="loginUser()" id="login-btn" style="width:100%;padding:12px;background:#3b82f6;color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:8px;transition:background 0.2s;">Entrar</button>
+      <button onclick="loginUser()" id="login-btn" style="width:100%;padding:12px;background:#3b82f6;color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:8px;">Entrar</button>
       <p id="login-error" style="color:#ef4444;font-size:13px;text-align:center;min-height:18px;"></p>
       <p style="text-align:center;color:#64748b;font-size:13px;">¿No tenés cuenta? <a href="#" onclick="mostrarRegistro();return false;" style="color:#3b82f6;text-decoration:none;">Registrate</a></p>
     </div>
-
-    <!-- Registro -->
     <div id="register-form" style="display:none;">
-      <input id="reg-username" type="text" placeholder="Usuario (3-20 caracteres, sin espacios)" autocomplete="off" onkeydown="if(event.key==='Enter')registrarUsuario()" style="width:100%;padding:12px 16px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#f1f5f9;font-size:15px;box-sizing:border-box;margin-bottom:10px;outline:none;">
+      <input id="reg-username" type="text" placeholder="Usuario (3-20 caracteres)" autocomplete="off" onkeydown="if(event.key==='Enter')registrarUsuario()" style="width:100%;padding:12px 16px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#f1f5f9;font-size:15px;box-sizing:border-box;margin-bottom:10px;outline:none;">
       <div style="position:relative;margin-bottom:10px;">
         <input id="reg-password" type="password" placeholder="Contraseña (mínimo 4 caracteres)" autocomplete="new-password" onkeydown="if(event.key==='Enter')registrarUsuario()" style="width:100%;padding:12px 40px 12px 16px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#f1f5f9;font-size:15px;box-sizing:border-box;outline:none;">
         <button onclick="const i=document.getElementById('reg-password');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈';" tabindex="-1" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:#64748b;padding:0;">👁</button>
       </div>
-      <button onclick="registrarUsuario()" id="reg-btn" style="width:100%;padding:12px;background:#22c55e;color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:8px;transition:background 0.2s;">Crear cuenta</button>
+      <button onclick="registrarUsuario()" id="reg-btn" style="width:100%;padding:12px;background:#22c55e;color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:8px;">Crear cuenta</button>
       <p id="reg-error" style="color:#ef4444;font-size:13px;text-align:center;min-height:18px;"></p>
       <p style="text-align:center;color:#64748b;font-size:13px;">¿Ya tenés cuenta? <a href="#" onclick="mostrarLogin();return false;" style="color:#3b82f6;text-decoration:none;">Iniciá sesión</a></p>
     </div>
@@ -301,6 +297,10 @@ textarea { min-height:110px; }
   </div>
 </div>
 
+
+
+<!-- Chat panel flotante -->
+<div id="chat-panel-placeholder"></div>
 <script>
 const $ = id => document.getElementById(id);
 const ADMIN_URL = "https://ort-admin.simonabulafia.workers.dev";
@@ -340,9 +340,7 @@ async function loginUser() {
     if (data.ok) {
       sessionStorage.setItem("js_session_token", data.sessionToken);
       onLoginSuccess(data.displayName || data.username, null);
-    } else {
-      err.textContent = data.error || "Usuario o contraseña incorrectos.";
-    }
+    } else { err.textContent = data.error || "Usuario o contraseña incorrectos."; }
   } catch(e) { err.textContent = "Error de conexión. Intentá de nuevo."; }
   btn.textContent = "Entrar"; btn.disabled = false;
 }
@@ -363,8 +361,7 @@ async function registrarUsuario() {
       const data2 = await res2.json();
       if (data2.ok) {
         sessionStorage.setItem("js_session_token", data2.sessionToken);
-        onLoginSuccess(data2.displayName || data2.username, null);
-        return;
+        onLoginSuccess(data2.displayName || data2.username, null); return;
       }
     }
     err.textContent = data.error || "Error al crear la cuenta.";
@@ -374,11 +371,11 @@ async function registrarUsuario() {
 
 function mostrarRegistro() {
   $("login-form").style.display = "none"; $("register-form").style.display = "block";
-  $("reg-error").textContent = ""; if ($("reg-username")) $("reg-username").focus();
+  $("reg-error").textContent = ""; setTimeout(() => { if ($("reg-username")) $("reg-username").focus(); }, 50);
 }
 function mostrarLogin() {
   $("register-form").style.display = "none"; $("login-form").style.display = "block";
-  $("login-error").textContent = ""; if ($("login-username")) $("login-username").focus();
+  $("login-error").textContent = ""; setTimeout(() => { if ($("login-username")) $("login-username").focus(); }, 50);
 }
 
 function onLoginSuccess(username, adminToken) {
@@ -396,10 +393,12 @@ function cerrarSesion() {
   sessionStorage.removeItem("js_session_token");
   const ov = $("pwd-overlay");
   if (ov) { ov.classList.remove("saliendo"); ov.style.display = "flex"; }
-  const loginUser = $("login-username"), loginPwd = $("login-password"), loginErr = $("login-error");
-  if (loginUser) loginUser.value = ""; if (loginPwd) loginPwd.value = ""; if (loginErr) loginErr.textContent = "";
+  if ($("login-username")) $("login-username").value = "";
+  if ($("login-password")) $("login-password").value = "";
+  if ($("login-error")) $("login-error").textContent = "";
   mostrarLogin();
   const cu = $("campo-usuario"); if (cu) cu.value = "";
+  const sb = $("sender-badge"); if (sb) sb.textContent = "";
 }
 
 // Restaurar sesión
@@ -418,11 +417,12 @@ function cerrarSesion() {
 async function enviarFormulario(e) {
   e.preventDefault();
   const btn = $("submit-btn");
-  if (!estaLogueado()) { $("pwd-overlay").style.display = "flex"; return; }
-  if ($("radio-otro").checked) {
-    const otroVal = $("otro-input").value.trim();
-    if (!otroVal) { $("otro-input").focus(); return; }
-    e.target.querySelector('input[name="tipo-otro"]').value = otroVal;
+  if (!estaLogueado()) { const ov = $("pwd-overlay"); if (ov) ov.style.display = "flex"; return; }
+  if ($("radio-otro") && $("radio-otro").checked) {
+    const otroVal = $("otro-input") ? $("otro-input").value.trim() : "";
+    if (!otroVal) { if ($("otro-input")) $("otro-input").focus(); return; }
+    const tipoOtroField = e.target.querySelector('input[name="tipo-otro"]');
+    if (tipoOtroField) tipoOtroField.value = otroVal;
   }
   btn.disabled = true; btn.textContent = "Enviando...";
   const formData = new FormData(e.target);
@@ -436,7 +436,8 @@ async function enviarFormulario(e) {
       body: JSON.stringify({ action:"save_suggestion", usuario, tipo, tipoOtro, mensaje, notas }) });
     const data = await res.json();
     if (data.ok) {
-      $("form-wrapper").style.display = "none"; $("success-msg").style.display = "block";
+      const fw = $("form-wrapper"); if (fw) fw.style.display = "none";
+      const sm = $("success-msg"); if (sm) sm.style.display = "block";
     } else {
       alert("Error al enviar. Intentá de nuevo.");
       btn.disabled = false; btn.textContent = "✉️ Enviar sugerencia";
@@ -449,11 +450,13 @@ async function enviarFormulario(e) {
 
 // ── UI ──
 document.addEventListener("DOMContentLoaded", function() {
-  const radios = document.querySelectorAll('input[name="tipo"]');
-  radios.forEach(r => r.addEventListener("change", () => {
-    const wrap = document.getElementById("otro-input")?.closest(".form-group");
-    if (wrap) wrap.style.display = $("radio-otro").checked ? "block" : "none";
-  }));
+  const radioOtro = $("radio-otro");
+  if (radioOtro) {
+    document.querySelectorAll('input[name="tipo"]').forEach(r => r.addEventListener("change", () => {
+      const wrap = $("otro-input") ? $("otro-input").closest(".form-group") : null;
+      if (wrap) wrap.style.display = radioOtro.checked ? "block" : "none";
+    }));
+  }
 });
 
 function toggleDropdown(id) {
@@ -467,10 +470,5 @@ document.addEventListener("click", e => {
 function abrirDisclaimer() { const m = $("disclaimer-modal"); if (m) m.style.display = "flex"; }
 function cerrarDisclaimer() { const m = $("disclaimer-modal"); if (m) m.style.display = "none"; }
 </script>
-
-<!-- Chat panel flotante -->
-<div id="chat-panel-placeholder"></div>
-
-
 </body>
 </html>
