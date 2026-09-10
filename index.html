@@ -1527,14 +1527,15 @@
 
   // ── DESCARGA ──
   async function descargar(btn, juego) {
-    const token = sessionStorage.getItem("auth_token");
-    if (!token) { alert("Sesión expirada, volvé a ingresar la contraseña."); cerrarSesion(); return; }
+    const token = sessionStorage.getItem("js_session_token") || sessionStorage.getItem("js_adminToken");
+    if (!token) { alert("Sesión expirada, volvé a ingresar."); cerrarSesion(); return; }
     btn.classList.add("descargando");
     btn.disabled = true;
     try {
-      const res = await fetch("https://ort-getlink.simonabulafia.workers.dev", {
+      const res = await fetch(ADMIN_URL, {
         method: "POST",
-        body: JSON.stringify({ token, juego })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "get_link", dl: juego })
       });
       const data = await res.json();
       if (data.ok) {
@@ -1592,11 +1593,11 @@
   }
 
   setInterval(() => {
-    if (sessionStorage.getItem("auth_piratas") !== "ok" && !$("pwd-overlay")) location.reload();
+    if (!sessionStorage.getItem("js_username") && !sessionStorage.getItem("js_adminToken") && !$("pwd-overlay")) location.reload();
   }, 500);
 
   // ── JUEGOS ──
-  function getFavsKey() { return "favs_" + (sessionStorage.getItem("auth_nombre") || "guest"); }
+  function getFavsKey() { return "favs_" + (sessionStorage.getItem("js_username") || "guest"); }
   var favs = JSON.parse(localStorage.getItem(getFavsKey()) || "[]");
   var activeGenre = "todos";
   var activeWeight = "todos-pesos";
@@ -3059,7 +3060,7 @@ Link de descarga: https://github.com/...</pre>
 
   async function cargarResenaModal(juego) {
     const wrap = $("modal-resenas-wrap");
-    if (!sessionStorage.getItem("auth_piratas")) return;
+    if (!sessionStorage.getItem("js_username") && !sessionStorage.getItem("js_adminToken")) return;
     wrap.style.display = "block";
 
     // Cargar promedio
