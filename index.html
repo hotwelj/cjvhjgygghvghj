@@ -1970,20 +1970,6 @@
   });
   // ── PANEL ADMIN ──
 
-  function togglePwd(btn) {
-    const container = btn.closest('[data-togglepwd]');
-    const span = container ? container.querySelector('[data-user]') : null;
-    if (!span) return;
-    const username = span.dataset.user;
-    const pwd = span.dataset.pwd;
-    if (span.textContent === username) {
-      span.textContent = pwd;
-      btn.textContent = '🙈';
-    } else {
-      span.textContent = username;
-      btn.textContent = '👁';
-    }
-  }
 
   async function mostrarPanelAdmin(adminToken) {
     const ADMIN_URL = "https://ort-admin.simonabulafia.workers.dev";
@@ -2201,13 +2187,22 @@ Link de descarga: https://github.com/...</pre>
       list.innerHTML = usuarios.map((u) => {
         const fechaReg = u.fechaRegistro ? new Date(u.fechaRegistro).toLocaleString("es-AR", { day:"2-digit", month:"2-digit", year:"numeric" }) : "—";
         const pausado = u.pausado || false;
+        const safeId = u.username.replace(/[^a-z0-9]/g, '_');
+        const pwd = (u.displayName && u.displayName !== u.username) ? u.displayName : '(sin contraseña)';
         return `
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1e293b;">
           <div style="flex:1;min-width:0;">
-            <div style="display:flex;align-items:center;gap:8px;" data-togglepwd>
-              <span style="color:#f1f5f9;font-weight:600;" data-user="${u.username}" data-pwd="${u.displayName || u.username}">${u.username}</span>
-              <button onclick="togglePwd(this)" style="background:none;border:none;cursor:pointer;font-size:14px;color:#64748b;padding:0;line-height:1;" title="Ver contraseña">👁</button>
-              ${pausado ? '<span style="font-size:11px;background:#854d0e;color:#fde047;padding:1px 7px;border-radius:10px;">⏸ Pausado</span>' : ''}
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span id="uname_${safeId}" style="color:#f1f5f9;font-weight:600;">${u.username}</span>
+              <button title="Ver contraseña" style="background:none;border:none;cursor:pointer;font-size:14px;color:#64748b;padding:0;line-height:1;"
+                onclick="(function(btn){
+                  var sp=document.getElementById('uname_${safeId}');
+                  var showing=btn.dataset.showing==='1';
+                  sp.textContent=showing?'${u.username}':'${pwd}';
+                  btn.textContent=showing?'👁':'🙈';
+                  btn.dataset.showing=showing?'0':'1';
+                })(this)">👁</button>
+              ${pausado ? '<span style="font-size:11px;background:#854d0e;color:#fde047;padding:1px 7px;border-radius:10px;margin-left:4px;">⏸ Pausado</span>' : ''}
             </div>
             <div style="color:#64748b;font-size:11px;margin-top:2px;">@${u.username} · Registrado: ${fechaReg}</div>
           </div>
