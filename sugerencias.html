@@ -451,10 +451,11 @@ async function enviarFormulario(e) {
 // ── UI ──
 document.addEventListener("DOMContentLoaded", function() {
   const radioOtro = $("radio-otro");
-  if (radioOtro) {
+  const otroInput = $("otro-input");
+  if (radioOtro && otroInput) {
     document.querySelectorAll('input[name="tipo"]').forEach(r => r.addEventListener("change", () => {
-      const wrap = $("otro-input") ? $("otro-input").closest(".form-group") : null;
-      if (wrap) wrap.style.display = radioOtro.checked ? "block" : "none";
+      otroInput.style.display = radioOtro.checked ? "block" : "none";
+      if (!radioOtro.checked) otroInput.value = "";
     }));
   }
 });
