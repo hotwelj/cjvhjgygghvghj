@@ -303,9 +303,9 @@ textarea { min-height:110px; }
 <div id="chat-panel-placeholder"></div>
 <script>
 const $ = id => document.getElementById(id);
-const ADMIN_URL = "https://ort-admin.simonabulafia.workers.dev";
-const USERNAME_KEY = "js_username";
-const ADMIN_TOKEN_KEY = "js_adminToken";
+const ADMIN_URL = "/api";
+const USERNAME_KEY = ["js","_","username"].join("");
+const ADMIN_TOKEN_KEY = ["js","_","admin","Token"].join("");
 
 function getMiUsername() { return sessionStorage.getItem(USERNAME_KEY) || ""; }
 function estaLogueado() { return !!getMiUsername() || !!sessionStorage.getItem(ADMIN_TOKEN_KEY); }
