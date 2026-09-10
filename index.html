@@ -2025,6 +2025,11 @@
             </div>
             <p id="admin-add-msg" style="margin-top:10px;font-size:13px;color:#22c55e;display:none;"></p>
           </div>
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;margin-top:20px;">
+            <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:14px;">Usuarios registrados</h2>
+            <input id="admin-search" type="text" placeholder="🔍 Buscar por usuario..." oninput="buscarUsuario(this.value)" style="width:100%;padding:10px 14px;background:#0f172a;border:1px solid #334155;border-radius:10px;color:#f1f5f9;font-size:14px;margin-bottom:14px;box-sizing:border-box;outline:none;">
+            <div id="admin-user-list" style="color:#94a3b8;font-size:14px;">Cargando...</div>
+          </div>
         </div>
 
         <div id="panel-storage" style="display:none;">
@@ -2167,20 +2172,17 @@ Link de descarga: https://github.com/...</pre>
 
     // Cambiar tab
     window.switchTab = function(tab) {
-      overlay.querySelector("#panel-contras").style.display = tab === "contras" ? "block" : "none";
-      overlay.querySelector("#panel-sugerencias").style.display = tab === "sugerencias" ? "block" : "none";
-      overlay.querySelector("#panel-anuncios").style.display = tab === "anuncios" ? "block" : "none";
-      overlay.querySelector("#panel-resenas").style.display = tab === "resenas" ? "block" : "none";
-      overlay.querySelector("#panel-storage").style.display = tab === "storage" ? "block" : "none";
-      
-      overlay.querySelector("#panel-juegos").style.display = tab === "juegos" ? "block" : "none";
-      if (tab === "juegos") cargarJuegosAdmin();
-      if (tab !== "chats") { const a=document.getElementById("chats-aviso");const c=document.getElementById("chats-contenido");if(a)a.style.display="block";if(c)c.style.display="none"; }
-      ["contras","sugerencias","anuncios","resenas","storage","chats","juegos"].forEach(t => {
+      ["contras","sugerencias","anuncios","resenas","storage","juegos"].forEach(t => {
+        const panel = overlay.querySelector(`#panel-${t}`);
+        if (panel) panel.style.display = tab === t ? "block" : "none";
         const btn = overlay.querySelector(`#tab-${t}`);
-        btn.style.background = tab === t ? "#3b82f6" : "#1e293b";
-        btn.style.color = tab === t ? "white" : "#94a3b8";
+        if (btn) {
+          btn.style.background = tab === t ? "#3b82f6" : "#1e293b";
+          btn.style.color = tab === t ? "white" : "#94a3b8";
+        }
       });
+      if (tab === "contras") cargarUsuarios();
+      if (tab === "juegos") cargarJuegosAdmin();
       if (tab === "sugerencias") cargarSugerencias();
       if (tab === "anuncios") cargarAnuncioActual();
       if (tab === "resenas") cargarResenasAdmin();
@@ -2613,7 +2615,7 @@ Link de descarga: https://github.com/...</pre>
       const res = await fetch(ADMIN_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "add_user", adminToken, contrasena: pwd }),
+        body: JSON.stringify({ action: "register", username: overlay.querySelector('#admin-user-new')?.value?.trim() || pwd, password: pwd }),
       });
       const data = await res.json();
       this.textContent = "+ Agregar"; this.disabled = false;
