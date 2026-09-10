@@ -1989,7 +1989,6 @@
           <button id="tab-anuncios" onclick="switchTab('anuncios')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">📢 Anuncios</button>
           <button id="tab-resenas" onclick="switchTab('resenas')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">⭐ Reseñas</button>
           <button id="tab-juegos" onclick="switchTab('juegos')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">🎮 Juegos</button>
-          <button id="tab-chats" onclick="switchTab('chats')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">🗂 Chats</button>
           <button id="tab-storage" onclick="switchTab('storage')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">🗄 Storage</button>
         </div>
 
@@ -2018,24 +2017,6 @@
             <p style="color:#475569;font-size:13px;margin-bottom:16px;">Elimina mensajes de chat de más de 2 días para liberar espacio en Firestore.</p>
             <button id="btn-limpiar-msgs" onclick="limpiarMensajes()" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-weight:600;font-size:14px;">🗑 Borrar todos los mensajes</button>
             <p id="limpiar-msg" style="margin-top:10px;font-size:13px;display:none;"></p>
-          </div>
-        </div>
-        <div id="panel-chats" style="display:none;">
-          <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;">
-            <div id="chats-aviso" style="text-align:center;padding:20px 0;">
-              <div style="font-size:40px;margin-bottom:12px;">🔒</div>
-              <h2 style="color:#f1f5f9;font-size:16px;font-weight:700;margin:0 0 10px;">Chats privados</h2>
-              <p style="color:#94a3b8;font-size:13px;line-height:1.6;margin:0 0 20px;max-width:360px;margin-left:auto;margin-right:auto;">Los chats entre usuarios son privados. Como administrador accedés con fines de moderación exclusivamente.</p>
-              <button onclick="document.getElementById('chats-aviso').style.display='none';document.getElementById('chats-contenido').style.display='block';cargarChatsAdmin();" style="background:#3b82f6;color:white;border:none;border-radius:10px;padding:10px 24px;cursor:pointer;font-weight:600;font-size:14px;">Entiendo, continuar</button>
-            </div>
-            <div id="chats-contenido" style="display:none;">
-              <div style="display:flex;gap:8px;margin-bottom:16px;">
-                <button onclick="verChatsAdmin('privados')" id="admin-chats-btn-priv" style="flex:1;padding:8px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:#3b82f6;color:white;">💬 Chats 1a1</button>
-                <button onclick="verChatsAdmin('grupos')" id="admin-chats-btn-grup" style="flex:1;padding:8px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:#0f172a;color:#94a3b8;">👥 Grupos</button>
-                <button onclick="migrarChats()" id="admin-chats-btn-migrar" style="padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-size:12px;background:#0f172a;color:#64748b;" title="Solo necesario la primera vez para cargar chats existentes. No es necesario tocarlo de nuevo.">🔄</button>
-              </div>
-              <div id="admin-chats-lista" style="color:#94a3b8;font-size:13px;">Cargando...</div>
-            </div>
           </div>
         </div>
         <div id="panel-juegos" style="display:none;">
@@ -2175,7 +2156,7 @@ Link de descarga: https://github.com/...</pre>
       overlay.querySelector("#panel-anuncios").style.display = tab === "anuncios" ? "block" : "none";
       overlay.querySelector("#panel-resenas").style.display = tab === "resenas" ? "block" : "none";
       overlay.querySelector("#panel-storage").style.display = tab === "storage" ? "block" : "none";
-      overlay.querySelector("#panel-chats").style.display = tab === "chats" ? "block" : "none";
+      
       overlay.querySelector("#panel-juegos").style.display = tab === "juegos" ? "block" : "none";
       if (tab === "juegos") cargarJuegosAdmin();
       if (tab !== "chats") { const a=document.getElementById("chats-aviso");const c=document.getElementById("chats-contenido");if(a)a.style.display="block";if(c)c.style.display="none"; }
@@ -2667,21 +2648,6 @@ Link de descarga: https://github.com/...</pre>
 
     let adminChatsModo = 'privados';
 
-    window.cargarChatsAdmin = async function() { verChatsAdmin(adminChatsModo); };
-
-    window.migrarChats = async function() {
-      const btn = document.getElementById('admin-chats-btn-migrar');
-      btn.textContent = '⏳'; btn.disabled = true;
-      const res = await fetch("https://ort-admin.simonabulafia.workers.dev", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "migrar_chats", adminToken }),
-      });
-      const data = await res.json();
-      btn.textContent = data.ok ? '✅ ' + data.creados : '❌';
-      btn.disabled = false;
-      if (data.ok) setTimeout(() => verChatsAdmin(adminChatsModo), 500);
-    };
-
     let _adminMsgN = 0;
           const renderMsgs = function(msgs) {
             msgs = msgs || [];
@@ -2708,36 +2674,7 @@ Link de descarga: https://github.com/...</pre>
               +"<button class='admin-collapse-btn' data-col='col_"+uid+"' data-hid='hid_"+uid+"' style='"+btnStyle+"'>&#9660; Colapsar</button></div>";
           };
 
-        window.verChatsAdmin = async function(modo) {
-      adminChatsModo = modo;
-      const lista = overlay.querySelector("#admin-chats-lista");
-      const btnPriv = overlay.querySelector("#admin-chats-btn-priv");
-      const btnGrup = overlay.querySelector("#admin-chats-btn-grup");
-      btnPriv.style.background = modo === 'privados' ? '#3b82f6' : '#0f172a';
-      btnPriv.style.color = modo === 'privados' ? 'white' : '#94a3b8';
-      btnGrup.style.background = modo === 'grupos' ? '#3b82f6' : '#0f172a';
-      btnGrup.style.color = modo === 'grupos' ? 'white' : '#94a3b8';
-      lista.innerHTML = '<p style="color:#64748b;">Cargando...</p>';
-      try {
-        const res = await fetch("https://ort-admin.simonabulafia.workers.dev", {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "list_chats_admin", adminToken, modo }),
-        });
-        const data = await res.json();
-        if (!data.ok) { lista.innerHTML = '<p style="color:#ef4444;">Error al cargar</p>'; return; }
-
-
-        if (modo === 'privados') {
-          const chats = data.chats || [];
-          if (!chats.length) { lista.innerHTML = '<p style="color:#64748b;">Sin chats recientes</p>'; return; }
-          lista.innerHTML = chats.map(c => '<div style="background:#0f172a;border:1px solid #1e3a5f;border-radius:10px;padding:14px;margin-bottom:12px;"><div style="color:#93c5fd;font-size:12px;font-weight:600;margin-bottom:10px;">💬 '+c.chatId.replace(/_/g,' — ')+'</div>'+renderMsgs(c.msgs)+'</div>').join('');
-        } else {
-          const grupos = data.grupos || [];
-          if (!grupos.length) { lista.innerHTML = '<p style="color:#64748b;">Sin grupos</p>'; return; }
-          lista.innerHTML = grupos.map(g => '<div style="background:#0f172a;border:1px solid #1e3a5f;border-radius:10px;padding:14px;margin-bottom:12px;"><div style="color:#93c5fd;font-size:12px;font-weight:600;margin-bottom:4px;">👥 '+g.nombre+'</div><div style="color:#475569;font-size:11px;margin-bottom:10px;">Creador: '+g.creador+' · '+g.miembros+'</div>'+renderMsgs(g.msgs)+'</div>').join('');
-        }
-      } catch(e) { lista.innerHTML = '<p style="color:#ef4444;">Error: '+e.message+'<br><small>'+e.stack?.split('\n')[1]+'</small></p>'; }
-    };
+        ;
 
     // Event delegation para botones de expandir/colapsar en admin chats
     document.addEventListener("click", function(e) {
