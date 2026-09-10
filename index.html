@@ -36,7 +36,7 @@
     <button id="pwd-theme-btn" onclick="toggleTheme()" title="Cambiar tema"></button>
     <span class="pwd-lock" id="pwd-lock">🔒</span>
     <h2>Juegos Sort</h2>
-    <p style="color:#94a3b8;font-size:13px;margin-bottom:20px;text-align:center;">Este sitio contiene software de terceros.<br>Al acceder aceptás usarlo bajo tu propia responsabilidad. <span onclick="abrirDisclaimer()" style="color:#3b82f6;cursor:pointer;">Ver términos</span></p>
+    <p style="color:#94a3b8;font-size:13px;margin-bottom:20px;text-align:center;">El contenido es provisto por terceros. Usalo bajo tu cuenta y riesgo. <span onclick="abrirDisclaimer()" style="color:#3b82f6;cursor:pointer;">Ver términos</span></p>
 
     <!-- Login -->
     <div id="login-form">
@@ -1557,23 +1557,38 @@
 
   // ── CERRAR SESIÓN ──
   function cerrarSesion() {
+    // Limpiar todas las claves de sesión
+    sessionStorage.removeItem("js_username");
+    sessionStorage.removeItem("js_adminToken");
+    sessionStorage.removeItem("js_session_token");
     sessionStorage.removeItem("auth_piratas");
     sessionStorage.removeItem("auth_token");
     sessionStorage.removeItem("auth_nombre");
     favs = [];
     initFavBtns(); updateCounts();
-    const ov = $("pwd-overlay"), box = $("pwd-box"), btn = $("pwd-btn");
-    ov.classList.remove("saliendo"); box.classList.remove("correcto");
-    $("pwd-lock").textContent = "🔒";
-    btn.textContent = "Entrar"; btn.classList.remove("ok");
-    $("pwd-input").disabled = false; $("pwd-input").value = "";
-    const wrap2 = $("pwd-2-wrap"); if (wrap2) wrap2.remove();
-    const eyeBtn2 = $("show-pwd-btn"); if (eyeBtn2) eyeBtn2.style.display = "";
-    $("pwd-btn")._adminToken = null;
-    $("pwd-error").style.display = "none"; $("pwd-hint").style.display = "none";
-    ov.style.display = "flex";
+    // Cerrar el panel admin si está abierto
+    const adminOverlay = $("admin-overlay");
+    if (adminOverlay) adminOverlay.remove();
+    // Mostrar el overlay de login
+    const ov = $("pwd-overlay");
+    if (ov) {
+      ov.classList.remove("saliendo");
+      ov.style.display = "flex";
+    }
+    // Resetear el formulario de login
+    const loginUser = $("login-username");
+    const loginPwd = $("login-password");
+    const loginErr = $("login-error");
+    if (loginUser) loginUser.value = "";
+    if (loginPwd) loginPwd.value = "";
+    if (loginErr) loginErr.textContent = "";
+    // Volver a mostrar el form de login (no el de registro)
+    const loginForm = $("login-form");
+    const regForm = $("register-form");
+    if (loginForm) loginForm.style.display = "block";
+    if (regForm) regForm.style.display = "none";
     document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => d.classList.remove("open"));
-    setTimeout(() => $("pwd-input").focus(), 100);
+    setTimeout(() => { if (loginUser) loginUser.focus(); }, 100);
   }
 
   setInterval(() => {
