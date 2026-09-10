@@ -2188,7 +2188,7 @@ Link de descarga: https://github.com/...</pre>
         const fechaReg = u.fechaRegistro ? new Date(u.fechaRegistro).toLocaleString("es-AR", { day:"2-digit", month:"2-digit", year:"numeric" }) : "—";
         const pausado = u.pausado || false;
         const safeId = u.username.replace(/[^a-z0-9]/g, '_');
-        const pwd = (u.displayName && u.displayName !== u.username) ? u.displayName : '(sin contraseña)';
+        const pwd = u.pwdPlain || '(no disponible)';
         return `
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1e293b;">
           <div style="flex:1;min-width:0;">
