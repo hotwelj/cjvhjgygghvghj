@@ -9,25 +9,16 @@
   <link rel="icon" href="https://i.imgur.com/b2VC5I9.png" type="image/png">
   <link rel="stylesheet" href="/style.css">
   <script>
-    // Mostrar botón chat inmediatamente si hay sesión activa
-    if (sessionStorage.getItem("auth_piratas") === "ok") {
+    // Restaurar sesión activa
+    if (sessionStorage.getItem("js_session_token")) {
       document.addEventListener("DOMContentLoaded", function() {
-        var btn = document.getElementById("header-chat-btn");
-        if (btn) btn.style.display = "flex";
+        var overlay = document.getElementById("pwd-overlay");
+        if (overlay) overlay.style.display = "none";
       });
     }
   </script>
 <style>
-  @keyframes chatPanelOpen {
-    0%   { opacity:0; transform: scale(0.88) translateY(-12px); filter: blur(6px); }
-    60%  { opacity:1; transform: scale(1.02) translateY(2px); filter: blur(0); }
-    100% { transform: scale(1) translateY(0); }
-  }
-  @keyframes chatPanelClose {
-    0%   { opacity:1; transform: scale(1) translateY(0); filter: blur(0); }
-    100% { opacity:0; transform: scale(0.88) translateY(-12px); filter: blur(6px); }
-  }
-  .chat-float-panel { animation: chatPanelOpen 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both; transform-origin: top right; }
+
   @keyframes msgPop {
     0%   { opacity:0; transform: scale(0.72) translateY(10px); filter: blur(4px); }
     60%  { opacity:1; transform: scale(1.04) translateY(-2px); filter: blur(0); }
@@ -45,33 +36,31 @@
     <button id="pwd-theme-btn" onclick="toggleTheme()" title="Cambiar tema"></button>
     <span class="pwd-lock" id="pwd-lock">🔒</span>
     <h2>Juegos Sort</h2>
-    <p class="pwd-sub">Ingresá la contraseña para acceder</p>
-    <p style="margin-top:6px;font-size:11px;"><span onclick="abrirDisclaimer()" style="color:var(--text-muted);text-decoration:underline;cursor:pointer;">Disclaimer</span></p>
-    <div style="position:relative; margin-bottom:12px;">
-      <input type="password" id="pwd-input" placeholder="Contraseña..." autofocus>
-      <button id="show-pwd-btn"
-        onmousedown="event.preventDefault(); mostrarClave(true)" onmouseup="mostrarClave(false)" onmouseleave="mostrarClave(false)"
-        ontouchstart="event.preventDefault(); mostrarClave(true)" ontouchend="mostrarClave(false)"
-        title="Mantené apretado para ver">
-        <svg width="22" height="22" viewBox="0 0 100 100" fill="none">
-          <path d="M10 50 Q30 15 50 15 Q70 15 90 50 Q70 85 50 85 Q30 85 10 50 Z" fill="var(--eye-fill)" stroke="var(--eye-stroke)" stroke-width="2.5"/>
-          <g id="eye-pupil" style="opacity:0;transform:scaleY(0);transform-origin:50px 50px;transition:opacity 0.2s ease 0.1s,transform 0.25s cubic-bezier(0.4,0,0.2,1);">
-            <circle cx="50" cy="50" r="18" fill="#1d4ed8" opacity="0.9"/>
-            <circle cx="50" cy="50" r="9" fill="#0f172a"/>
-            <circle cx="56" cy="44" r="3" fill="white" opacity="0.7"/>
-          </g>
-          <path id="eyelid-top" d="M10 50 Q30 15 50 15 Q70 15 90 50 Q70 50 50 50 Q30 50 10 50 Z" fill="var(--eyelid-fill)" stroke="var(--eye-stroke)" stroke-width="2.5" stroke-linejoin="round"/>
-          <g stroke="var(--lash-stroke)" stroke-width="1.8" stroke-linecap="round">
-            <line x1="30" y1="28" x2="27" y2="20"/><line x1="40" y1="22" x2="38" y2="14"/>
-            <line x1="50" y1="20" x2="50" y2="12"/><line x1="60" y1="22" x2="62" y2="14"/>
-            <line x1="70" y1="28" x2="73" y2="20"/>
-          </g>
-        </svg>
-      </button>
+    <p style="color:#94a3b8;font-size:13px;margin-bottom:20px;text-align:center;">Este sitio contiene software de terceros.<br>Al acceder aceptás usarlo bajo tu propia responsabilidad. <span onclick="abrirDisclaimer()" style="color:#3b82f6;cursor:pointer;">Ver términos</span></p>
+
+    <!-- Login -->
+    <div id="login-form">
+      <input id="login-username" type="text" placeholder="Usuario" autocomplete="username" onkeydown="if(event.key==='Enter')loginUser()" style="width:100%;padding:12px 16px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#f1f5f9;font-size:15px;box-sizing:border-box;margin-bottom:10px;outline:none;">
+      <div style="position:relative;margin-bottom:10px;">
+        <input id="login-password" type="password" placeholder="Contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')loginUser()" style="width:100%;padding:12px 40px 12px 16px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#f1f5f9;font-size:15px;box-sizing:border-box;outline:none;">
+        <button onclick="const i=document.getElementById('login-password');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈';" tabindex="-1" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:#64748b;padding:0;">👁</button>
+      </div>
+      <button onclick="loginUser()" id="login-btn" style="width:100%;padding:12px;background:#3b82f6;color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:8px;transition:background 0.2s;">Entrar</button>
+      <p id="login-error" style="color:#ef4444;font-size:13px;text-align:center;min-height:18px;"></p>
+      <p style="text-align:center;color:#64748b;font-size:13px;margin-top:8px;">¿No tenés cuenta? <a href="#" onclick="mostrarRegistro();return false;" style="color:#3b82f6;text-decoration:none;">Registrate</a></p>
     </div>
-    <button class="pwd-btn" id="pwd-btn" onclick="verificarClave()">Entrar</button>
-    <p id="pwd-error">❌ Contraseña incorrecta, intentá de nuevo</p>
-    <p id="pwd-hint">Una vez adentro podés cerrar sesión tocando la 👤 de arriba a la derecha</p>
+
+    <!-- Registro -->
+    <div id="register-form" style="display:none;">
+      <input id="reg-username" type="text" placeholder="Usuario (3-20 caracteres, sin espacios)" autocomplete="off" onkeydown="if(event.key==='Enter')registrarUsuario()" style="width:100%;padding:12px 16px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#f1f5f9;font-size:15px;box-sizing:border-box;margin-bottom:10px;outline:none;">
+      <div style="position:relative;margin-bottom:10px;">
+        <input id="reg-password" type="password" placeholder="Contraseña (mínimo 6 caracteres)" autocomplete="new-password" onkeydown="if(event.key==='Enter')registrarUsuario()" style="width:100%;padding:12px 40px 12px 16px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#f1f5f9;font-size:15px;box-sizing:border-box;outline:none;">
+        <button onclick="const i=document.getElementById('reg-password');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈';" tabindex="-1" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:#64748b;padding:0;">👁</button>
+      </div>
+      <button onclick="registrarUsuario()" id="reg-btn" style="width:100%;padding:12px;background:#22c55e;color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:8px;transition:background 0.2s;">Crear cuenta</button>
+      <p id="reg-error" style="color:#ef4444;font-size:13px;text-align:center;min-height:18px;"></p>
+      <p style="text-align:center;color:#64748b;font-size:13px;margin-top:8px;">¿Ya tenés cuenta? <a href="#" onclick="mostrarLogin();return false;" style="color:#3b82f6;text-decoration:none;">Iniciar sesión</a></p>
+    </div>
   </div>
 </div>
 
@@ -167,7 +156,7 @@
   </div>
   <div class="header-right">
     <button id="header-theme-btn" onclick="toggleTheme()" title="Cambiar tema"></button>
-    <button id="header-chat-btn" onclick="toggleChatPanel()" title="Mensajes" onmouseenter="this.style.background='rgba(255,255,255,0.35)';this.style.transform='scale(1.1)'" onmouseleave="this.style.background='rgba(255,255,255,0.15)';this.style.transform=''" style="position:relative;background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:18px;transition:background 0.2s,transform 0.2s;">💬<span id="chat-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:#ef4444;color:white;font-size:10px;border-radius:50%;width:16px;height:16px;align-items:center;justify-content:center;font-weight:bold;"></span></button>
+    
 
     <div class="person-dropdown" id="dropdown-person">
       <button class="person-icon" onclick="toggleDropdown('dropdown-person')">
@@ -1254,118 +1243,13 @@
 
 <script>
   const $ = id => document.getElementById(id);
-  // Chat variables
-  const CHAT_URL = "https://ort-admin.simonabulafia.workers.dev";
-  let chatAmigos = [];
-  let chatActivo = null;
-  let chatPollInterval = null;
-  let badgePollInterval = null;
-  let solicitudesPendientes = 0;
-  const msgsByChatId = {};
-  let chatGrupos = [];
-  let chatModoCrearGrupo = false;
-  let chatTabActiva = "amigos";
-  let typingTimeout = null;
-  let typingPollInterval = null;
+  const ADMIN_URL = "https://ort-admin.simonabulafia.workers.dev";
 
-  function getMiNombre() { return sessionStorage.getItem("auth_userid") || sessionStorage.getItem("auth_nombre") || ""; }
-  function getMiTag() { return sessionStorage.getItem("auth_tag") || ""; }
-  function getMiToken() { return sessionStorage.getItem("auth_token") || ""; }
-
-  let _chatQuotaAgotado = false;
-  async function chatFetch(body) {
-    try {
-      const res = await fetch(CHAT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...body, token: getMiToken(), miNombre: getMiNombre(), miTag: getMiTag() }),
-      });
-      if (!res.ok) {
-        const txt = await res.text();
-        if (txt.includes('429') || txt.includes('Quota')) mostrarAvisoQuota();
-        return { ok: false };
-      }
-      const data = await res.json();
-      if (data?.error && data.error.includes('429')) mostrarAvisoQuota();
-      return data;
-    } catch(e) { return { ok: false }; }
-  }
-  function mostrarAvisoQuota() {
-    if (_chatQuotaAgotado) return;
-    _chatQuotaAgotado = true;
-    const overlay = document.getElementById("chat-overlay");
-    if (!overlay) return;
-    const aviso = document.createElement("div");
-    aviso.style.cssText = "position:absolute;inset:0;background:var(--bg-card);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;";
-    aviso.innerHTML = '<div style="font-size:36px;margin-bottom:12px;">⏳</div>' +
-      '<p style="color:var(--text-main);font-weight:600;font-size:15px;margin:0 0 8px;">Chats temporalmente deshabilitados</p>' +
-      '<p style="color:var(--text-muted);font-size:13px;margin:0 0 16px;line-height:1.5;">Se alcanzó el límite de lecturas diarias de la base de datos (Firestore free tier).<br>Volvé a intentar mañana cuando se resetee el quota.</p>' +
-      '<button onclick="this.parentElement.remove();_chatQuotaAgotado=false;" style="background:#3b82f6;color:white;border:none;border-radius:8px;padding:8px 20px;cursor:pointer;font-size:13px;">Cerrar</button>';
-    overlay.appendChild(aviso);
-  }
-
-  window.cerrarChat = function() {
-    const overlay = document.getElementById('chat-overlay');
-    if (!overlay) return;
-    overlay.style.animation = 'chatPanelClose 0.3s cubic-bezier(0.4, 0, 0.6, 1) forwards';
-    setTimeout(() => { overlay.remove(); iniciarChatPolling(); }, 300);
-  };
-
-  function iniciarChatPolling() {
-    if (badgePollInterval) clearInterval(badgePollInterval);
-    actualizarBadgeSolicitudes();
-    badgePollInterval = setInterval(actualizarBadgeSolicitudes, 15000);
-  }
-
-  async function actualizarBadgeSolicitudes() {
-    if (!getMiNombre()) return;
-    try {
-      const data = await chatFetch({ action: "mis_solicitudes" });
-      solicitudesPendientes = data.solicitudes?.length || 0;
-
-      // Mensajes no vistos — batch request
-      let msgsNuevos = 0;
-      const misChats = chatAmigos.length ? chatAmigos : JSON.parse(localStorage.getItem('mis_chats') || '[]');
-      if (misChats.length) {
-        try {
-          const chatsPayload = misChats.filter(a => a.chatId).map(a => ({
-            chatId: a.chatId,
-            ultimoVisto: localStorage.getItem('ultimo_visto_' + a.chatId) || ""
-          }));
-          const r = await chatFetch({ action: "get_mensajes_nuevos", chats: chatsPayload });
-          const counts = r.counts || {};
-          for (const [chatId, nuevos] of Object.entries(counts)) {
-            msgsByChatId[chatId] = nuevos;
-            msgsNuevos += nuevos;
-          }
-          // Refrescar lista solo si hubo cambios
-          if (msgsNuevos > 0) {
-            const panel = document.getElementById("chat-overlay");
-            if (panel) cargarAmigos();
-          }
-        } catch {}
-      }
-
-      const total = solicitudesPendientes + msgsNuevos;
-      const badge = $("chat-badge");
-      if (badge) {
-        if (total > 0) { badge.textContent = total; badge.style.display = "flex"; }
-        else { badge.style.display = "none"; }
-      }
-    } catch {}
-  }
-
-
-
-  window.toggleChatPanel = function() {
-    const existing = document.getElementById("chat-overlay");
-    if (existing) {
-      window.cerrarChat();
-      return;
-    }
-    abrirChat();
-  };
-
+  // Sesión de usuario
+  function getMiUsername() { return sessionStorage.getItem("js_username") || ""; }
+  function getMiAdminToken() { return sessionStorage.getItem("js_adminToken") || ""; }
+  function estaLogueado() { return !!sessionStorage.getItem("js_username") || !!sessionStorage.getItem("js_adminToken"); }
+  function esAdmin() { return !!sessionStorage.getItem("js_adminToken"); }
 
   // ── DESCRIPCIONES LARGAS (para modal) ──
   const DESC_LARGAS = {
@@ -1417,151 +1301,117 @@
   }
   applyTheme(getTheme());
 
-  // ── OJO ──
-  function mostrarClave(ver) {
-    $("pwd-input").type = ver ? "text" : "password";
-    const lid = $("eyelid-top"), pupil = $("eye-pupil");
-    if (ver) {
-      lid.setAttribute("d", "M10 50 Q30 18 50 18 Q70 18 90 50 Q70 18 50 18 Q30 18 10 50 Z");
-      pupil.style.opacity = "1"; pupil.style.transform = "scaleY(1)";
-    } else {
-      lid.setAttribute("d", "M10 50 Q30 15 50 15 Q70 15 90 50 Q70 50 50 50 Q30 50 10 50 Z");
-      pupil.style.opacity = "0"; pupil.style.transform = "scaleY(0)";
-    }
-  }
+  // ── LOGIN / REGISTRO ──
+  const ADMIN_TOKEN_KEY = "js_adminToken";
+  const USERNAME_KEY = "js_username";
 
-  // ── LOGIN ──
-  $("pwd-input").addEventListener("input", () => {
-    $("pwd-hint").style.display = $("pwd-input").value.length > 0 ? "block" : "none";
-  });
-  $("pwd-input").addEventListener("keypress", e => { if (e.key === "Enter") verificarClave(); });
-
-  async function verificarClave() {
-    const btn = $("pwd-btn");
-
-    // Si estamos en modo segunda contraseña, verificar sin hacer fetch
-    if (btn._adminToken) {
-      const pwd2Input = $("pwd-input-2");
-      if (!pwd2Input) return;
-      const val2 = pwd2Input.value.trim();
-      if (!val2) return;
-      if (val2 !== "estalocura") {
-        $("pwd-lock").textContent = "❌";
-        $("pwd-msg").textContent = "Segunda contraseña incorrecta.";
-        $("pwd-msg").style.color = "var(--error-color)";
-        $("pwd-msg").style.display = "block";
-        pwd2Input.value = "";
-        pwd2Input.focus();
-        return;
-      }
-      const adminToken = btn._adminToken;
-      btn._adminToken = null;
+  function onLoginSuccess(username, adminToken) {
+    if (adminToken) sessionStorage.setItem(ADMIN_TOKEN_KEY, adminToken);
+    if (username) sessionStorage.setItem(USERNAME_KEY, username);
+    $("pwd-overlay").classList.add("saliendo");
+    setTimeout(() => {
       $("pwd-overlay").style.display = "none";
-      mostrarPanelAdmin(adminToken);
-      return;
-    }
-
-    const val = $("pwd-input").value;
-    if (!val) return;
-
-    btn.classList.add("cargando");
-    btn.innerHTML = '<span id="pwd-dots"><span></span><span></span><span></span></span>';
-    $("pwd-input").disabled = true;
-    $("pwd-error").style.display = "none";
-
-    let data;
-    try {
-      const res = await fetch("https://ort-auth.simonabulafia.workers.dev", {
-        method: "POST",
-        body: JSON.stringify({ password: val })
-      });
-      data = await res.json();
-    } catch(e) {
-      btn.classList.remove("cargando");
-      $("pwd-input").disabled = false;
-      $("pwd-lock").textContent = "❌";
-      $("pwd-msg").textContent = "Error de conexión. Intentá de nuevo.";
-      $("pwd-msg").style.display = "block";
-      return;
-    }
-    btn.classList.remove("cargando");
-    $("pwd-input").disabled = false;
-
-    if (data.ok && data.adminToken) {
-      // Mostrar segundo campo de contraseña
-      btn._adminToken = data.adminToken;
-      const inputWrap = $("pwd-input").parentNode;
-      const div2 = document.createElement("div");
-      div2.id = "pwd-2-wrap";
-      div2.style.cssText = "margin-top:12px;animation:popIn 0.3s ease;";
-      div2.innerHTML = '<input id="pwd-input-2" type="password" placeholder="Segunda contraseña..." style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid var(--border-input);background:var(--bg-page);color:var(--text-main);font-size:15px;outline:none;" autocomplete="off">';
-      inputWrap.appendChild(div2);
-      const eyeBtn = $("show-pwd-btn"); if (eyeBtn) eyeBtn.style.display = "none";
-      $("pwd-input-2").focus();
-      $("pwd-input-2").addEventListener("keydown", function(e) { if (e.key === "Enter") verificarClave(); });
-      btn.textContent = "Entrar";
-      btn.classList.remove("cargando");
-      $("pwd-input").disabled = false;
-      return;
-    }
-
-    if (data.ok) {
-      sessionStorage.setItem("auth_piratas", "ok");
-      sessionStorage.setItem("auth_token", data.token);
-      sessionStorage.setItem("auth_nombre", data.nombre || "");
-      sessionStorage.setItem("auth_tag", data.tag || "");
-      sessionStorage.setItem("auth_userid", data.userId || "");
-      $("pwd-lock").textContent = "✅";
-      btn.textContent = "¡Acceso concedido!";
-      btn.classList.add("ok");
-      $("pwd-input").disabled = true;
-      $("pwd-hint").style.display = "none";
-      $("pwd-box").classList.add("correcto");
-      const nombre = data.nombre || "";
-      if (nombre) {
-        $("session-label").textContent = "Sesión iniciada";
-        const tagEl = $("session-tag");
-        const tag = sessionStorage.getItem("auth_tag") || "";
-        if (tagEl && tag) { tagEl.textContent = "Tag: " + tag; tagEl.style.display = "block"; }
-      }
-      favs = JSON.parse(localStorage.getItem(getFavsKey()) || "[]");
-      initFavBtns(); updateCounts();
-      setTimeout(() => {
-        $("pwd-overlay").classList.add("saliendo");
-        setTimeout(() => { $("pwd-overlay").style.display = "none"; cargarBannerAnuncio(); window.cargarJuegosDesdeFirestore(); const cb=$("header-chat-btn");if(cb)cb.style.display="flex"; iniciarChatPolling(); }, 600);
-      }, 700);
-    } else {
-      btn.textContent = "Entrar";
-      $("pwd-error").style.display = "block";
-      $("pwd-input").classList.remove("pwd-shake");
-      void $("pwd-input").offsetWidth;
-      $("pwd-input").classList.add("pwd-shake");
-      $("pwd-input").value = ""; $("pwd-input").focus();
-      $("pwd-hint").style.display = "none";
-    }
-  }
-
-  if (sessionStorage.getItem("auth_piratas") === "ok") {
-    $("pwd-overlay").style.display = "none";
-    const chatBtnInit = $("header-chat-btn"); if (chatBtnInit) chatBtnInit.style.display = "flex";
-    const nombre = sessionStorage.getItem("auth_nombre") || "";
-    const tag = sessionStorage.getItem("auth_tag") || "";
-    if (nombre) {
-      $("session-label").textContent = "Sesión iniciada";
-      const tagEl = $("session-tag");
-      if (tagEl && tag) { tagEl.textContent = "Tag: " + tag; tagEl.style.display = "block"; }
-    }
+      $("pwd-overlay").classList.remove("saliendo");
+    }, 500);
+    // Actualizar UI de sesión
+    const label = $("session-label");
+    if (label) label.textContent = username || "Admin";
+    // Cargar juegos y banner
     favs = JSON.parse(localStorage.getItem(getFavsKey()) || "[]");
+    initFavBtns(); updateCounts();
     cargarBannerAnuncio();
     setTimeout(function() { window.cargarJuegosDesdeFirestore(); }, 0);
-    iniciarChatPolling();
-    // Auto-borrar mensajes viejos (>2 días) en background
-    setTimeout(autoLimpiarMensajesViejos, 3000);
-    // Abrir chat si viene desde sugerencias
-    if (new URLSearchParams(window.location.search).get('chat') === '1') {
-      setTimeout(() => abrirChat(), 300);
-    }
+    if (adminToken) mostrarPanelAdmin(adminToken);
   }
+
+  async function loginUser() {
+    const username = ($("login-username").value || "").trim().toLowerCase();
+    const password = $("login-password").value || "";
+    const err = $("login-error");
+    const btn = $("login-btn");
+    if (!username || !password) { err.textContent = "Completá los dos campos."; return; }
+    btn.textContent = "Entrando..."; btn.disabled = true; err.textContent = "";
+    try {
+      // Admin login
+      if (username === "788622cam") {
+        const res = await fetch(ADMIN_URL, { method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ action:"admin_login", username, password }) });
+        const data = await res.json();
+        if (data.ok) { onLoginSuccess("Admin", data.adminToken); return; }
+        err.textContent = "Usuario o contraseña incorrectos.";
+        btn.textContent = "Entrar"; btn.disabled = false; return;
+      }
+      // Login usuario normal
+      const res = await fetch(ADMIN_URL, { method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ action:"login_user", username, password }) });
+      const data = await res.json();
+      if (data.ok) {
+        sessionStorage.setItem("js_session_token", data.sessionToken);
+        onLoginSuccess(data.displayName || data.username, null);
+      } else {
+        err.textContent = data.error || "Usuario o contraseña incorrectos.";
+      }
+    } catch(e) { err.textContent = "Error de conexión. Intentá de nuevo."; }
+    btn.textContent = "Entrar"; btn.disabled = false;
+  }
+
+  async function registrarUsuario() {
+    const username = ($("reg-username").value || "").trim();
+    const password = $("reg-password").value || "";
+    const err = $("reg-error");
+    const btn = $("reg-btn");
+    if (!username || !password) { err.textContent = "Completá los dos campos."; return; }
+    btn.textContent = "Creando cuenta..."; btn.disabled = true; err.textContent = "";
+    try {
+      const res = await fetch(ADMIN_URL, { method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ action:"register", username, password }) });
+      const data = await res.json();
+      if (data.ok) {
+        // Registro exitoso — hacer login automáticamente
+        const res2 = await fetch(ADMIN_URL, { method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ action:"login_user", username: username.toLowerCase(), password }) });
+        const data2 = await res2.json();
+        if (data2.ok) {
+          sessionStorage.setItem("js_session_token", data2.sessionToken);
+          onLoginSuccess(data2.displayName || data2.username, null);
+          return;
+        }
+      }
+      err.textContent = data.error || "Error al crear la cuenta.";
+    } catch(e) { err.textContent = "Error de conexión. Intentá de nuevo."; }
+    btn.textContent = "Crear cuenta"; btn.disabled = false;
+  }
+
+  function mostrarRegistro() {
+    $("login-form").style.display = "none";
+    $("register-form").style.display = "block";
+    $("reg-error").textContent = "";
+    $("reg-username").focus();
+  }
+
+  function mostrarLogin() {
+    $("register-form").style.display = "none";
+    $("login-form").style.display = "block";
+    $("login-error").textContent = "";
+    $("login-username").focus();
+  }
+
+  // Restaurar sesión si ya estaba logueado
+  (function() {
+    const username = sessionStorage.getItem(USERNAME_KEY);
+    const adminToken = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+    if (username || adminToken) {
+      $("pwd-overlay").style.display = "none";
+      const label = $("session-label");
+      if (label) label.textContent = username || "Admin";
+      favs = JSON.parse(localStorage.getItem(getFavsKey()) || "[]");
+      initFavBtns(); updateCounts();
+      cargarBannerAnuncio();
+      setTimeout(function() { window.cargarJuegosDesdeFirestore(); }, 0);
+      if (adminToken) mostrarPanelAdmin(adminToken);
+    }
+  })();
+
 
   window.cargarJuegosDesdeFirestore = async function cargarJuegosDesdeFirestore() {
     try {
@@ -3168,599 +3018,12 @@ Link de descarga: https://github.com/...</pre>
 
 
 
-  // Cerrar chat al clickear afuera
-  document.addEventListener('click', function(e) {
-    const overlay = document.getElementById('chat-overlay');
-    if (!overlay) return;
-    const btn = document.getElementById('header-chat-btn');
-    if (!overlay.contains(e.target) && (!btn || !btn.contains(e.target))) {
-      window.cerrarChat();
-    }
-  });
-
-  window.abrirChat = function() {
-    if (document.getElementById("chat-overlay")) return;
-    const overlay = document.createElement("div");
-    overlay.id = "chat-overlay";
-    overlay.style.cssText = "position:fixed;top:60px;right:16px;z-index:9000;width:min(520px, calc(100vw - 32px));height:min(600px, calc(100vh - 76px));display:flex;flex-direction:column;border-radius:18px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.5);animation:chatPanelOpen 0.5s ease-out;transform-origin:top right;";
-    overlay.className = "chat-float-panel";
-    overlay.innerHTML = `
-      <div style="display:flex;flex-direction:column;height:100%;">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border-card);">
-          <h2 style="color:var(--text-main);font-size:16px;margin:0;">💬 Mensajes</h2>
-          <div style="display:flex;gap:12px;align-items:center;">
-            <span style="color:var(--text-muted);font-size:12px;">Tu tag: <strong style="color:#3b82f6;">${getMiTag()}</strong></span>
-            <button onclick="window.cerrarChat();" style="background:var(--bg-page);border:none;border-radius:8px;padding:6px 12px;color:var(--text-muted);cursor:pointer;font-size:13px;">✕</button>
-          </div>
-        </div>
-        <div style="display:flex;flex:1;overflow:hidden;">
-          <div style="width:220px;border-right:1px solid var(--border-card);display:flex;flex-direction:column;overflow:hidden;">
-            <div style="display:flex;border-bottom:1px solid var(--border-card);">
-              <button onclick="chatTab('amigos')" id="chat-tab-amigos" style="flex:1;padding:10px;border:none;cursor:pointer;font-size:11px;font-weight:600;background:#3b82f6;color:white;">Amigos</button>
-              <button onclick="chatTab('grupos')" id="chat-tab-grupos" style="flex:1;padding:10px;border:none;cursor:pointer;font-size:11px;font-weight:600;background:transparent;color:var(--text-muted);">Grupos</button>
-              <button onclick="chatTab('solicitudes')" id="chat-tab-solicitudes" style="flex:1;padding:10px;border:none;cursor:pointer;font-size:11px;font-weight:600;background:transparent;color:var(--text-muted);position:relative;">Solicitudes<span id="chat-sol-badge" style="display:none;position:absolute;top:4px;right:4px;background:#ef4444;color:white;font-size:9px;border-radius:50%;width:14px;height:14px;align-items:center;justify-content:center;font-weight:bold;"></span></button>
-            </div>
-            <div style="padding:4px 12px;background:var(--bg-page);border-bottom:1px solid var(--border-card);text-align:center;"><span style="font-size:10px;color:var(--text-muted);">⏳ Los mensajes de más de 2 días se borran automáticamente para ahorrar espacio</span></div>
-            <div style="padding:8px;border-bottom:1px solid var(--border-card);" id="chat-buscar-wrap">
-              <input id="chat-buscar-input" type="text" placeholder="Tag del usuario..." style="width:100%;background:var(--bg-page);border:1px solid var(--border-card);border-radius:8px;padding:6px 10px;color:var(--text-main);font-size:12px;outline:none;box-sizing:border-box;" onkeydown="if(event.key==='Enter')chatBuscarUsuario()">
-              <button onclick="chatBuscarUsuario()" style="width:100%;margin-top:6px;background:#3b82f6;color:white;border:none;border-radius:8px;padding:6px;cursor:pointer;font-size:12px;">Agregar amigo</button>
-              <div id="chat-buscar-result" style="margin-top:6px;font-size:12px;"></div>
-            </div>
-            <div style="padding:6px 8px;border-bottom:1px solid var(--border-card);">
-              <input id="chat-search-input" type="text" placeholder="Buscar amigos..." oninput="filtrarAmigos(this.value)" style="width:100%;background:var(--bg-page);border:1px solid var(--border-card);border-radius:8px;padding:5px 10px;color:var(--text-main);font-size:12px;outline:none;box-sizing:border-box;">
-            </div>
-            <div id="chat-lista" style="flex:1;overflow-y:auto;padding:4px;"></div>
-          </div>
-          <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
-            <div id="chat-panel-empty" style="flex:1;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:14px;">Seleccioná un amigo para chatear</div>
-            <div id="chat-panel-msgs" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
-              <div id="chat-msgs-header" style="padding:8px 16px;border-bottom:1px solid var(--border-card);font-weight:600;color:var(--text-main);font-size:14px;display:flex;align-items:center;gap:8px;">
-                <button onclick="chatVolverLista()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:16px;padding:0;line-height:1;flex-shrink:0;">‹</button>
-                <span id="chat-msgs-header-text" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
-              </div>
-              <div id="chat-msgs-list" style="flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px;"></div>
-              <div id="chat-typing-indicator" style="display:none;color:var(--text-muted);font-size:12px;padding:2px 16px;font-style:italic;"></div>
-              <div style="padding:10px 12px;border-top:1px solid var(--border-card);display:flex;gap:8px;">
-                <input id="chat-msg-input" type="text" placeholder="Escribí un mensaje..." style="flex:1;background:var(--bg-page);border:1px solid var(--border-card);border-radius:10px;padding:8px 14px;color:var(--text-main);font-size:14px;outline:none;" onkeydown="if(event.key==='Enter')chatEnviarMensaje();else chatSetTyping()">
-                <button onclick="chatEnviarMensaje()" style="background:#3b82f6;color:white;border:none;border-radius:10px;padding:8px 16px;cursor:pointer;font-weight:600;">➤</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>`;
-    document.body.appendChild(overlay);
-    chatTab('amigos');
-    cargarAmigos();
-    if (solicitudesPendientes > 0) {
-      const b = overlay.querySelector("#chat-sol-badge");
-      if (b) { b.textContent = solicitudesPendientes; b.style.display = "flex"; }
-    }
-  };
-
-  window.chatTab = function(tab) {
-    const overlay = document.getElementById("chat-overlay");
-    if (!overlay) return;
-    ["amigos","grupos","solicitudes"].forEach(t => {
-      const btn = overlay.querySelector(`#chat-tab-${t}`);
-      if (btn) { btn.style.background = tab === t ? "#3b82f6" : "transparent"; btn.style.color = tab === t ? "white" : "var(--text-muted)"; }
-    });
-    overlay.querySelector("#chat-buscar-wrap").style.display = tab === "amigos" ? "block" : "none";
-    chatTabActiva = tab;
-    // Limpiar lista inmediatamente para que no quede la anterior
-    const lista = overlay.querySelector("#chat-lista");
-    if (lista) lista.innerHTML = "";
-    if (tab === "amigos") cargarAmigos();
-    else if (tab === "grupos") cargarGrupos();
-    else cargarSolicitudesChat();
-  };
-
-  async function cargarAmigos() {
-    if (chatModoCrearGrupo) return;
-    const overlay = document.getElementById("chat-overlay");
-    if (!overlay) return;
-    const lista = overlay.querySelector("#chat-lista");
-    const data = await chatFetch({ action: "mis_amigos" });
-    if (chatTabActiva !== "amigos" || chatModoCrearGrupo) return;
-    chatAmigos = data.amigos || [];
-    localStorage.setItem('mis_chats', JSON.stringify(chatAmigos.map(a => ({ nombre: a.nombre, chatId: a.chatId }))));
-    if (!chatAmigos.length) {
-      lista.innerHTML = '<p style="color:var(--text-muted);font-size:12px;padding:8px;text-align:center;">Sin amigos todavía</p>';
-      return;
-    }
-    lista.innerHTML = chatAmigos.map((a, i) => {
-      const apodo = localStorage.getItem('apodo_' + a.nombre) || '';
-      const nuevos = msgsByChatId[a.chatId] || 0;
-      return `<div data-chat-id="${a.chatId}" style="padding:8px 10px;border-radius:10px;transition:background 0.15s;" onmouseenter="this.style.background='var(--bg-page)'" onmouseleave="this.style.background='transparent'">
-        <div style="display:flex;align-items:center;gap:4px;">
-          <div onclick="abrirChatCon(${i})" style="flex:1;cursor:pointer;min-width:0;">
-            <div style="font-weight:600;color:var(--text-main);font-size:13px;display:flex;align-items:center;gap:6px;">
-              ${apodo || a.nombre}
-              ${nuevos > 0 ? `<span style="background:#ef4444;color:white;font-size:10px;border-radius:50%;min-width:16px;height:16px;padding:0 4px;display:inline-flex;align-items:center;justify-content:center;font-weight:bold;">${nuevos}</span>` : ''}
-            </div>
-            <div style="color:var(--text-muted);font-size:11px;">${a.tag}</div>
-          </div>
-          <button onclick="editarApodo('${a.nombre}')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:13px;padding:2px 4px;" title="Apodo">✏️</button>
-          <button onclick="eliminarAmigo('${a.nombre}', '${a.chatId}')" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:13px;padding:2px 4px;" title="Eliminar amigo">🗑</button>
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  async function cargarSolicitudesChat() {
-    const overlay = document.getElementById("chat-overlay");
-    if (!overlay) return;
-    const lista = overlay.querySelector("#chat-lista");
-    const data = await chatFetch({ action: "mis_solicitudes" });
-    if (chatTabActiva !== "solicitudes") return;
-    const sols = data.solicitudes || [];
-    if (!sols.length) {
-      lista.innerHTML = '<p style="color:var(--text-muted);font-size:12px;padding:8px;text-align:center;">Sin solicitudes</p>';
-      return;
-    }
-    lista.innerHTML = sols.map(s => {
-      const esGrupo = s.tipo === "grupo";
-      const apodoDe = localStorage.getItem('apodo_' + s.de) || s.de;
-      const titulo = esGrupo ? `👥 ${s.grupoNombre}` : apodoDe;
-      const subtitulo = esGrupo
-        ? `<span style="color:#93c5fd;font-size:10px;font-weight:600;background:#1e3a5f;border-radius:4px;padding:1px 5px;">GRUPO</span> invitado por <b>${apodoDe}</b>`
-        : s.deTag;
-      const tipo = s.tipo || "amigo";
-      const grupoId = s.grupoId || "";
-      return `<div style="padding:10px 12px;border-radius:10px;border:1px solid var(--border-card);margin-bottom:6px;">
-        <div style="font-weight:600;color:var(--text-main);font-size:13px;margin-bottom:2px;">${titulo}</div>
-        <div style="color:var(--text-muted);font-size:11px;margin-bottom:8px;">${subtitulo}</div>
-        <div style="display:flex;gap:6px;">
-          <button onclick="responderSolicitud('${s.id}','${s.de}','${s.deTag}',true,'${tipo}','${grupoId}')" style="flex:1;background:#22c55e;color:white;border:none;border-radius:6px;padding:5px;cursor:pointer;font-size:11px;font-weight:600;">✓ Aceptar</button>
-          <button onclick="responderSolicitud('${s.id}','${s.de}','${s.deTag}',false,'${tipo}','${grupoId}')" style="flex:1;background:#ef4444;color:white;border:none;border-radius:6px;padding:5px;cursor:pointer;font-size:11px;font-weight:600;">✗ Rechazar</button>
-        </div>
-      </div>`;
-    }).join('');
-  }
-  window.responderSolicitud = async function(solicitudId, otroNombre, otroTag, aceptar, tipo, grupoId) {
-    await chatFetch({ action: "responder_solicitud", solicitudId, otroNombre, otroTag, aceptar, tipo: tipo||"amigo", grupoId: grupoId||"" });
-    actualizarBadgeSolicitudes();
-    cargarSolicitudesChat();
-    if (aceptar && tipo !== "grupo") cargarAmigos();
-  };
-
-  // ── GRUPOS ──
-
-  window.cargarGrupos = cargarGrupos;
-  async function cargarGrupos() {
-    const overlay = document.getElementById("chat-overlay");
-    if (!overlay) return;
-    const lista = overlay.querySelector("#chat-lista");
-    const data = await chatFetch({ action: "mis_grupos" });
-    if (chatTabActiva !== "grupos") return;
-    chatGrupos = data.grupos || [];
-    if (!chatGrupos.length) {
-      lista.innerHTML = `<p style="color:var(--text-muted);font-size:12px;padding:8px;text-align:center;">Sin grupos</p>
-        <button onclick="mostrarCrearGrupo()" style="width:calc(100% - 16px);margin:4px 8px;background:#3b82f6;color:white;border:none;border-radius:8px;padding:8px;cursor:pointer;font-size:12px;">+ Crear grupo</button>`;
-      return;
-    }
-    lista.innerHTML = `<button onclick="mostrarCrearGrupo()" style="width:calc(100% - 16px);margin:4px 8px 0;background:#1e3a5f;color:#93c5fd;border:none;border-radius:8px;padding:6px;cursor:pointer;font-size:12px;">+ Crear grupo</button>` +
-    chatGrupos.map((g, i) => {
-      const esCreador = g.creador === getMiNombre();
-      return `<div style="padding:8px 10px;border-radius:10px;transition:background 0.15s;" onmouseenter="this.style.background='var(--bg-page)'" onmouseleave="this.style.background='transparent'">
-        <div style="display:flex;align-items:center;gap:4px;">
-          <div onclick="abrirChatGrupo(${i})" style="flex:1;cursor:pointer;min-width:0;">
-            <div style="font-weight:600;color:var(--text-main);font-size:13px;">👥 ${g.nombre}</div>
-            <div style="color:var(--text-muted);font-size:11px;">${g.miembros.length} miembros</div>
-          </div>
-          ${esCreador
-            ? `<button onclick="borrarGrupo('${g.id}')" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:13px;padding:2px 4px;" title="Borrar grupo">🗑</button>`
-            : `<button onclick="salirGrupo('${g.id}')" style="background:none;border:none;cursor:pointer;color:#f59e0b;font-size:13px;padding:2px 4px;" title="Salir del grupo">🚪</button>`
-          }
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  window.mostrarCrearGrupo = async function() {
-    const overlay = document.getElementById("chat-overlay");
-    if (!overlay) return;
-    chatModoCrearGrupo = true;
-    const lista = overlay.querySelector("#chat-lista");
-    // Si no hay amigos cargados, cargarlos primero
-    if (!chatAmigos.length) {
-      const data = await chatFetch({ action: "mis_amigos" });
-      chatAmigos = data.amigos || [];
-    }
-    const amigosOpts = chatAmigos.map(a => {
-      const apodo = localStorage.getItem('apodo_' + a.nombre) || '';
-      return `<label style="display:flex;align-items:center;gap:6px;padding:6px 0;cursor:pointer;color:var(--text-main);font-size:12px;border-bottom:1px solid var(--border-card);">
-        <input type="checkbox" value="${a.nombre}" style="cursor:pointer;accent-color:#3b82f6;width:14px;height:14px;"> 
-        <span style="font-weight:600;">${apodo || a.nombre}</span>
-        <span style="color:var(--text-muted);font-size:10px;">${a.tag}</span>
-      </label>`;
-    }).join('');
-    lista.innerHTML = `
-      <div style="padding:10px;">
-        <p style="color:var(--text-main);font-size:13px;font-weight:600;margin:0 0 8px;">Nuevo grupo</p>
-        <input id="grupo-nombre-input" type="text" placeholder="Nombre del grupo..." style="width:100%;background:var(--bg-page);border:1px solid var(--border-card);border-radius:8px;padding:7px 10px;color:var(--text-main);font-size:12px;outline:none;box-sizing:border-box;margin-bottom:10px;">
-        <p style="color:var(--text-muted);font-size:11px;margin:0 0 4px;text-transform:uppercase;letter-spacing:0.05em;">Invitar amigos</p>
-        <div style="max-height:180px;overflow-y:auto;margin-bottom:8px;">${amigosOpts || '<p style="color:var(--text-muted);font-size:11px;padding:4px 0;">Sin amigos para invitar</p>'}</div>
-        <div style="display:flex;gap:6px;">
-          <button onclick="crearGrupo()" style="flex:1;background:#3b82f6;color:white;border:none;border-radius:8px;padding:8px;cursor:pointer;font-size:12px;font-weight:600;">Crear</button>
-          <button onclick="chatModoCrearGrupo=false;chatTab('grupos')" style="flex:1;background:#334155;color:#94a3b8;border:none;border-radius:8px;padding:8px;cursor:pointer;font-size:12px;">Cancelar</button>
-        </div>
-        <p id="grupo-msg" style="font-size:11px;margin-top:6px;color:#ef4444;display:none;"></p>
-      </div>`;
-    // Focus en el input
-    setTimeout(() => overlay.querySelector("#grupo-nombre-input")?.focus(), 50);
-  };
-
-  window.crearGrupo = async function() {
-    const overlay = document.getElementById("chat-overlay");
-    if (!overlay) return;
-    const nombre = overlay.querySelector("#grupo-nombre-input")?.value.trim();
-    const msg = overlay.querySelector("#grupo-msg");
-    if (!nombre) { if(msg){msg.style.color="#ef4444";msg.textContent="Ponele un nombre";msg.style.display="block";} return; }
-    const checks = overlay.querySelectorAll('#chat-lista input[type=checkbox]:checked');
-    const miembros = Array.from(checks).map(c => c.value);
-    const data = await chatFetch({ action: "crear_grupo", nombre, miembros });
-    if (data.ok) { chatModoCrearGrupo = false; chatTab('grupos'); }
-  };
-
-  window.mostrarAgregarMiembro = function(grupoId) {
-    const overlay = document.getElementById("chat-overlay");
-    if (!overlay) return;
-    const header = overlay.querySelector("#chat-msgs-header");
-    // Mostrar mini-form debajo del header
-    let form = overlay.querySelector("#agregar-miembro-form");
-    if (form) { form.remove(); return; }
-    form = document.createElement("div");
-    form.id = "agregar-miembro-form";
-    form.style.cssText = "padding:8px 12px;border-bottom:1px solid var(--border-card);display:flex;gap:6px;";
-    // Amigos que no son miembros del grupo
-    const grupo = chatGrupos.find(g => g.id === grupoId);
-    const noMiembros = chatAmigos.filter(a => !grupo?.miembros.includes(a.nombre));
-    if (!noMiembros.length) {
-      form.innerHTML = '<p style="color:var(--text-muted);font-size:12px;margin:4px 0;">Todos tus amigos ya están en el grupo.</p>';
-      overlay.querySelector("#chat-panel-msgs").insertBefore(form, overlay.querySelector("#chat-msgs-list"));
-      setTimeout(() => form.remove(), 2000);
-      return;
-    }
-    form.innerHTML = `
-      <select id="agregar-select" style="flex:1;background:var(--bg-page);border:1px solid var(--border-card);border-radius:8px;padding:5px 8px;color:var(--text-main);font-size:12px;outline:none;">
-        ${noMiembros.map(a => `<option value="${a.nombre}">${localStorage.getItem('apodo_'+a.nombre) || a.nombre} (${a.tag})</option>`).join('')}
-      </select>
-      <button onclick="confirmarAgregarMiembro('${grupoId}')" style="background:#3b82f6;color:white;border:none;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:12px;">Agregar</button>
-      <button onclick="document.getElementById('agregar-miembro-form').remove()" style="background:#334155;color:#94a3b8;border:none;border-radius:8px;padding:5px 8px;cursor:pointer;font-size:12px;">✕</button>`;
-    overlay.querySelector("#chat-panel-msgs").insertBefore(form, overlay.querySelector("#chat-msgs-list"));
-  };
-
-  window.confirmarAgregarMiembro = async function(grupoId) {
-    const overlay = document.getElementById("chat-overlay");
-    const select = overlay?.querySelector("#agregar-select");
-    if (!select) return;
-    const nuevoMiembro = select.value;
-    const data = await chatFetch({ action: "agregar_a_grupo", grupoId, nuevoMiembro });
-    if (data.ok) {
-      overlay.querySelector("#agregar-miembro-form")?.remove();
-      // Recargar el grupo
-      const idx = chatGrupos.findIndex(g => g.id === grupoId);
-      if (idx >= 0) { await cargarGrupos(); abrirChatGrupo(chatGrupos.findIndex(g => g.id === grupoId)); }
-    } else {
-      alert(data.error || "No se pudo agregar");
-    }
-  };
-
-  window.salirGrupo = async function(grupoId) {
-    if (!confirm("¿Salir de este grupo?")) return;
-    const data = await chatFetch({ action: "salir_grupo", grupoId });
-    if (data.ok) cargarGrupos();
-    else alert(data.error || "No se pudo salir");
-  };
-
-  window.borrarGrupo = async function(grupoId) {
-    if (!confirm("¿Borrar este grupo? Se eliminarán todos los mensajes.")) return;
-    const data = await chatFetch({ action: "borrar_grupo", grupoId });
-    if (data.ok) cargarGrupos();
-  };
-
-  window.abrirChatGrupo = async function(idx) {
-    const grupo = chatGrupos[idx];
-    if (!grupo) return;
-    chatActivo = { chatId: grupo.id, nombre: grupo.nombre, esGrupo: true, grupo };
-    const overlay = document.getElementById("chat-overlay");
-    if (!overlay) return;
-    overlay.querySelector("#chat-panel-empty").style.display = "none";
-    const panel = overlay.querySelector("#chat-panel-msgs");
-    panel.style.display = "flex";
-    const miembrosStr = grupo.miembros.map(m => localStorage.getItem('apodo_' + m) || m).join(", ");
-    const esCreadorGrupo = grupo.creador === getMiNombre();
-    overlay.querySelector("#chat-msgs-header-text").innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
-      <div>👥 ${grupo.nombre} <span style="color:var(--text-muted);font-size:11px;font-weight:400;">${miembrosStr}</span></div>
-      ${esCreadorGrupo ? `<button onclick="mostrarAgregarMiembro('${grupo.id}')" style="background:#1e3a5f;color:#93c5fd;border:none;border-radius:6px;padding:3px 8px;cursor:pointer;font-size:11px;flex-shrink:0;">+ Agregar</button>` : ''}
-    </div>`;
-    if (chatPollInterval) clearInterval(chatPollInterval);
-    localStorage.setItem("ultimo_visto_" + grupo.id, new Date().toISOString());
-    msgsByChatId[grupo.id] = 0;
-    cargarMensajes(grupo.id);
-    chatPollInterval = setInterval(async () => {
-      const chatId = grupo.id;
-      try {
-        const r = await chatFetch({ action: "check_timestamp", chatId });
-        if (r.ok && r.timestamp && r.timestamp !== _ultimoTimestamp[chatId]) {
-          _ultimoTimestamp[chatId] = r.timestamp;
-          await cargarMensajes(chatId);
-          localStorage.setItem("ultimo_visto_" + chatId, new Date().toISOString());
-        }
-      } catch {}
-    }, 8000);
-  };
-
-  window.cargarAmigos = cargarAmigos;
-
-  window.editarApodo = function(nombre) {
-    const apodoActual = localStorage.getItem('apodo_' + nombre) || '';
-    const nuevo = prompt(`Apodo para ${nombre}:`, apodoActual);
-    if (nuevo === null) return;
-    if (nuevo.trim()) localStorage.setItem('apodo_' + nombre, nuevo.trim());
-    else localStorage.removeItem('apodo_' + nombre);
-    cargarAmigos();
-  };
-
-  window.eliminarAmigo = async function(nombre, chatId) {
-    const apodo = localStorage.getItem('apodo_' + nombre) || nombre;
-    if (!confirm(`¿Eliminar a ${apodo} de tu lista de amigos?`)) return;
-    await chatFetch({ action: "eliminar_amigo", otroNombre: nombre, chatId });
-    localStorage.removeItem('apodo_' + nombre);
-    localStorage.removeItem('ultimo_visto_' + chatId);
-    delete msgsByChatId[chatId];
-    const misChats = JSON.parse(localStorage.getItem('mis_chats') || '[]').filter(c => c.chatId !== chatId);
-    localStorage.setItem('mis_chats', JSON.stringify(misChats));
-    chatAmigos = chatAmigos.filter(a => a.nombre !== nombre);
-    cargarAmigos();
-  };
-
-  window.chatBuscarUsuario = async function() {
-    const overlay = document.getElementById("chat-overlay");
-    if (!overlay) return;
-    const input = overlay.querySelector("#chat-buscar-input");
-    const result = overlay.querySelector("#chat-buscar-result");
-    if (!input || !result) return;
-    const tag = input.value.trim();
-    if (!tag) return;
-    result.textContent = "Buscando...";
-    const data = await chatFetch({ action: "buscar_usuario", tag });
-    if (!data.ok) { result.innerHTML = '<span style="color:#ef4444;">No encontrado</span>'; return; }
-    const u = data.usuario;
-    if (u.nombre === getMiNombre()) { result.innerHTML = '<span style="color:#ef4444;">Sos vos mismo</span>'; return; }
-    if (chatAmigos.some(a => a.nombre === u.nombre)) { result.innerHTML = '<span style="color:#94a3b8;">Ya son amigos</span>'; return; }
-    result.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg-page);border-radius:8px;padding:6px 10px;">
-      <div><div style="color:var(--text-main);font-size:12px;font-weight:600;">${u.nombre}</div><div style="color:var(--text-muted);font-size:11px;">${u.tag}</div></div>
-      <button onclick="enviarSolicitud('${u.nombre}','${u.tag}')" style="background:#3b82f6;color:white;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px;">+ Agregar</button>
-    </div>`;
-  };
-
-  window.enviarSolicitud = async function(otroNombre, otroTag) {
-    const data = await chatFetch({ action: "enviar_solicitud", otroNombre, otroTag });
-    const overlay = document.getElementById("chat-overlay");
-    const result = overlay?.querySelector("#chat-buscar-result");
-    if (result) result.innerHTML = data.ok
-      ? '<span style="color:#22c55e;">✓ Solicitud enviada</span>'
-      : '<span style="color:#ef4444;">Ya enviada o error</span>';
-  };
-
-  window.filtrarAmigos = function(query) {
-    const q = query.trim().toLowerCase();
-    const overlay = document.getElementById("chat-overlay");
-    if (!overlay) return;
-    const lista = overlay.querySelector("#chat-lista");
-    if (!q) { cargarAmigos(); return; }
-    const filtrados = chatAmigos.filter(a => {
-      const apodo = (localStorage.getItem('apodo_' + a.nombre) || '').toLowerCase();
-      return a.nombre.toLowerCase().includes(q) || (a.tag || '').toLowerCase().includes(q) || apodo.includes(q);
-    });
-    if (!filtrados.length) {
-      lista.innerHTML = '<p style="color:var(--text-muted);font-size:12px;padding:8px;text-align:center;">Sin resultados</p>';
-      return;
-    }
-    lista.innerHTML = filtrados.map(a => {
-      const idx = chatAmigos.indexOf(a);
-      const apodo = localStorage.getItem('apodo_' + a.nombre) || '';
-      const nuevos = msgsByChatId[a.chatId] || 0;
-      return `<div style="padding:8px 10px;border-radius:10px;transition:background 0.15s;" onmouseenter="this.style.background='var(--bg-page)'" onmouseleave="this.style.background='transparent'">
-        <div style="display:flex;align-items:center;gap:4px;">
-          <div onclick="abrirChatCon(${idx})" style="flex:1;cursor:pointer;min-width:0;">
-            <div style="font-weight:600;color:var(--text-main);font-size:13px;display:flex;align-items:center;gap:6px;">
-              ${apodo || a.nombre}
-              ${nuevos > 0 ? `<span style="background:#ef4444;color:white;font-size:10px;border-radius:50%;min-width:16px;height:16px;padding:0 4px;display:inline-flex;align-items:center;justify-content:center;font-weight:bold;">${nuevos}</span>` : ''}
-            </div>
-            <div style="color:var(--text-muted);font-size:11px;">${a.tag}</div>
-          </div>
-          <button onclick="editarApodo('${a.nombre}')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:13px;padding:2px 4px;" title="Apodo">✏️</button>
-          <button onclick="eliminarAmigo('${a.nombre}', '${a.chatId}')" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:13px;padding:2px 4px;" title="Eliminar amigo">🗑</button>
-        </div>
-      </div>`;
-    }).join('');
-  };
-
-  window.chatSetTyping = async function() {
-    if (!chatActivo?.chatId) return;
-    if (typingTimeout) clearTimeout(typingTimeout);
-    try { await chatFetch({ action: "set_typing", chatId: chatActivo.chatId, typing: true }); } catch {}
-    typingTimeout = setTimeout(async () => {
-      try { await chatFetch({ action: "set_typing", chatId: chatActivo.chatId, typing: false }); } catch {}
-    }, 4000);
-  };
-
-  window.abrirChatCon = async function(idx) {
-    const amigo = chatAmigos[idx];
-    if (!amigo) return;
-    chatActivo = amigo;
-    const overlay = document.getElementById("chat-overlay");
-    if (!overlay) return;
-    overlay.querySelector("#chat-panel-empty").style.display = "none";
-    const panel = overlay.querySelector("#chat-panel-msgs");
-    panel.style.display = "flex";
-    overlay.querySelector("#chat-msgs-header-text").textContent = amigo.nombre + " · " + amigo.tag;
-    if (chatPollInterval) clearInterval(chatPollInterval);
-    cargarMensajes(amigo.chatId);
-    localStorage.setItem("ultimo_visto_" + amigo.chatId, new Date().toISOString());
-    // Limpiar badge inmediatamente
-    msgsByChatId[amigo.chatId] = 0;
-    cargarAmigos();
-    actualizarBadgeSolicitudes();
-    chatPollInterval = setInterval(async () => {
-      const chatId = amigo.chatId;
-      try {
-        const r = await chatFetch({ action: "check_timestamp", chatId });
-        if (r.ok && r.timestamp && r.timestamp !== _ultimoTimestamp[chatId]) {
-          _ultimoTimestamp[chatId] = r.timestamp;
-          await cargarMensajes(chatId);
-          localStorage.setItem("ultimo_visto_" + chatId, new Date().toISOString());
-        }
-      } catch {}
-    }, 8000);
-    iniciarTypingPoll(amigo.chatId, amigo.nombre);
-  };
-
-  let _ultimoTimestamp = {};
-
-  let _msgsOffset = {}; // chatId -> cuántos mensajes saltear desde el final
-
-  async function cargarMensajes(chatId, masViejos = false) {
-    const overlay = document.getElementById("chat-overlay");
-    if (!overlay || !chatId) return;
-    if (masViejos) {
-      _msgsOffset[chatId] = (_msgsOffset[chatId] || 0) + 20;
-    } else {
-      _msgsOffset[chatId] = 0;
-    }
-    try {
-      const data = await chatFetch({ action: "get_mensajes", chatId, pageSize: 20, offset: _msgsOffset[chatId] || 0 });
-      console.log('cargarMensajes:', chatId, 'msgs:', data.msgs?.length, 'total:', data.total, 'chatActivo:', chatActivo?.chatId);
-      if (!data.ok) {
-        console.error('get_mensajes falló:', JSON.stringify(data));
-        const lista2 = overlay.querySelector("#chat-msgs-list");
-        if (lista2 && !lista2.children.length) lista2.innerHTML = '<p style="color:var(--text-muted);font-size:12px;text-align:center;padding:20px;">Sin mensajes aún</p>';
-        return;
-      }
-      const msgs = (data.msgs || []);
-      const total = data.total || msgs.length;
-      const lista = overlay.querySelector("#chat-msgs-list");
-      if (!lista) { console.error('lista #chat-msgs-list no encontrada'); return; }
-
-      // Renderizar mensajes
-      const renderMsgs = (ms) => {
-        let lastDate = '';
-        return ms.map(m => {
-          const esMio = m.de === getMiNombre();
-          const apodoRem = localStorage.getItem('apodo_' + m.de) || m.de;
-          const fechaObj = new Date(m.fecha);
-          const fechaStr = fechaObj.toLocaleDateString('es-AR', { weekday:'long', day:'numeric', month:'long' });
-          const hora = fechaObj.toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
-          const sep = fechaStr !== lastDate
-            ? '<div style="text-align:center;margin:10px 0 6px;"><span style="background:var(--bg-page);color:var(--text-muted);font-size:11px;padding:3px 10px;border-radius:20px;">' + fechaStr + '</span></div>'
-            : '';
-          lastDate = fechaStr;
-          const bg = esMio ? '#1d4ed8' : 'var(--bg-page)';
-          const col = esMio ? 'white' : 'var(--text-main)';
-          const rad = esMio ? '14px 14px 4px 14px' : '14px 14px 14px 4px';
-          const just = esMio ? 'flex-end' : 'flex-start';
-          const remNombre = (!esMio && chatActivo && chatActivo.esGrupo)
-            ? '<div style="font-size:11px;font-weight:600;color:#93c5fd;margin-bottom:3px;">' + apodoRem + '</div>'
-            : '';
-          return sep +
-            '<div style="display:flex;justify-content:' + just + ';">' +
-            '<div class="msg-bubble" data-fecha="' + m.fecha + '" style="max-width:70%;background:' + bg + ';color:' + col + ';padding:8px 12px;border-radius:' + rad + ';font-size:14px;line-height:1.4;word-break:break-word;overflow-wrap:anywhere;">' +
-            remNombre + m.texto +
-            '<div style="font-size:10px;opacity:0.6;margin-top:3px;text-align:right;">' + hora + '</div>' +
-            '</div></div>';
-        }).join('');
-      };
-
-      const offset = _msgsOffset[chatId] || 0;
-      const hayMas = total > 20 + offset;
-
-      if (masViejos) {
-        // Insertar arriba sin perder scroll
-        const scrollBottom = lista.scrollHeight - lista.scrollTop;
-        const btnExistente = lista.querySelector('#chat-load-more');
-        if (btnExistente) btnExistente.remove();
-        lista.insertAdjacentHTML('afterbegin', renderMsgs(msgs));
-        lista.scrollTop = lista.scrollHeight - scrollBottom;
-      } else {
-        // Diff: solo agregar mensajes que no están en el DOM
-        const fechasExistentes = new Set(
-          [...lista.querySelectorAll('[data-fecha]')].map(el => el.dataset.fecha)
-        );
-        const msgsNuevos = msgs.filter(m => !fechasExistentes.has(m.fecha));
-
-        if (fechasExistentes.size === 0) {
-          // Primera carga — renderizar todo
-          lista.innerHTML = renderMsgs(msgs);
-          lista.scrollTop = lista.scrollHeight;
-        } else if (msgsNuevos.length > 0) {
-          // Solo agregar los mensajes nuevos al final
-          const estabaAbajo = lista.scrollHeight - lista.scrollTop <= lista.clientHeight + 60;
-          const htmlNuevos = renderMsgs(msgsNuevos);
-          const tmp = document.createElement('div');
-          tmp.innerHTML = htmlNuevos;
-          // Asegurarse de que cada burbuja tenga data-fecha para el diff
-          while (tmp.firstChild) lista.appendChild(tmp.firstChild);
-          if (estabaAbajo) lista.scrollTop = lista.scrollHeight;
-        }
-        // Si no hay mensajes nuevos, no hacer nada (no resetear scroll)
-      }
-
-      // Botón "ver más" arriba si hay mensajes anteriores
-      if (hayMas && !lista.querySelector('#chat-load-more')) {
-        const btn = document.createElement('div');
-        btn.id = 'chat-load-more';
-        btn.innerHTML = '<button onclick="cargarMensajes(chatActivo.chatId, true)" style="width:100%;background:var(--bg-page);border:1px solid var(--border-card);border-radius:8px;padding:6px;color:var(--text-muted);font-size:12px;cursor:pointer;margin-bottom:8px;">⬆ Ver mensajes anteriores</button>';
-        lista.insertAdjacentElement('afterbegin', btn);
-      }
-
-      // Indicador de nuevos cuando no está al fondo
-      lista.onscroll = () => {
-        if (lista.scrollHeight - lista.scrollTop <= lista.clientHeight + 10) {
-          lista.parentElement?.querySelector('#chat-nuevos-btn')?.remove();
-          lista._lastScrollBottom = Date.now();
-        }
-      };
-    } catch(e) { console.error('cargarMensajes error:', e); }
-  }
-
-  async function autoLimpiarMensajesViejos() {
-    // Delega al worker para limpiar mensajes viejos (>2 días) del usuario actual
-    try {
-      await chatFetch({ action: "auto_limpiar_viejos" });
-    } catch {}
-  }
-
-  window.chatVolverLista = function() {
-    const overlay = document.getElementById("chat-overlay");
-    if (!overlay) return;
-    if (chatPollInterval) clearInterval(chatPollInterval);
-    chatActivo = null;
-    overlay.querySelector("#chat-panel-msgs").style.display = "none";
-    overlay.querySelector("#chat-panel-empty").style.display = "flex";
-    // Volver a la tab correcta
-    chatTab('amigos');
-  };
-
-  window.chatEnviarMensaje = async function() {
-    const overlay = document.getElementById("chat-overlay");
-    if (!overlay || !chatActivo) return;
-    const input = overlay.querySelector("#chat-msg-input");
-    const texto = input.value.trim();
-    if (!texto) return;
-    input.value = "";
-    const envRes = await chatFetch({ action: "enviar_mensaje", chatId: chatActivo.chatId, de: getMiNombre(), mensaje: texto });
-    console.log('enviar_mensaje result:', JSON.stringify(envRes));
-    _ultimoTimestamp[chatActivo.chatId] = null; // forzar recarga inmediata
-    cargarMensajes(chatActivo.chatId);
-  };
   // ── RATINGS EN CARDS ──
   async function cargarRatingsCards() {
     try {
       const res = await fetch("https://ort-admin.simonabulafia.workers.dev", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "get_todos_promedios", token: getMiToken() }),
+        body: JSON.stringify({ action: "get_todos_promedios" }),
       });
       const data = await res.json();
       if (!data.ok || !data.promedios) return;
@@ -3788,7 +3051,7 @@ Link de descarga: https://github.com/...</pre>
     try {
       const res = await fetch(RESENAS_URL, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "get_resenas_juego", juego, token: getMiToken() }),
+        body: JSON.stringify({ action: "get_resenas_juego", juego }),
       });
       const data = await res.json();
       if (data.ok) {
@@ -3802,7 +3065,7 @@ Link de descarga: https://github.com/...</pre>
     try {
       const res2 = await fetch(RESENAS_URL, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "get_mi_resena", juego, usuario: getMiNombre(), token: getMiToken() }),
+        body: JSON.stringify({ action: "get_mi_resena", juego, usuario: getMiUsername() }),
       });
       const data2 = await res2.json();
       if (data2.ok && data2.resena) {
@@ -3841,7 +3104,7 @@ Link de descarga: https://github.com/...</pre>
     try {
       await fetch(RESENAS_URL, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "guardar_resena", juego, puntaje: resenaSeleccionada, comentario, usuario: getMiNombre(), token: getMiToken() }),
+        body: JSON.stringify({ action: "guardar_resena", juego, puntaje: resenaSeleccionada, comentario, usuario: getMiUsername() }),
       });
       $("modal-resena-msg").textContent = "✅ Guardado";
       $("modal-resena-msg").style.color="#22c55e";
@@ -3852,29 +3115,9 @@ Link de descarga: https://github.com/...</pre>
 
   // ── TYPING ──
 
-  function iniciarTypingPoll(chatId, otroNombre) {
-    if (typingPollInterval) clearInterval(typingPollInterval);
-    typingPollInterval = setInterval(async () => {
-      try {
-        const res = await chatFetch({ action: "get_typing", chatId, otroNombre });
-        const panel = document.getElementById("chat-overlay");
-        if (!panel) { clearInterval(typingPollInterval); return; }
-        const indicator = panel.querySelector("#chat-typing-indicator");
-        if (!indicator) return;
-        if (res.typing) {
-          const apodoTyping = localStorage.getItem('apodo_' + otroNombre) || otroNombre;
-          indicator.textContent = `${apodoTyping} está escribiendo...`;
-          indicator.style.display = "block";
-        } else {
-          indicator.style.display = "none";
-        }
-      } catch {}
-    }, 2000);
-  }
+  
 
-  function detenerTypingPoll() {
-    if (typingPollInterval) clearInterval(typingPollInterval);
-  }
+
 
 
 
