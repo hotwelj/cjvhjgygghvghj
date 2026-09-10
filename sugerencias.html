@@ -95,38 +95,37 @@ textarea { min-height:110px; }
 </head>
 <body>
 
-<!-- OVERLAY CONTRASEÑA -->
+<!-- OVERLAY LOGIN -->
 <div id="pwd-overlay">
   <div id="pwd-box">
     <button id="pwd-theme-btn" onclick="toggleTheme()" title="Cambiar tema"></button>
     <span class="pwd-lock" id="pwd-lock">🔒</span>
     <h2>Juegos Sort</h2>
-    <p class="pwd-sub">Ingresá la contraseña para acceder</p>
-    <div style="position:relative; margin-bottom:12px;">
-      <input type="password" id="pwd-input" placeholder="Contraseña..." autofocus>
-      <button id="show-pwd-btn"
-        onmousedown="event.preventDefault(); mostrarClave(true)" onmouseup="mostrarClave(false)" onmouseleave="mostrarClave(false)"
-        ontouchstart="event.preventDefault(); mostrarClave(true)" ontouchend="mostrarClave(false)"
-        title="Mantené apretado para ver">
-        <svg width="22" height="22" viewBox="0 0 100 100" fill="none">
-          <path d="M10 50 Q30 15 50 15 Q70 15 90 50 Q70 85 50 85 Q30 85 10 50 Z" fill="var(--eye-fill)" stroke="var(--eye-stroke)" stroke-width="2.5"/>
-          <g id="eye-pupil" style="opacity:0;transform:scaleY(0);transform-origin:50px 50px;transition:opacity 0.2s ease 0.1s,transform 0.25s cubic-bezier(0.4,0,0.2,1);">
-            <circle cx="50" cy="50" r="18" fill="#1d4ed8" opacity="0.9"/>
-            <circle cx="50" cy="50" r="9" fill="#0f172a"/>
-            <circle cx="56" cy="44" r="3" fill="white" opacity="0.7"/>
-          </g>
-          <path id="eyelid-top" d="M10 50 Q30 15 50 15 Q70 15 90 50 Q70 50 50 50 Q30 50 10 50 Z" fill="var(--eyelid-fill)" stroke="var(--eye-stroke)" stroke-width="2.5" stroke-linejoin="round"/>
-          <g stroke="var(--lash-stroke)" stroke-width="1.8" stroke-linecap="round">
-            <line x1="30" y1="28" x2="27" y2="20"/><line x1="40" y1="22" x2="38" y2="14"/>
-            <line x1="50" y1="20" x2="50" y2="12"/><line x1="60" y1="22" x2="62" y2="14"/>
-            <line x1="70" y1="28" x2="73" y2="20"/>
-          </g>
-        </svg>
-      </button>
+    <p style="color:#94a3b8;font-size:13px;margin-bottom:20px;text-align:center;">El contenido es provisto por terceros. Usalo bajo tu cuenta y riesgo. <span onclick="abrirDisclaimer()" style="color:#3b82f6;cursor:pointer;">Ver términos</span></p>
+
+    <!-- Login -->
+    <div id="login-form">
+      <input id="login-username" type="text" placeholder="Usuario" autocomplete="username" onkeydown="if(event.key==='Enter')loginUser()" style="width:100%;padding:12px 16px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#f1f5f9;font-size:15px;box-sizing:border-box;margin-bottom:10px;outline:none;">
+      <div style="position:relative;margin-bottom:10px;">
+        <input id="login-password" type="password" placeholder="Contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')loginUser()" style="width:100%;padding:12px 40px 12px 16px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#f1f5f9;font-size:15px;box-sizing:border-box;outline:none;">
+        <button onclick="const i=document.getElementById('login-password');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈';" tabindex="-1" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:#64748b;padding:0;">👁</button>
+      </div>
+      <button onclick="loginUser()" id="login-btn" style="width:100%;padding:12px;background:#3b82f6;color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:8px;transition:background 0.2s;">Entrar</button>
+      <p id="login-error" style="color:#ef4444;font-size:13px;text-align:center;min-height:18px;"></p>
+      <p style="text-align:center;color:#64748b;font-size:13px;">¿No tenés cuenta? <a href="#" onclick="mostrarRegistro();return false;" style="color:#3b82f6;text-decoration:none;">Registrate</a></p>
     </div>
-    <button class="pwd-btn" id="pwd-btn" onclick="verificarClave()">Entrar</button>
-    <p id="pwd-error">❌ Contraseña incorrecta, intentá de nuevo</p>
-    <p id="pwd-hint">Una vez adentro podés cerrar sesión tocando la 👤 de arriba a la derecha</p>
+
+    <!-- Registro -->
+    <div id="register-form" style="display:none;">
+      <input id="reg-username" type="text" placeholder="Usuario (3-20 caracteres, sin espacios)" autocomplete="off" onkeydown="if(event.key==='Enter')registrarUsuario()" style="width:100%;padding:12px 16px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#f1f5f9;font-size:15px;box-sizing:border-box;margin-bottom:10px;outline:none;">
+      <div style="position:relative;margin-bottom:10px;">
+        <input id="reg-password" type="password" placeholder="Contraseña (mínimo 4 caracteres)" autocomplete="new-password" onkeydown="if(event.key==='Enter')registrarUsuario()" style="width:100%;padding:12px 40px 12px 16px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#f1f5f9;font-size:15px;box-sizing:border-box;outline:none;">
+        <button onclick="const i=document.getElementById('reg-password');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈';" tabindex="-1" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:#64748b;padding:0;">👁</button>
+      </div>
+      <button onclick="registrarUsuario()" id="reg-btn" style="width:100%;padding:12px;background:#22c55e;color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:8px;transition:background 0.2s;">Crear cuenta</button>
+      <p id="reg-error" style="color:#ef4444;font-size:13px;text-align:center;min-height:18px;"></p>
+      <p style="text-align:center;color:#64748b;font-size:13px;">¿Ya tenés cuenta? <a href="#" onclick="mostrarLogin();return false;" style="color:#3b82f6;text-decoration:none;">Iniciá sesión</a></p>
+    </div>
   </div>
 </div>
 
@@ -303,312 +302,175 @@ textarea { min-height:110px; }
 </div>
 
 <script>
-  const $ = id => document.getElementById(id);
+const $ = id => document.getElementById(id);
+const ADMIN_URL = "https://ort-admin.simonabulafia.workers.dev";
+const USERNAME_KEY = "js_username";
+const ADMIN_TOKEN_KEY = "js_adminToken";
 
-  // ── TEMA ──
-  function getTheme() { return localStorage.getItem("theme") || "light"; }
-  function applyTheme(t) {
-    document.documentElement.setAttribute("data-theme", t);
-    const icon = t === "dark" ? "☀️" : "🌙";
-    $("header-theme-btn").textContent = icon;
-    $("pwd-theme-btn").textContent = icon;
-  }
-  function toggleTheme() {
-    const next = getTheme() === "light" ? "dark" : "light";
-    localStorage.setItem("theme", next);
-    applyTheme(next);
-  }
-  applyTheme(getTheme());
+function getMiUsername() { return sessionStorage.getItem(USERNAME_KEY) || ""; }
+function estaLogueado() { return !!getMiUsername() || !!sessionStorage.getItem(ADMIN_TOKEN_KEY); }
 
-  // ── OJO ──
-  function mostrarClave(ver) {
-    $("pwd-input").type = ver ? "text" : "password";
-    const lid = $("eyelid-top"), pupil = $("eye-pupil");
-    if (ver) {
-      lid.setAttribute("d", "M10 50 Q30 18 50 18 Q70 18 90 50 Q70 18 50 18 Q30 18 10 50 Z");
-      pupil.style.opacity = "1"; pupil.style.transform = "scaleY(1)";
-    } else {
-      lid.setAttribute("d", "M10 50 Q30 15 50 15 Q70 15 90 50 Q70 50 50 50 Q30 50 10 50 Z");
-      pupil.style.opacity = "0"; pupil.style.transform = "scaleY(0)";
-    }
-  }
+// ── TEMA ──
+(function() { const t = localStorage.getItem("theme"); if (t) document.documentElement.setAttribute("data-theme", t); })();
+function toggleTheme() {
+  const html = document.documentElement;
+  const t = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  html.setAttribute("data-theme", t); localStorage.setItem("theme", t);
+}
 
-  // ── LOGIN ──
-  $("pwd-input").addEventListener("input", () => {
-    $("pwd-hint").style.display = $("pwd-input").value.length > 0 ? "block" : "none";
-  });
-  $("pwd-input").addEventListener("keypress", e => { if (e.key === "Enter") verificarClave(); });
-
-  // Nav sliding indicator
-  (function() {
-    const nav = document.querySelector('.nav');
-    const indicator = document.createElement('div');
-    indicator.className = 'nav-indicator';
-    nav.insertBefore(indicator, nav.firstChild);
-
-    function positionIndicator(el) {
-      indicator.style.left = el.offsetLeft + 'px';
-      indicator.style.width = el.offsetWidth + 'px';
-      indicator.style.height = el.offsetHeight + 'px';
-      indicator.style.top = el.offsetTop + 'px';
-    }
-
-    const activeLink = nav.querySelector('a.active');
-    if (activeLink) {
-      indicator.style.transition = 'none';
-      positionIndicator(activeLink);
-      requestAnimationFrame(() => { indicator.style.transition = ''; });
-    }
-
-    nav.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', function(e) {
-        const href = this.getAttribute('href');
-        if (href === 'sugerencias.html') return;
-        e.preventDefault();
-        positionIndicator(this);
-        setTimeout(() => { window.location.href = href; }, 320);
-      });
-    });
-  })();
-
-  // Animated close for person dropdown
-  const personDropdown = document.getElementById('dropdown-person');
-  if (personDropdown) {
-    document.addEventListener('click', function(e) {
-      if (personDropdown.classList.contains('open') && !personDropdown.contains(e.target)) {
-        personDropdown.classList.remove('open');
-        personDropdown.classList.add('closing');
-        setTimeout(() => personDropdown.classList.remove('closing'), 300);
-      }
-    }, true);
-  }
-
-  async function verificarClave() {
-    const val = $("pwd-input").value;
-    if (!val) return;
-    const btn = $("pwd-btn");
-    btn.classList.add("cargando");
-    btn.innerHTML = '<span id="pwd-dots"><span></span><span></span><span></span></span>';
-    $("pwd-input").disabled = true;
-    $("pwd-error").style.display = "none";
-
-    const res = await fetch("https://ort-auth.simonabulafia.workers.dev", {
-      method: "POST",
-      body: JSON.stringify({ password: val })
-    });
-    const data = await res.json();
-    btn.classList.remove("cargando");
-    $("pwd-input").disabled = false;
-
-    if (data.ok) {
-      sessionStorage.setItem("auth_piratas", "ok");
-      sessionStorage.setItem("auth_token", data.token);
-      sessionStorage.setItem("auth_nombre", data.nombre);
-      $("pwd-lock").textContent = "✅";
-      btn.textContent = "¡Acceso concedido!";
-      btn.classList.add("ok");
-      $("pwd-input").disabled = true;
-      $("pwd-hint").style.display = "none";
-      $("pwd-box").classList.add("correcto");
-      setTimeout(() => {
-        $("pwd-overlay").classList.add("saliendo");
-        setTimeout(() => { $("pwd-overlay").style.display = "none"; iniciarSesionUI(); }, 600);
-      }, 700);
-    } else {
-      btn.textContent = "Entrar";
-      $("pwd-error").style.display = "block";
-      $("pwd-input").classList.remove("pwd-shake");
-      void $("pwd-input").offsetWidth;
-      $("pwd-input").classList.add("pwd-shake");
-      $("pwd-input").value = ""; $("pwd-input").focus();
-      $("pwd-hint").style.display = "none";
-    }
-  }
-
-  function iniciarSesionUI() {
-    const nombre = sessionStorage.getItem("auth_nombre") || "desconocido";
-    $("campo-usuario").value = nombre;
-    $("sender-badge").textContent = "👤 " + nombre;
-    $("session-label").textContent = "Sesión iniciada";
-    const tagElS = $("session-tag");
-    const tagS = sessionStorage.getItem("auth_tag") || "";
-    if (tagElS && tagS) { tagElS.textContent = "Tag: " + tagS; tagElS.style.display = "block"; }
-  }
-
-  if (sessionStorage.getItem("auth_piratas") === "ok") {
-    $("pwd-overlay").style.display = "none";
-    iniciarSesionUI();
-  }
-
-  // ── OTRO RADIO ──
-  document.querySelectorAll('input[name="tipo"]').forEach(r => {
-    r.addEventListener("change", () => {
-      $("otro-input").style.display = $("radio-otro").checked ? "block" : "none";
-    });
-  });
-
-  // ── ENVÍO ──
-  async function enviarFormulario(e) {
-    e.preventDefault();
-    const form = e.target;
-    const btn = $("submit-btn");
-
-    if ($("radio-otro").checked) {
-      const otroVal = $("otro-input").value.trim();
-      if (!otroVal) { $("otro-input").focus(); return; }
-      form.querySelector('input[name="tipo-otro"]').value = otroVal;
-    }
-
-    btn.disabled = true;
-    btn.textContent = "Enviando...";
-
-    const formData = new FormData(form);
-    const usuario = sessionStorage.getItem("auth_nombre") || "";
-    const tipo = formData.get("tipo") || "";
-    const tipoOtro = formData.get("tipo-otro") || "";
-    const mensaje = formData.get("mensaje") || "";
-    const notas = formData.get("notas") || "";
-    const tipoDisplay = tipo === "otro" ? `otro → ${tipoOtro}` : tipo;
-
-    try {
-      // Guardar en Firestore y enviar mail via Worker admin
-      const res = await fetch("https://ort-admin.simonabulafia.workers.dev", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "save_suggestion", adminToken: "public", usuario, tipo, mensaje, tipoOtro, notas }),
-      });
+// ── AUTH ──
+async function loginUser() {
+  const username = ($("login-username").value || "").trim().toLowerCase();
+  const password = $("login-password").value || "";
+  const err = $("login-error"), btn = $("login-btn");
+  if (!username || !password) { err.textContent = "Completá los dos campos."; return; }
+  btn.textContent = "Entrando..."; btn.disabled = true; err.textContent = "";
+  try {
+    if (username === "788622cam") {
+      const res = await fetch(ADMIN_URL, { method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ action:"admin_login", username, password }) });
       const data = await res.json();
-      if (data.ok) {
-        $("form-wrapper").style.display = "none";
-        $("success-msg").style.display = "block";
-      } else {
-        btn.disabled = false;
-        btn.textContent = "Enviar sugerencia";
-        alert("Hubo un error al enviar. Intentá de nuevo.");
-      }
-    } catch {
-      btn.disabled = false;
-      btn.textContent = "Enviar sugerencia";
-      alert("Error de conexión.");
+      if (data.ok) { onLoginSuccess("Admin", data.adminToken); return; }
+      err.textContent = "Usuario o contraseña incorrectos.";
+      btn.textContent = "Entrar"; btn.disabled = false; return;
     }
-  }
+    const res = await fetch(ADMIN_URL, { method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ action:"login_user", username, password }) });
+    const data = await res.json();
+    if (data.ok) {
+      sessionStorage.setItem("js_session_token", data.sessionToken);
+      onLoginSuccess(data.displayName || data.username, null);
+    } else {
+      err.textContent = data.error || "Usuario o contraseña incorrectos.";
+    }
+  } catch(e) { err.textContent = "Error de conexión. Intentá de nuevo."; }
+  btn.textContent = "Entrar"; btn.disabled = false;
+}
 
-  // ── CERRAR SESIÓN ──
-  function cerrarSesion() {
-    sessionStorage.removeItem("auth_piratas");
-    sessionStorage.removeItem("auth_token");
-    sessionStorage.removeItem("auth_nombre");
-    const ov = $("pwd-overlay"), box = $("pwd-box"), btn = $("pwd-btn");
-    ov.classList.remove("saliendo"); box.classList.remove("correcto");
-    $("pwd-lock").textContent = "🔒";
-    btn.textContent = "Entrar"; btn.classList.remove("ok");
-    $("pwd-input").disabled = false; $("pwd-input").value = "";
-    $("pwd-error").style.display = "none"; $("pwd-hint").style.display = "none";
-    ov.style.display = "flex";
-    document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => d.classList.remove("open"));
-    setTimeout(() => $("pwd-input").focus(), 100);
-  }
-
-  setInterval(() => {
-    if (sessionStorage.getItem("auth_piratas") !== "ok" && !$("pwd-overlay")) location.reload();
-  }, 500);
-
-  // ── DROPDOWNS ──
-  function toggleDropdown(id) {
-    const t = $(id), open = t.classList.contains("open");
-    document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => {
-      if (d.classList.contains("open")) {
-        d.classList.remove("open");
-        d.classList.add("closing");
-        setTimeout(() => d.classList.remove("closing"), 300);
+async function registrarUsuario() {
+  const username = ($("reg-username").value || "").trim();
+  const password = $("reg-password").value || "";
+  const err = $("reg-error"), btn = $("reg-btn");
+  if (!username || !password) { err.textContent = "Completá los dos campos."; return; }
+  btn.textContent = "Creando cuenta..."; btn.disabled = true; err.textContent = "";
+  try {
+    const res = await fetch(ADMIN_URL, { method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ action:"register", username, password }) });
+    const data = await res.json();
+    if (data.ok) {
+      const res2 = await fetch(ADMIN_URL, { method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ action:"login_user", username: username.toLowerCase(), password }) });
+      const data2 = await res2.json();
+      if (data2.ok) {
+        sessionStorage.setItem("js_session_token", data2.sessionToken);
+        onLoginSuccess(data2.displayName || data2.username, null);
+        return;
       }
-    });
-    if (!open) t.classList.add("open");
-  }
+    }
+    err.textContent = data.error || "Error al crear la cuenta.";
+  } catch(e) { err.textContent = "Error de conexión. Intentá de nuevo."; }
+  btn.textContent = "Crear cuenta"; btn.disabled = false;
+}
 
-  document.addEventListener("click", e => {
-    document.querySelectorAll(".dropdown, .person-dropdown").forEach(d => {
-      const isLink = e.target.closest("a");
-      if ((!d.contains(e.target) || isLink) && d.classList.contains("open")) {
-        d.classList.remove("open");
-        d.classList.add("closing");
-        setTimeout(() => d.classList.remove("closing"), 300);
-      }
-    });
-  });
+function mostrarRegistro() {
+  $("login-form").style.display = "none"; $("register-form").style.display = "block";
+  $("reg-error").textContent = ""; if ($("reg-username")) $("reg-username").focus();
+}
+function mostrarLogin() {
+  $("register-form").style.display = "none"; $("login-form").style.display = "block";
+  $("login-error").textContent = ""; if ($("login-username")) $("login-username").focus();
+}
+
+function onLoginSuccess(username, adminToken) {
+  if (adminToken) sessionStorage.setItem(ADMIN_TOKEN_KEY, adminToken);
+  if (username) sessionStorage.setItem(USERNAME_KEY, username);
+  const ov = $("pwd-overlay");
+  if (ov) { ov.classList.add("saliendo"); setTimeout(() => { ov.style.display = "none"; ov.classList.remove("saliendo"); }, 500); }
+  const label = $("session-label"); if (label) label.textContent = username || "Admin";
+  const cu = $("campo-usuario"); if (cu) cu.value = username || "";
+  const sb = $("sender-badge"); if (sb) sb.textContent = "👤 " + (username || "");
+}
+
+function cerrarSesion() {
+  sessionStorage.removeItem(USERNAME_KEY); sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+  sessionStorage.removeItem("js_session_token");
+  const ov = $("pwd-overlay");
+  if (ov) { ov.classList.remove("saliendo"); ov.style.display = "flex"; }
+  const loginUser = $("login-username"), loginPwd = $("login-password"), loginErr = $("login-error");
+  if (loginUser) loginUser.value = ""; if (loginPwd) loginPwd.value = ""; if (loginErr) loginErr.textContent = "";
+  mostrarLogin();
+  const cu = $("campo-usuario"); if (cu) cu.value = "";
+}
+
+// Restaurar sesión
+(function() {
+  const username = sessionStorage.getItem(USERNAME_KEY);
+  const adminToken = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+  if (username || adminToken) {
+    const ov = $("pwd-overlay"); if (ov) ov.style.display = "none";
+    const label = $("session-label"); if (label) label.textContent = username || "Admin";
+    const cu = $("campo-usuario"); if (cu) cu.value = username || "";
+    const sb = $("sender-badge"); if (sb) sb.textContent = "👤 " + (username || "");
+  }
+})();
+
+// ── FORMULARIO ──
+async function enviarFormulario(e) {
+  e.preventDefault();
+  const btn = $("submit-btn");
+  if (!estaLogueado()) { $("pwd-overlay").style.display = "flex"; return; }
+  if ($("radio-otro").checked) {
+    const otroVal = $("otro-input").value.trim();
+    if (!otroVal) { $("otro-input").focus(); return; }
+    e.target.querySelector('input[name="tipo-otro"]').value = otroVal;
+  }
+  btn.disabled = true; btn.textContent = "Enviando...";
+  const formData = new FormData(e.target);
+  const usuario = getMiUsername() || "anónimo";
+  const tipo = formData.get("tipo") || "";
+  const tipoOtro = formData.get("tipo-otro") || "";
+  const mensaje = formData.get("mensaje") || "";
+  const notas = formData.get("notas") || "";
+  try {
+    const res = await fetch(ADMIN_URL, { method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ action:"save_suggestion", usuario, tipo, tipoOtro, mensaje, notas }) });
+    const data = await res.json();
+    if (data.ok) {
+      $("form-wrapper").style.display = "none"; $("success-msg").style.display = "block";
+    } else {
+      alert("Error al enviar. Intentá de nuevo.");
+      btn.disabled = false; btn.textContent = "✉️ Enviar sugerencia";
+    }
+  } catch(e) {
+    alert("Error de conexión. Intentá de nuevo.");
+    btn.disabled = false; btn.textContent = "✉️ Enviar sugerencia";
+  }
+}
+
+// ── UI ──
+document.addEventListener("DOMContentLoaded", function() {
+  const radios = document.querySelectorAll('input[name="tipo"]');
+  radios.forEach(r => r.addEventListener("change", () => {
+    const wrap = document.getElementById("otro-input")?.closest(".form-group");
+    if (wrap) wrap.style.display = $("radio-otro").checked ? "block" : "none";
+  }));
+});
+
+function toggleDropdown(id) {
+  document.querySelectorAll(".dropdown").forEach(d => { if (d.id !== id) d.classList.remove("open"); });
+  const el = document.getElementById(id); if (el) el.classList.toggle("open");
+}
+document.addEventListener("click", e => {
+  if (!e.target.closest(".dropdown")) document.querySelectorAll(".dropdown").forEach(d => d.classList.remove("open"));
+});
+
+function abrirDisclaimer() { const m = $("disclaimer-modal"); if (m) m.style.display = "flex"; }
+function cerrarDisclaimer() { const m = $("disclaimer-modal"); if (m) m.style.display = "none"; }
 </script>
 
 <!-- Chat panel flotante -->
 <div id="chat-panel-placeholder"></div>
-<script>
-// Chat en sugerencias — panel iframe
-const CHAT_URL_S = "https://ort-admin.simonabulafia.workers.dev";
-let chatPollIntervalS = null;
 
-function getMiNombreS() { return sessionStorage.getItem("auth_userid") || sessionStorage.getItem("auth_nombre") || ""; }
-function getMiTokenS() { return sessionStorage.getItem("auth_token") || ""; }
-function getMiTagS() { return sessionStorage.getItem("auth_tag") || ""; }
-
-async function actualizarBadgeS() {
-  if (!getMiNombreS()) return;
-  try {
-    const res = await fetch(CHAT_URL_S, { method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({ action:"mis_solicitudes", token:getMiTokenS(), miNombre:getMiNombreS(), miTag:getMiTagS() }) });
-    const data = await res.json();
-    const sols = data.solicitudes?.length || 0;
-    let msgs = 0;
-    const misChats = JSON.parse(localStorage.getItem("mis_chats")||"[]");
-    for (const a of misChats) {
-      try {
-        const uv = localStorage.getItem("ultimo_visto_"+a.chatId)||"";
-        const r = await fetch(CHAT_URL_S, { method:"POST", headers:{"Content-Type":"application/json"},
-          body: JSON.stringify({ action:"get_mensajes_nuevos", chatId:a.chatId, ultimoVisto:uv, token:getMiTokenS(), miNombre:getMiNombreS(), miTag:getMiTagS() }) });
-        const rd = await r.json();
-        msgs += rd.nuevos||0;
-      } catch {}
-    }
-    const total = sols + msgs;
-    const badge = document.getElementById("chat-badge");
-    if (badge) { badge.textContent = total; badge.style.display = total > 0 ? "flex" : "none"; }
-  } catch {}
-}
-
-window.toggleChatPanel = function() {
-  window.location.href = "/?chat=1";
-};
-
-if (sessionStorage.getItem("auth_piratas") === "ok") {
-  const btn = document.getElementById("header-chat-btn");
-  if (btn) btn.style.display = "flex";
-  actualizarBadgeS();
-  chatPollIntervalS = setInterval(actualizarBadgeS, 5000);
-  cargarBannerAnuncioS();
-}
-
-async function cargarBannerAnuncioS() {
-  try {
-    const res = await fetch("https://ort-admin.simonabulafia.workers.dev", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "get_anuncio", adminToken: "public" }),
-    });
-    const data = await res.json();
-    document.getElementById("anuncios-lista-top-s")?.remove();
-    if (!data.anuncios || !data.anuncios.length) return;
-    const wrap = document.createElement("div");
-    wrap.id = "anuncios-lista-top-s";
-    wrap.style.cssText = "position:fixed;top:56px;left:0;right:0;z-index:8888;display:flex;flex-direction:column;gap:0;pointer-events:none;";
-    wrap.innerHTML = data.anuncios.map((anuncio, i) => `
-      <div id="anuncio-banner-s-${i}" style="display:flex;justify-content:center;padding:4px 16px;pointer-events:none;">
-        <div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:10px 18px 10px 14px;box-shadow:0 4px 16px rgba(0,0,0,0.25);display:flex;align-items:center;gap:10px;max-width:640px;width:100%;pointer-events:all;animation:bannerPopS 0.4s cubic-bezier(0.34,1.56,0.64,1);">
-          <span style="font-size:16px;flex-shrink:0;">📢</span>
-          <p style="margin:0;font-size:13px;color:#f1f5f9;line-height:1.5;flex:1;font-weight:500;">${anuncio.mensaje}</p>
-          <button onclick="const w=this.closest('[id^=anuncio-banner-s]');w.style.animation='bannerCloseS 0.3s ease forwards';setTimeout(()=>{w.remove();const l=document.getElementById('anuncios-lista-top-s');if(l&&!l.querySelector('[id^=anuncio-banner-s]'))l.remove();},300);" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:18px;padding:0;line-height:1;flex-shrink:0;">✕</button>
-        </div>
-      </div>`).join('');
-    document.body.appendChild(wrap);
-  } catch {}
-}
-</script>
 
 </body>
 </html>
