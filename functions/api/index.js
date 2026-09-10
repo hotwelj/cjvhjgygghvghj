@@ -1,26 +1,21 @@
 // Cloudflare Pages Function — proxy al worker real
-// El worker real nunca aparece en el browser
-
-const TARGET = "https://ort-admin.simonabulafia.workers.dev";
+// La URL del worker viene de variable de entorno — nunca en el código
 
 export async function onRequestPost(context) {
-  const { request } = context;
-  
+  const { request, env } = context;
+  const TARGET = env.WORKER_URL;
+
   try {
     const body = await request.text();
-    
     const res = await fetch(TARGET, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // Pasar la IP real para rate limiting
         "CF-Connecting-IP": request.headers.get("CF-Connecting-IP") || "",
-        // Origen interno — el worker sabe que viene del proxy
         "X-Proxy-Secret": "js-pages-proxy-2024",
       },
       body,
     });
-
     const data = await res.text();
     return new Response(data, {
       status: res.status,
