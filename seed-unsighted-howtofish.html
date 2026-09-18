@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Seed links</title></head>
+<body style="font-family:sans-serif;padding:40px;background:#0f172a;color:#f1f5f9;">
+<h2>Diagnóstico + Guardar links</h2>
+<div id="resultado">Cargando...</div>
+<script>
+async function seed() {
+  const ADMIN_URL = "https://ort-admin.simonabulafia.workers.dev";
+  const ADMIN_USER = "788622cam";
+  const ADMIN_PASS = "estalocura";
+  const headers = { "Content-Type": "application/json", "X-Proxy-Secret": "js-pages-proxy-2024" };
+  const resultado = document.getElementById("resultado");
+  let log = "";
+
+  log += `<b>Origin de esta página:</b> ${window.location.origin || "(vacío — probablemente file://)"}<br>`;
+  log += `<b>Protocolo:</b> ${window.location.protocol}<br><br>`;
+  resultado.innerHTML = log;
+
+  // TEST 0: fetch simple a un endpoint público conocido, sin headers custom
+  try {
+    log += "TEST 0 — fetch simple sin headers custom...<br>";
+    resultado.innerHTML = log;
+    const r0 = await fetch(ADMIN_URL, { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ action: "list_juegos" }) });
+    log += `  status: ${r0.status}<br>`;
+    const d0 = await r0.text();
+    log += `  respuesta: ${d0.slice(0,200)}<br><br>`;
+  } catch (e) {
+    log += `  <span style="color:#ef4444">FALLÓ: ${e.name}: ${e.message}</span><br>`;
+    log += `  <span style="color:#94a3b8;font-size:12px">Si esto ya falla, el problema es anterior a CORS del worker — puede ser: bloqueo del browser al abrir vía file://, extensión, antivirus, o red.</span><br><br>`;
+    resultado.innerHTML = log;
+    return;
+  }
+  resultado.innerHTML = log;
+
+  // TEST 1: login admin con X-Proxy-Secret
+  const juegos = [
+    { dl: "unsighted", url: "https://github.com/hotwelj/cjvhjgygghvghj/releases/download/Unsighted/UNSIGHTED.v1.1.4.zip" },
+    { dl: "how-to-fish", url: "https://github.com/hotwelj/cjvhjgygghvghj/releases/download/How-to-fish/How.to.Fish.v1.0.12.zip" }
+  ];
+
+  try {
+    log += "TEST 1 — login admin...<br>";
+    resultado.innerHTML = log;
+    const loginRes = await fetch(ADMIN_URL, { method: "POST", headers, body: JSON.stringify({ action: "admin_login", username: ADMIN_USER, password: ADMIN_PASS }) });
+    log += `  status: ${loginRes.status}<br>`;
+    const loginData = await loginRes.json();
+    log += `  respuesta: ${JSON.stringify(loginData)}<br><br>`;
+
+    if (!loginData.ok) {
+      resultado.innerHTML = log + "<p style='color:#ef4444'>❌ Login falló.</p>";
+      return;
+    }
+
+    for (const j of juegos) {
+      log += `Guardando ${j.dl}...<br>`;
+      resultado.innerHTML = log;
+      const saveRes = await fetch(ADMIN_URL, { method: "POST", headers, body: JSON.stringify({ action: "save_link", adminToken: loginData.adminToken, dl: j.dl, url: j.url }) });
+      log += `  status: ${saveRes.status}<br>`;
+      const saveData = await saveRes.json();
+      log += saveData.ok ? `  <span style="color:#22c55e">✅ OK</span><br><br>` : `  <span style="color:#ef4444">❌ ${JSON.stringify(saveData)}</span><br><br>`;
+      resultado.innerHTML = log;
+    }
+  } catch (e) {
+    log += `<p style="color:#ef4444">❌ ${e.name}: ${e.message}</p>`;
+    resultado.innerHTML = log;
+  }
+}
+seed();
+</script>
+</body>
+</html>
