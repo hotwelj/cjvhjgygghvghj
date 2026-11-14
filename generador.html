@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generador de plantillas - Juegos Sort</title>
+<style>
+  :root { --bg:#0f172a; --card:#1e293b; --line:#334155; --text:#f1f5f9; --muted:#94a3b8; --accent:#38bdf8; --ok:#22c55e; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; line-height:1.5; }
+  .wrap { max-width:860px; margin:0 auto; padding:24px 16px 60px; }
+  h1 { font-size:22px; margin:0 0 4px; }
+  p.sub { color:var(--muted); margin:0 0 20px; font-size:14px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:16px; }
+  label { display:block; font-size:13px; color:var(--muted); margin:12px 0 4px; }
+  label:first-child { margin-top:0; }
+  input[type=text], input[type=number], input[type=password], textarea, select {
+    width:100%; background:var(--bg); color:var(--text); border:1px solid var(--line); border-radius:8px; padding:9px 10px; font:inherit; }
+  textarea { min-height:110px; resize:vertical; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .row3 { display:grid; grid-template-columns:2fr 1fr; gap:12px; }
+  @media (max-width:600px){ .row,.row3{ grid-template-columns:1fr; } }
+  .genres { display:flex; flex-wrap:wrap; gap:8px; }
+  .genres label { display:inline-flex; align-items:center; gap:6px; margin:0; padding:6px 10px; border:1px solid var(--line); border-radius:999px; color:var(--text); cursor:pointer; font-size:13px; }
+  .genres input { margin:0; }
+  .hint { font-size:12px; color:var(--muted); margin-top:4px; }
+  .cat { display:inline-block; padding:2px 10px; border-radius:999px; background:var(--bg); border:1px solid var(--line); font-size:13px; }
+  pre { background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:12px; white-space:pre-wrap; word-break:break-word; font-size:13px; margin:0; }
+  button { background:var(--accent); color:#04283a; border:0; border-radius:8px; padding:9px 14px; font:inherit; font-weight:600; cursor:pointer; }
+  button.sec { background:transparent; color:var(--text); border:1px solid var(--line); }
+  .actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+  .warn { color:#fbbf24; font-size:13px; margin-top:8px; }
+  .okmsg { color:var(--ok); font-size:13px; margin-left:8px; }
+  #lock { max-width:420px; margin:12vh auto 0; padding:0 16px; display:none; }
+  .err { color:#f87171; font-size:13px; margin-top:8px; min-height:18px; }
+  .inline { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text); margin:12px 0 0; }
+  .inline input { width:auto; margin:0; }
+</style>
+</head>
+<body>
+<div id="lock">
+  <div class="card">
+    <h1>Generador de plantillas</h1>
+    <p class="sub">Ingresá con tu usuario y clave de admin.</p>
+    <label for="lockUser">Usuario</label>
+    <input type="text" id="lockUser" autocomplete="username">
+    <label for="lockPass">Clave</label>
+    <input type="password" id="lockPass" autocomplete="current-password">
+    <div class="actions"><button id="lockBtn">Entrar</button></div>
+    <div class="err" id="lockErr"></div>
+  </div>
+</div>
+<div class="wrap" id="app" style="display:none">
+  <h1>Generador de plantillas</h1>
+  <p class="sub">Completá los datos y copiá la plantilla para "Pegar plantilla". Todo se arma en tu navegador, no se envía a ningún lado.</p>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" placeholder="Ej: Slow Roads">
+      </div>
+      <div>
+        <label for="dl">DL ID (se completa solo, podés cambiarlo)</label>
+        <input type="text" id="dl" placeholder="slow-roads">
+      </div>
+    </div>
+
+    <label for="imagen">Imagen (nombre del archivo en /images/)</label>
+    <input type="text" id="imagen" placeholder="slowroads.webp">
+
+    <div class="row3">
+      <div>
+        <label for="peso">Peso</label>
+        <input type="number" id="peso" min="0" step="any" placeholder="Ej: 359041274">
+      </div>
+      <div>
+        <label for="unidad">Unidad</label>
+        <select id="unidad">
+          <option value="bytes">bytes (como lo da GitHub)</option>
+          <option value="MB">MB</option>
+          <option value="GB">GB</option>
+        </select>
+      </div>
+    </div>
+    <div class="hint">Categoría calculada: <span class="cat" id="cat">-</span> &nbsp; Peso en la plantilla: <span class="cat" id="pesoTxt">-</span></div>
+
+    <label>Géneros</label>
+    <div class="genres" id="genres"></div>
+
+    <label for="desc">Descripción</label>
+    <textarea id="desc" placeholder="Descripción del juego..."></textarea>
+  </div>
+
+  <div class="card">
+    <h1 style="font-size:16px;margin-bottom:8px">Plantilla</h1>
+    <pre id="out">Completá los campos...</pre>
+    <div class="actions">
+      <button id="copiar">Copiar plantilla</button><span class="okmsg" id="okc"></span>
+    </div>
+    <div class="warn" id="avisos"></div>
+  </div>
+
+  <div class="card">
+    <h1 style="font-size:16px;margin-bottom:8px">Guardar link de descarga</h1>
+    <label for="url">URL de descarga</label>
+    <input type="text" id="url" placeholder="https://github.com/.../releases/download/...">
+    <div class="hint" id="guardarInfo">Se guarda con el DL ID de arriba, usando tu sesión de admin.</div>
+    <div class="actions">
+      <button id="guardar">Guardar link</button>
+    </div>
+    <div id="guardarRes" style="margin-top:10px;font-size:14px"></div>
+  </div>
+</div>
+
+<script>
+const ADMIN_URL = "https://ort-admin.simonabulafia.workers.dev";
+const GENEROS = ["accion","aventura","indie","humor","puzzle","roguelike","metroidvania","clicker","terror","estrategia","sandbox","simulacion"];
+const $ = id => document.getElementById(id);
+
+const gbox = $("genres");
+GENEROS.forEach(g => {
+  const l = document.createElement("label");
+  l.innerHTML = '<input type="checkbox" value="' + g + '"> ' + g;
+  gbox.appendChild(l);
+});
+
+function slug(s) {
+  return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+    .replace(/['’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+// Devuelve el peso en MB (1 MB = 1024 KB, como lo muestra Windows)
+function pesoEnMB() {
+  const v = parseFloat($("peso").value);
+  if (!isFinite(v) || v <= 0) return null;
+  const u = $("unidad").value;
+  if (u === "bytes") return v / (1024 * 1024);
+  if (u === "GB") return v * 1024;
+  return v;
+}
+
+function categoria(mb) {
+  if (mb < 200) return "liviano";
+  if (mb < 600) return "normal";
+  if (mb < 1536) return "pesado";
+  return "muypesado";
+}
+
+function textoPeso(mb) {
+  if (mb >= 1024) return (Math.round(mb / 1024 * 10) / 10) + "GB";
+  return Math.round(mb) + "MB";
+}
+
+let dlManual = false;
+$("dl").addEventListener("input", () => { dlManual = $("dl").value.trim() !== ""; });
+$("nombre").addEventListener("input", () => { if (!dlManual) $("dl").value = slug($("nombre").value); });
+
+function generos() {
+  return [...gbox.querySelectorAll("input:checked")].map(i => i.value);
+}
+
+function render() {
+  const mb = pesoEnMB();
+  const cat = mb == null ? null : categoria(mb);
+  const pt = mb == null ? null : textoPeso(mb);
+  $("cat").textContent = cat || "-";
+  $("pesoTxt").textContent = pt || "-";
+
+  const nombre = $("nombre").value.trim();
+  const dl = $("dl").value.trim();
+  const img = $("imagen").value.trim().replace(/^\/?(images\/)?/, "");
+  const gens = generos();
+  const desc = $("desc").value.trim().replace(/\s*\n\s*/g, " ");
+
+  const faltan = [];
+  if (!nombre) faltan.push("nombre");
+  if (!dl) faltan.push("DL ID");
+  if (!img) faltan.push("imagen");
+  if (mb == null) faltan.push("peso");
+  if (!gens.length) faltan.push("géneros");
+  if (!desc) faltan.push("descripción");
+
+  $("avisos").textContent = faltan.length ? "Falta completar: " + faltan.join(", ") + "." : "";
+
+  $("out").textContent =
+    "Nombre: " + nombre + "\n" +
+    "DL ID: " + dl + "\n" +
+    "Imagen: " + (img ? "images/" + img : "") + "\n" +
+    "Peso: " + (pt || "") + "\n" +
+    "Categoría: " + (cat || "") + "\n" +
+    "Géneros: " + gens.join(" ") + "\n" +
+    "Descripción: " + desc;
+}
+
+document.querySelectorAll("input,textarea,select").forEach(el => el.addEventListener("input", render));
+document.querySelectorAll("input[type=checkbox]").forEach(el => el.addEventListener("change", render));
+
+$("copiar").addEventListener("click", async () => {
+  const t = $("out").textContent;
+  try { await navigator.clipboard.writeText(t); }
+  catch (e) {
+    const r = document.createRange(); r.selectNodeContents($("out"));
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand("copy");
+  }
+  $("okc").textContent = "Copiado";
+  setTimeout(() => $("okc").textContent = "", 1500);
+});
+
+// ---- Acceso con usuario y clave de admin (se valida contra el worker) ----
+function mostrarApp(){ $("lock").style.display = "none"; $("app").style.display = "block"; }
+
+let entrando = false;
+let adminToken = null;
+async function intentarEntrar(){
+  if (entrando) return;
+  const user = $("lockUser").value.trim(), pass = $("lockPass").value;
+  if (!user || !pass) { $("lockErr").textContent = "Completá usuario y clave."; return; }
+  entrando = true; $("lockBtn").disabled = true; $("lockErr").textContent = "Verificando...";
+  try {
+    const res = await fetch(ADMIN_URL, { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "admin_login", username: user, password: pass }) });
+    const data = await res.json();
+    if (data && data.ok) { adminToken = data.adminToken; mostrarApp(); }
+    else { $("lockErr").textContent = "Usuario o clave incorrectos."; $("lockPass").value = ""; }
+  } catch (e) {
+    $("lockErr").textContent = "No se pudo conectar con el servidor. Abrí esta página desde juegosort.pages.dev, no como archivo local.";
+  }
+  entrando = false; $("lockBtn").disabled = false;
+}
+
+$("lockBtn").addEventListener("click", intentarEntrar);
+$("lockPass").addEventListener("keydown", e => { if (e.key === "Enter") intentarEntrar(); });
+$("lockUser").addEventListener("keydown", e => { if (e.key === "Enter") $("lockPass").focus(); });
+$("lock").style.display = "block"; $("lockUser").focus();
+
+$("guardar").addEventListener("click", async () => {
+  const dl = $("dl").value.trim(), url = $("url").value.trim();
+  const res = $("guardarRes");
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  if (!dl || !url) { res.innerHTML = '<span style="color:#fbbf24">Completá el DL ID y la URL de descarga.</span>'; return; }
+  if (!adminToken) { res.innerHTML = '<span style="color:#f87171">No hay sesión de admin. Recargá la página y volvé a entrar.</span>'; return; }
+  $("guardar").disabled = true; res.textContent = "Guardando...";
+  try {
+    const r = await fetch(ADMIN_URL, { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "save_link", adminToken, dl, url }) });
+    const d = await r.json();
+    res.innerHTML = d && d.ok
+      ? '<span style="color:#22c55e">✅ Link guardado correctamente para dl="' + esc(dl) + '"</span>'
+      : '<span style="color:#f87171">❌ Error al guardar: ' + esc(JSON.stringify(d)) + '</span><div class="hint">Si dice que no está autorizado, la sesión pudo vencer: recargá y volvé a entrar.</div>';
+  } catch (e) {
+    res.innerHTML = '<span style="color:#f87171">❌ No se pudo conectar: ' + esc(e.message) + '</span>';
+  }
+  $("guardar").disabled = false;
+});
+
+render();
+</script>
+</body>
+</html>
